@@ -1,5 +1,5 @@
 import { useConversation } from "@elevenlabs/react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Phone, PhoneOff, Mic } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -9,7 +9,6 @@ import { toast } from "sonner";
 interface VoiceAgentProps {
   className?: string;
   variant?: "floating" | "inline";
-  agentId?: string;
 }
 
 // Client tools that the agent can call
@@ -32,16 +31,16 @@ interface CheckAvailabilityParams {
   date: string;
 }
 
-export function VoiceAgent({ className, variant = "floating", agentId }: VoiceAgentProps) {
+export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [micPermission, setMicPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
-
-  // Get agent ID from props or environment variable
-  const effectiveAgentId = agentId || import.meta.env.VITE_ELEVENLABS_AGENT_ID;
+  const retryCountRef = useRef(0);
+  const maxRetries = 3;
 
   const conversation = useConversation({
     onConnect: () => {
       console.log("Connected to voice agent");
+      retryCountRef.current = 0;
       toast.success("Connected! Start speaking...");
     },
     onDisconnect: () => {
@@ -104,8 +103,6 @@ export function VoiceAgent({ className, variant = "floating", agentId }: VoiceAg
       },
       checkAvailability: async (params: CheckAvailabilityParams) => {
         console.log("Checking availability for:", params.date);
-        // In a real app, you'd check actual availability
-        // For now, we'll simulate availability check
         const dayOfWeek = new Date(params.date).getDay();
         if (dayOfWeek === 0) {
           return "We have limited availability on Sundays. Our hours are 8am to 5pm.";
@@ -123,23 +120,22 @@ export function VoiceAgent({ className, variant = "floating", agentId }: VoiceAg
     try {
       // Request microphone permission
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop()); // Stop the test stream
+      stream.getTracks().forEach(track => track.stop());
       setMicPermission('granted');
 
-      if (!effectiveAgentId) {
-        toast.error("Voice agent not configured. Please set up an ElevenLabs agent.");
-        return;
-      }
-
-      // Get signed URL for the agent
-      const { data, error } = await supabase.functions.invoke('elevenlabs-conversation-token', {
-        body: { agent_id: effectiveAgentId }
-      });
+      // Get signed URL and agent_id from backend (no frontend env var needed)
+      const { data, error } = await supabase.functions.invoke('elevenlabs-conversation-token');
       
-      if (error || !data?.signed_url) {
-        throw new Error(error?.message || 'Failed to get conversation token');
+      if (error) {
+        throw new Error(error.message || 'Failed to get conversation token');
+      }
+      
+      if (!data?.signed_url) {
+        throw new Error('No signed URL received from server');
       }
 
+      console.log('Starting conversation with agent:', data.agent_id);
+      
       await conversation.startSession({
         signedUrl: data.signed_url,
       });
@@ -149,13 +145,18 @@ export function VoiceAgent({ className, variant = "floating", agentId }: VoiceAg
       if (error.name === 'NotAllowedError') {
         setMicPermission('denied');
         toast.error("Microphone access is required for voice calls");
+      } else if (retryCountRef.current < maxRetries) {
+        retryCountRef.current++;
+        toast.error(`Connection failed. Retrying... (${retryCountRef.current}/${maxRetries})`);
+        setTimeout(() => startConversation(), 1000 * retryCountRef.current);
+        return;
       } else {
         toast.error(error.message || "Failed to connect. Please try again.");
       }
     } finally {
       setIsConnecting(false);
     }
-  }, [conversation, effectiveAgentId]);
+  }, [conversation]);
 
   const stopConversation = useCallback(async () => {
     await conversation.endSession();
