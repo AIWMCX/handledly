@@ -106,9 +106,14 @@ export type Database = {
       leads: {
         Row: {
           bedrooms: number | null
+          call_notes: string | null
           call_transcript: string | null
+          confirmation_call_status: string | null
+          confirmation_call_time: string | null
           created_at: string
           email: string
+          email_sent: boolean | null
+          email_sent_at: string | null
           estimated_quote: number | null
           full_name: string
           has_specialty_items: boolean | null
@@ -118,6 +123,7 @@ export type Database = {
           move_to_address: string | null
           notes: string | null
           phone: string
+          prefer_email_only: boolean | null
           property_type: string | null
           specialty_items: string[] | null
           status: string
@@ -125,9 +131,14 @@ export type Database = {
         }
         Insert: {
           bedrooms?: number | null
+          call_notes?: string | null
           call_transcript?: string | null
+          confirmation_call_status?: string | null
+          confirmation_call_time?: string | null
           created_at?: string
           email: string
+          email_sent?: boolean | null
+          email_sent_at?: string | null
           estimated_quote?: number | null
           full_name: string
           has_specialty_items?: boolean | null
@@ -137,6 +148,7 @@ export type Database = {
           move_to_address?: string | null
           notes?: string | null
           phone: string
+          prefer_email_only?: boolean | null
           property_type?: string | null
           specialty_items?: string[] | null
           status?: string
@@ -144,9 +156,14 @@ export type Database = {
         }
         Update: {
           bedrooms?: number | null
+          call_notes?: string | null
           call_transcript?: string | null
+          confirmation_call_status?: string | null
+          confirmation_call_time?: string | null
           created_at?: string
           email?: string
+          email_sent?: boolean | null
+          email_sent_at?: string | null
           estimated_quote?: number | null
           full_name?: string
           has_specialty_items?: boolean | null
@@ -156,6 +173,7 @@ export type Database = {
           move_to_address?: string | null
           notes?: string | null
           phone?: string
+          prefer_email_only?: boolean | null
           property_type?: string | null
           specialty_items?: string[] | null
           status?: string

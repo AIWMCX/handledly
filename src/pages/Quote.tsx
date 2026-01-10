@@ -3,8 +3,10 @@ import { Header, Footer, Container } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { VoiceAgent } from "@/components/VoiceAgent";
+import { ChatWidget } from "@/components/ChatWidget";
+import { QuoteConfirmation } from "@/components/QuoteConfirmation";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -21,7 +23,7 @@ import {
 import { 
   ArrowRight, ArrowLeft, Check, Phone, Clock, Users, 
   Home, Building2, Truck, Zap, Trash2, Weight, Gamepad2, HelpCircle,
-  CheckCircle
+  CheckCircle, Mail
 } from "lucide-react";
 
 type Step = 1 | 2 | 3 | 4;
@@ -56,6 +58,9 @@ export default function Quote() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [preferEmailOnly, setPreferEmailOnly] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [callScheduled, setCallScheduled] = useState(false);
   // Determine what fields to show based on service type
   const needsBedrooms = ['apartment-condo', 'house-townhouse', 'same-day'].includes(serviceType);
   const needsHours = serviceType === 'labor-only';
@@ -102,6 +107,7 @@ export default function Quote() {
           specialty_items: selectedSpecialty.length > 0 ? selectedSpecialty : null,
           estimated_quote: quote.total,
           status: 'new',
+          prefer_email_only: preferEmailOnly,
         })
         .select()
         .single();
@@ -122,8 +128,56 @@ export default function Quote() {
 
       if (quoteError) throw quoteError;
 
-      toast.success("Quote submitted! We'll be in touch within 10 minutes.");
       setStep(4);
+      toast.success("Quote submitted! Sending confirmation...");
+
+      // Send email quote (async, don't wait)
+      supabase.functions.invoke('send-quote-email', {
+        body: {
+          leadId: lead.id,
+          customerName: fullName,
+          email,
+          phone,
+          serviceType,
+          crewSize: quote.crewSize,
+          hourlyRate: quote.hourlyRate,
+          estimatedHours: quote.estimatedHours,
+          laborCost: quote.laborCost,
+          specialtyFee: quote.specialtyFee,
+          totalQuote: quote.total,
+          moveDate: moveDate || undefined,
+          moveFrom: moveFrom || undefined,
+          moveTo: moveTo || undefined,
+          specialtyItems: selectedSpecialty.length > 0 ? selectedSpecialty : undefined,
+        }
+      }).then(() => {
+        setEmailSent(true);
+        toast.success("Quote emailed successfully!");
+      }).catch((err) => {
+        console.error("Email error:", err);
+      });
+
+      // Schedule confirmation call if not email-only
+      if (!preferEmailOnly) {
+        supabase.functions.invoke('trigger-confirmation-call', {
+          body: {
+            leadId: lead.id,
+            customerName: fullName,
+            phone,
+            email,
+            serviceType,
+            totalQuote: quote.total,
+            moveDate: moveDate || undefined,
+            crewSize: quote.crewSize,
+            estimatedHours: quote.estimatedHours,
+          }
+        }).then(() => {
+          setCallScheduled(true);
+        }).catch((err) => {
+          console.error("Call scheduling error:", err);
+        });
+      }
+
     } catch (error) {
       console.error('Error submitting quote:', error);
       toast.error("Failed to submit quote. Please try again.");
@@ -418,30 +472,32 @@ export default function Quote() {
                           className="mt-2"
                         />
                       </div>
+
+                      {/* Email Only Preference */}
+                      <div className="flex items-center space-x-2 pt-2">
+                        <Checkbox
+                          id="emailOnly"
+                          checked={preferEmailOnly}
+                          onCheckedChange={(checked) => setPreferEmailOnly(checked as boolean)}
+                        />
+                        <Label htmlFor="emailOnly" className="text-sm text-muted-foreground cursor-pointer">
+                          Email only - don't call me
+                        </Label>
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* Step 4: Confirmation */}
-                {step === 4 && (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 rounded-full gradient-gold flex items-center justify-center mx-auto mb-6">
-                      <Check className="w-8 h-8 text-primary-foreground" />
-                    </div>
-                    <h2 className="font-serif text-2xl font-semibold text-foreground mb-4">
-                      Quote Submitted!
-                    </h2>
-                    <p className="text-muted-foreground mb-6">
-                      We've received your request and will contact you within 10 minutes 
-                      during business hours to confirm your quote and schedule.
-                    </p>
-                    <Button asChild className="gradient-gold text-primary-foreground">
-                      <a href="tel:+13035551234">
-                        <Phone className="mr-2 w-4 h-4" />
-                        Call Us Now
-                      </a>
-                    </Button>
-                  </div>
+                {step === 4 && quote && (
+                  <QuoteConfirmation
+                    customerName={fullName}
+                    totalQuote={quote.total}
+                    email={email}
+                    emailSent={emailSent}
+                    callScheduled={callScheduled}
+                    preferEmailOnly={preferEmailOnly}
+                  />
                 )}
 
                 {/* Navigation */}
@@ -562,6 +618,7 @@ export default function Quote() {
 
       <Footer />
       <VoiceAgent />
+      <ChatWidget />
     </div>
   );
 }
