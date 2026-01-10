@@ -1,7 +1,7 @@
 import { useConversation } from "@elevenlabs/react";
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Phone, PhoneOff, Mic, MicOff } from "lucide-react";
+import { Phone, PhoneOff, Mic } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -12,9 +12,32 @@ interface VoiceAgentProps {
   agentId?: string;
 }
 
+// Client tools that the agent can call
+interface CreateLeadParams {
+  fullName: string;
+  email: string;
+  phone: string;
+  serviceType?: string;
+  bedrooms?: number;
+  estimatedQuote?: number;
+}
+
+interface ScheduleAppointmentParams {
+  date: string;
+  time: string;
+  serviceType: string;
+}
+
+interface CheckAvailabilityParams {
+  date: string;
+}
+
 export function VoiceAgent({ className, variant = "floating", agentId }: VoiceAgentProps) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [micPermission, setMicPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
+
+  // Get agent ID from props or environment variable
+  const effectiveAgentId = agentId || import.meta.env.VITE_ELEVENLABS_AGENT_ID;
 
   const conversation = useConversation({
     onConnect: () => {
@@ -32,6 +55,67 @@ export function VoiceAgent({ className, variant = "floating", agentId }: VoiceAg
       console.error("Voice agent error:", error);
       toast.error("Connection error. Please try again.");
     },
+    // Client-side tools the agent can use
+    clientTools: {
+      createLead: async (params: CreateLeadParams) => {
+        console.log("Creating lead:", params);
+        try {
+          const { data, error } = await supabase
+            .from('leads')
+            .insert({
+              full_name: params.fullName,
+              email: params.email,
+              phone: params.phone,
+              property_type: params.serviceType || 'apartment-condo',
+              bedrooms: params.bedrooms,
+              estimated_quote: params.estimatedQuote,
+              status: 'new',
+            })
+            .select()
+            .single();
+
+          if (error) throw error;
+          return `Lead created successfully for ${params.fullName}. We'll follow up shortly!`;
+        } catch (error) {
+          console.error("Error creating lead:", error);
+          return "I apologize, I had trouble saving your information. Let me transfer you to our team.";
+        }
+      },
+      scheduleAppointment: async (params: ScheduleAppointmentParams) => {
+        console.log("Scheduling appointment:", params);
+        try {
+          const { data, error } = await supabase
+            .from('appointments')
+            .insert({
+              scheduled_date: params.date,
+              scheduled_time: params.time,
+              move_type: params.serviceType,
+              status: 'scheduled',
+            })
+            .select()
+            .single();
+
+          if (error) throw error;
+          return `Appointment scheduled for ${params.date} at ${params.time}. We'll send you a confirmation!`;
+        } catch (error) {
+          console.error("Error scheduling appointment:", error);
+          return "I had trouble scheduling that time. Let me connect you with our team to finalize.";
+        }
+      },
+      checkAvailability: async (params: CheckAvailabilityParams) => {
+        console.log("Checking availability for:", params.date);
+        // In a real app, you'd check actual availability
+        // For now, we'll simulate availability check
+        const dayOfWeek = new Date(params.date).getDay();
+        if (dayOfWeek === 0) {
+          return "We have limited availability on Sundays. Our hours are 8am to 5pm.";
+        }
+        if (dayOfWeek === 6) {
+          return "Saturday is a popular day! We have morning slots at 7am, 8am, and an afternoon slot at 1pm available.";
+        }
+        return "We have great availability on that date! We can start as early as 7am or schedule you for any time up to 4pm.";
+      },
+    },
   });
 
   const startConversation = useCallback(async () => {
@@ -42,24 +126,23 @@ export function VoiceAgent({ className, variant = "floating", agentId }: VoiceAg
       stream.getTracks().forEach(track => track.stop()); // Stop the test stream
       setMicPermission('granted');
 
-      // If we have an agent ID, get signed URL for it
-      if (agentId) {
-        const { data, error } = await supabase.functions.invoke('elevenlabs-conversation-token', {
-          body: { agent_id: agentId }
-        });
-        
-        if (error || !data?.signed_url) {
-          throw new Error(error?.message || 'Failed to get conversation token');
-        }
-
-        await conversation.startSession({
-          signedUrl: data.signed_url,
-        });
-      } else {
-        // No agent ID configured - show helpful message
+      if (!effectiveAgentId) {
         toast.error("Voice agent not configured. Please set up an ElevenLabs agent.");
         return;
       }
+
+      // Get signed URL for the agent
+      const { data, error } = await supabase.functions.invoke('elevenlabs-conversation-token', {
+        body: { agent_id: effectiveAgentId }
+      });
+      
+      if (error || !data?.signed_url) {
+        throw new Error(error?.message || 'Failed to get conversation token');
+      }
+
+      await conversation.startSession({
+        signedUrl: data.signed_url,
+      });
     } catch (error: any) {
       console.error("Failed to start conversation:", error);
       
@@ -72,7 +155,7 @@ export function VoiceAgent({ className, variant = "floating", agentId }: VoiceAg
     } finally {
       setIsConnecting(false);
     }
-  }, [conversation, agentId]);
+  }, [conversation, effectiveAgentId]);
 
   const stopConversation = useCallback(async () => {
     await conversation.endSession();

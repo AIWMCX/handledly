@@ -2,3 +2,9 @@ project_id = "spguevrimwpqygvcxrsk"
 
 [functions.elevenlabs-conversation-token]
 verify_jwt = false
+
+[functions.send-quote-email]
+verify_jwt = false
+
+[functions.trigger-confirmation-call]
+verify_jwt = false
