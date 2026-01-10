@@ -56,6 +56,10 @@ export default function Quote() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  // Determine what fields to show based on service type
+  const needsBedrooms = ['apartment-condo', 'house-townhouse', 'same-day'].includes(serviceType);
+  const needsHours = serviceType === 'labor-only';
+  const needsSpecialtyItems = ['heavy-items', 'pool-table'].includes(serviceType);
 
   // Calculate quote in real-time
   const quote: QuoteBreakdown | null = useMemo(() => {
@@ -67,12 +71,7 @@ export default function Quote() {
       specialtyItems: selectedSpecialty.length > 0 ? selectedSpecialty : undefined,
       moveDate: moveDate ? new Date(moveDate) : undefined,
     });
-  }, [serviceType, bedrooms, estimatedHours, selectedSpecialty, moveDate]);
-
-  // Determine what fields to show based on service type
-  const needsBedrooms = ['apartment-condo', 'house-townhouse', 'same-day'].includes(serviceType);
-  const needsHours = serviceType === 'labor-only';
-  const needsSpecialtyItems = ['heavy-items', 'pool-table'].includes(serviceType);
+  }, [serviceType, bedrooms, estimatedHours, selectedSpecialty, moveDate, needsBedrooms, needsHours]);
 
   const handleSpecialtyToggle = (value: string) => {
     setSelectedSpecialty(prev =>
