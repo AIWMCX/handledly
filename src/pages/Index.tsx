@@ -2,43 +2,45 @@ import { Header, Footer, Container, Section, SectionHeader } from "@/components/
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { VoiceAgent } from "@/components/VoiceAgent";
+import { AnnouncementBar } from "@/components/AnnouncementBar";
+import { TrustIndicators } from "@/components/TrustIndicators";
+import { HowItWorks } from "@/components/HowItWorks";
+import { StatsBar } from "@/components/StatsBar";
+import { PricingDisplay } from "@/components/PricingDisplay";
+import { HOURLY_RATES } from "@/lib/quoteCalculator";
 import { 
   Phone, ArrowRight, Shield, Clock, Star, Truck, 
-  Package, Users, Award, CheckCircle, MapPin 
+  Package, Users, Award, CheckCircle, MapPin, Zap
 } from "lucide-react";
 
-const stats = [
-  { value: "15+", label: "Years Experience" },
-  { value: "10,000+", label: "Moves Completed" },
-  { value: "4.9", label: "Star Rating" },
-  { value: "100%", label: "Satisfaction" },
-];
-
 const services = [
-  { icon: Truck, title: "Residential Moving", description: "Full-service home moving with expert packing, loading, and delivery across Denver." },
-  { icon: Package, title: "Commercial Moving", description: "Minimize downtime with efficient office and business relocation services." },
-  { icon: Shield, title: "Specialty Items", description: "Expert handling for pianos, antiques, artwork, safes, and other valuables." },
-  { icon: Users, title: "Packing Services", description: "Professional packing with premium materials to protect your belongings." },
+  { icon: Truck, title: "Residential Moving", description: "Full-service home moving with flat hourly rates. No hidden fees." },
+  { icon: Package, title: "Commercial Moving", description: "Minimize downtime with efficient office and business relocation." },
+  { icon: Shield, title: "Specialty Items", description: "Expert handling for pianos, safes, pool tables, and heavy items." },
+  { icon: Users, title: "Labor Only / Help", description: "Need help loading your truck or pod? We've got you covered." },
+  { icon: Zap, title: "Same-Day Moving", description: "Urgent move? We offer same-day service when you need it fast." },
+  { icon: Package, title: "Junk Removal", description: "Furniture, appliances, and debris removal from your property." },
 ];
 
 const testimonials = [
-  { name: "Sarah Mitchell", location: "Cherry Creek", rating: 5, text: "Absolutely flawless experience. The crew was professional, careful, and finished ahead of schedule." },
+  { name: "Sarah Mitchell", location: "Cherry Creek", rating: 5, text: "Absolutely flawless experience. The flat rate pricing was exactly what they quoted — no surprises!" },
   { name: "Michael Chen", location: "Highlands", rating: 5, text: "Moved my grand piano and antique collection without a scratch. These guys know what they're doing." },
-  { name: "Emily Rodriguez", location: "Downtown Denver", rating: 5, text: "Third time using Denver Premium Moving. Consistent quality every time." },
+  { name: "Emily Rodriguez", location: "Downtown Denver", rating: 5, text: "Third time using Denver Premium Moving. Same great service, same fair prices every time." },
 ];
 
 const whyChooseUs = [
-  "Licensed, bonded, and fully insured",
-  "Background-checked professional crews",
-  "Transparent pricing with no hidden fees",
-  "Premium packing materials included",
-  "Real-time tracking and communication",
-  "Damage-free guarantee on every move",
+  "Flat hourly rates — no hidden fees",
+  "Free packing materials included",
+  "No stair or elevator charges",
+  "Free furniture assembly/disassembly",
+  "500+ damage-free days",
+  "Same-day service available",
 ];
 
 export default function Index() {
   return (
     <div className="min-h-screen bg-background">
+      <AnnouncementBar />
       <Header />
       
       {/* Hero Section */}
@@ -50,16 +52,28 @@ export default function Index() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
               <Star className="w-4 h-4 text-primary fill-primary" />
-              <span className="text-sm font-medium text-primary">Denver's #1 Rated Moving Company</span>
+              <span className="text-sm font-medium text-primary">97% Happy Customers — 500+ Damage-Free Days</span>
             </div>
             
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-foreground leading-tight mb-6">
-              Premium Moving Services in <span className="text-gradient-gold">Denver</span>
+              Denver's <span className="text-gradient-gold">Flat-Rate</span> Moving Experts
             </h1>
             
-            <p className="text-lg lg:text-xl text-muted-foreground mb-8 max-w-2xl leading-relaxed">
-              Experience stress-free moving with Denver's most trusted team. From luxury homes to specialty items, we handle your move with the care you deserve.
+            <p className="text-lg lg:text-xl text-muted-foreground mb-4 max-w-2xl leading-relaxed">
+              No hidden fees, no surprises. Just one simple hourly rate that includes everything — 
+              truck, materials, assembly, and protection.
             </p>
+
+            <div className="flex flex-wrap items-center gap-4 mb-8 text-sm">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border">
+                <Users className="w-4 h-4 text-primary" />
+                <span className="text-foreground font-medium">2 Movers + Truck: ${HOURLY_RATES['2-movers']}/hr</span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border">
+                <CheckCircle className="w-4 h-4 text-primary" />
+                <span className="text-foreground font-medium">All materials included</span>
+              </div>
+            </div>
             
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
               <Button asChild size="lg" className="gradient-gold text-primary-foreground shadow-gold hover:opacity-90 h-12 px-8">
@@ -70,23 +84,25 @@ export default function Index() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-border">
-              {stats.map((stat) => (
-                <div key={stat.label}>
-                  <p className="font-serif text-2xl lg:text-3xl font-semibold text-foreground">{stat.value}</p>
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
-                </div>
-              ))}
-            </div>
+            <p className="text-sm text-muted-foreground">
+              <CheckCircle className="w-4 h-4 inline mr-1 text-primary" />
+              Get your personalized quote in less than 10 minutes
+            </p>
           </div>
         </Container>
       </section>
 
+      {/* Stats Bar */}
+      <StatsBar />
+
       {/* Services */}
       <Section className="bg-card">
         <Container>
-          <SectionHeader title="Our Premium Services" subtitle="Comprehensive moving solutions tailored to your needs." />
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <SectionHeader 
+            title="Our Services" 
+            subtitle="Flat-rate moving solutions for every need — residential, commercial, and specialty." 
+          />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((service) => (
               <div key={service.title} className="group p-6 rounded-2xl bg-background border border-border hover:border-primary/50 transition-all">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
@@ -97,15 +113,29 @@ export default function Index() {
               </div>
             ))}
           </div>
+          <div className="text-center mt-8">
+            <Button asChild variant="outline" size="lg">
+              <Link to="/services">View All Services <ArrowRight className="ml-2 w-4 h-4" /></Link>
+            </Button>
+          </div>
         </Container>
       </Section>
 
+      {/* Trust Indicators - What Makes Us Different */}
+      <TrustIndicators />
+
+      {/* Pricing Display */}
+      <PricingDisplay />
+
+      {/* How It Works */}
+      <HowItWorks />
+
       {/* Why Choose Us */}
-      <Section>
+      <Section className="bg-card">
         <Container>
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <SectionHeader title="Why Denver Chooses Us" subtitle="We're not just movers—we're trusted partners." align="left" />
+              <SectionHeader title="Why Denver Chooses Us" subtitle="No gimmicks, just honest service at fair prices." align="left" />
               <ul className="space-y-4">
                 {whyChooseUs.map((item) => (
                   <li key={item} className="flex items-start gap-3">
@@ -115,17 +145,17 @@ export default function Index() {
                 ))}
               </ul>
               <Button asChild size="lg" className="mt-8 gradient-gold text-primary-foreground shadow-gold hover:opacity-90">
-                <Link to="/about">Learn More <ArrowRight className="ml-2 w-5 h-5" /></Link>
+                <Link to="/quote">Get Your Free Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
               </Button>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
-                <div className="p-6 rounded-2xl bg-card border border-border"><Award className="w-8 h-8 text-primary mb-3" /><p className="font-serif text-lg font-semibold text-foreground">Award Winning</p></div>
-                <div className="p-6 rounded-2xl bg-card border border-border"><Shield className="w-8 h-8 text-primary mb-3" /><p className="font-serif text-lg font-semibold text-foreground">Fully Insured</p></div>
+                <div className="p-6 rounded-2xl bg-background border border-border"><Award className="w-8 h-8 text-primary mb-3" /><p className="font-serif text-lg font-semibold text-foreground">Award Winning</p></div>
+                <div className="p-6 rounded-2xl bg-background border border-border"><Shield className="w-8 h-8 text-primary mb-3" /><p className="font-serif text-lg font-semibold text-foreground">Fully Insured</p></div>
               </div>
               <div className="space-y-4 mt-8">
-                <div className="p-6 rounded-2xl bg-card border border-border"><Clock className="w-8 h-8 text-primary mb-3" /><p className="font-serif text-lg font-semibold text-foreground">On Time</p></div>
-                <div className="p-6 rounded-2xl bg-card border border-border"><MapPin className="w-8 h-8 text-primary mb-3" /><p className="font-serif text-lg font-semibold text-foreground">Local Experts</p></div>
+                <div className="p-6 rounded-2xl bg-background border border-border"><Clock className="w-8 h-8 text-primary mb-3" /><p className="font-serif text-lg font-semibold text-foreground">On Time</p></div>
+                <div className="p-6 rounded-2xl bg-background border border-border"><MapPin className="w-8 h-8 text-primary mb-3" /><p className="font-serif text-lg font-semibold text-foreground">30+ Cities</p></div>
               </div>
             </div>
           </div>
@@ -133,12 +163,12 @@ export default function Index() {
       </Section>
 
       {/* Testimonials */}
-      <Section className="bg-card">
+      <Section>
         <Container>
-          <SectionHeader title="What Our Clients Say" subtitle="Hear from the families we've helped move." />
+          <SectionHeader title="What Our Clients Say" subtitle="Real reviews from real customers." />
           <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((t) => (
-              <div key={t.name} className="p-6 rounded-2xl bg-background border border-border">
+              <div key={t.name} className="p-6 rounded-2xl bg-card border border-border">
                 <div className="flex gap-1 mb-4">{[...Array(t.rating)].map((_, i) => <Star key={i} className="w-4 h-4 text-primary fill-primary" />)}</div>
                 <p className="text-foreground mb-6">"{t.text}"</p>
                 <p className="font-medium text-foreground">{t.name}</p>
@@ -150,11 +180,11 @@ export default function Index() {
       </Section>
 
       {/* Final CTA */}
-      <Section>
+      <Section className="bg-card">
         <Container size="narrow">
           <div className="text-center">
             <h2 className="font-serif text-3xl lg:text-4xl font-semibold text-foreground mb-4">Ready to Make Your Move?</h2>
-            <p className="text-muted-foreground mb-8">Contact us today for a free quote.</p>
+            <p className="text-muted-foreground mb-8">Get a free quote in minutes. No hidden fees, guaranteed.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="gradient-gold text-primary-foreground shadow-gold hover:opacity-90">
                 <Link to="/quote">Get Free Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
