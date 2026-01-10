@@ -23,13 +23,15 @@ export function ChatWidget({ className }: ChatWidgetProps) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
-  const agentId = import.meta.env.VITE_ELEVENLABS_AGENT_ID;
+  const retryCountRef = useRef(0);
+  const maxRetries = 3;
 
   const conversation = useConversation({
     onConnect: () => {
       console.log("Chat connected");
+      retryCountRef.current = 0;
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
         role: 'agent',
@@ -42,9 +44,11 @@ export function ChatWidget({ className }: ChatWidgetProps) {
     },
     onMessage: (message) => {
       console.log("Received message:", message);
-      // Handle different message types from ElevenLabs
       const msg = message as any;
+      
+      // Handle agent response events
       if (msg.type === 'agent_response' && msg.agent_response_event?.agent_response) {
+        setIsSending(false);
         setMessages(prev => [...prev, {
           id: Date.now().toString(),
           role: 'agent',
@@ -52,9 +56,29 @@ export function ChatWidget({ className }: ChatWidgetProps) {
           timestamp: new Date(),
         }]);
       }
+      
+      // Handle agent response correction (when interrupted)
+      if (msg.type === 'agent_response_correction' && msg.agent_response_correction_event?.corrected_agent_response) {
+        setIsSending(false);
+        setMessages(prev => {
+          const updated = [...prev];
+          // Replace the last agent message with corrected version
+          for (let i = updated.length - 1; i >= 0; i--) {
+            if (updated[i].role === 'agent') {
+              updated[i] = {
+                ...updated[i],
+                content: msg.agent_response_correction_event.corrected_agent_response,
+              };
+              break;
+            }
+          }
+          return updated;
+        });
+      }
     },
     onError: (error) => {
       console.error("Chat error:", error);
+      setIsSending(false);
       toast.error("Connection error. Please try again.");
     },
   });
@@ -65,31 +89,39 @@ export function ChatWidget({ className }: ChatWidgetProps) {
   }, [messages]);
 
   const startChat = useCallback(async () => {
-    if (!agentId) {
-      toast.error("Chat not configured. Please try again later.");
-      return;
-    }
-
     setIsConnecting(true);
     try {
-      const { data, error } = await supabase.functions.invoke('elevenlabs-conversation-token', {
-        body: { agent_id: agentId }
-      });
+      // Get signed URL and agent_id from backend
+      const { data, error } = await supabase.functions.invoke('elevenlabs-conversation-token');
       
-      if (error || !data?.signed_url) {
-        throw new Error(error?.message || 'Failed to connect to chat');
+      if (error) {
+        throw new Error(error.message || 'Failed to connect to chat');
+      }
+      
+      if (!data?.signed_url) {
+        throw new Error('No signed URL received');
       }
 
+      console.log('Starting chat with agent:', data.agent_id);
+      
       await conversation.startSession({
         signedUrl: data.signed_url,
       });
     } catch (error: any) {
       console.error("Failed to start chat:", error);
+      
+      if (retryCountRef.current < maxRetries) {
+        retryCountRef.current++;
+        toast.error(`Connection failed. Retrying... (${retryCountRef.current}/${maxRetries})`);
+        setTimeout(() => startChat(), 1000 * retryCountRef.current);
+        return;
+      }
+      
       toast.error("Failed to connect. Please try again.");
     } finally {
       setIsConnecting(false);
     }
-  }, [conversation, agentId]);
+  }, [conversation]);
 
   const endChat = useCallback(async () => {
     await conversation.endSession();
@@ -111,7 +143,7 @@ export function ChatWidget({ className }: ChatWidgetProps) {
   };
 
   const sendMessage = async () => {
-    if (!inputValue.trim() || conversation.status !== 'connected') return;
+    if (!inputValue.trim() || conversation.status !== 'connected' || isSending) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -121,24 +153,17 @@ export function ChatWidget({ className }: ChatWidgetProps) {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    setIsSending(true);
     
-    // Send to agent using text mode
-    // Note: ElevenLabs SDK sends text messages via the conversation
-    // For text-only mode, we'd need to use a different approach
-    // For now, show the message and indicate text chat is coming
-    
-    setInputValue("");
-    
-    // Simulate agent response for demo purposes
-    // In production, this would come from the ElevenLabs webhook
-    setTimeout(() => {
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'agent',
-        content: "I received your message! For the full chat experience, please use our voice agent by clicking the phone button. Our team will also respond to your inquiry within 10 minutes during business hours.",
-        timestamp: new Date(),
-      }]);
-    }, 1500);
+    try {
+      // Send text message to the ElevenLabs conversation
+      await conversation.sendUserMessage(inputValue.trim());
+      setInputValue("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      setIsSending(false);
+      toast.error("Failed to send message. Please try again.");
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -256,6 +281,23 @@ export function ChatWidget({ className }: ChatWidgetProps) {
                 )}
               </div>
             ))}
+            
+            {/* Typing indicator */}
+            {isSending && (
+              <div className="flex gap-2 justify-start">
+                <div className="w-8 h-8 rounded-full gradient-gold flex-shrink-0 flex items-center justify-center">
+                  <Bot className="w-4 h-4 text-primary-foreground" />
+                </div>
+                <div className="bg-secondary rounded-2xl rounded-tl-sm px-4 py-3">
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div ref={messagesEndRef} />
           </div>
 
@@ -268,11 +310,11 @@ export function ChatWidget({ className }: ChatWidgetProps) {
                 onKeyPress={handleKeyPress}
                 placeholder="Type a message..."
                 className="flex-1"
-                disabled={!isConnected}
+                disabled={!isConnected || isSending}
               />
               <Button
                 onClick={sendMessage}
-                disabled={!inputValue.trim() || !isConnected}
+                disabled={!inputValue.trim() || !isConnected || isSending}
                 size="icon"
                 className="gradient-gold text-primary-foreground"
               >

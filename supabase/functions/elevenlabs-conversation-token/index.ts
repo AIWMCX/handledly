@@ -13,6 +13,7 @@ serve(async (req) => {
 
   try {
     const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
+    const ELEVENLABS_AGENT_ID = Deno.env.get('ELEVENLABS_AGENT_ID');
     
     if (!ELEVENLABS_API_KEY) {
       console.error('ELEVENLABS_API_KEY is not configured');
@@ -25,36 +26,22 @@ serve(async (req) => {
       );
     }
 
-    // Parse request body to get optional agent_id
-    let agentId = null;
-    try {
-      const body = await req.json();
-      agentId = body.agent_id;
-    } catch {
-      // No body or invalid JSON, continue without agent_id
-    }
-
-    // If no agent_id provided, return an error
-    // In production, you would configure a default agent ID
-    if (!agentId) {
-      console.log('No agent_id provided, returning instructions');
+    if (!ELEVENLABS_AGENT_ID) {
+      console.error('ELEVENLABS_AGENT_ID is not configured');
       return new Response(
-        JSON.stringify({ 
-          error: 'No agent_id provided',
-          message: 'Please configure your ElevenLabs agent ID. You can create an agent at https://elevenlabs.io/agents and provide the agent_id in the request body.'
-        }),
+        JSON.stringify({ error: 'ElevenLabs agent ID not configured' }),
         { 
-          status: 400, 
+          status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
     }
 
-    console.log(`Fetching signed URL for agent: ${agentId}`);
+    console.log(`Fetching signed URL for agent: ${ELEVENLABS_AGENT_ID}`);
 
     // Get signed URL for WebSocket connection
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${agentId}`,
+      `https://api.elevenlabs.io/v1/convai/conversation/get-signed-url?agent_id=${ELEVENLABS_AGENT_ID}`,
       {
         headers: {
           'xi-api-key': ELEVENLABS_API_KEY,
@@ -80,8 +67,12 @@ serve(async (req) => {
     const data = await response.json();
     console.log('Successfully obtained signed URL');
 
+    // Return both signed_url and agent_id so frontend doesn't need env vars
     return new Response(
-      JSON.stringify({ signed_url: data.signed_url }),
+      JSON.stringify({ 
+        signed_url: data.signed_url,
+        agent_id: ELEVENLABS_AGENT_ID 
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
