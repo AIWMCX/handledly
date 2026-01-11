@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { VoiceAgent } from "@/components/VoiceAgent";
 import { ChatWidget } from "@/components/ChatWidget";
+import { allServices } from "@/data/servicesData";
 import { 
   Truck, Package, Shield, Users, Home, Building2, 
   Warehouse, Piano, Wine, Dumbbell, ArrowRight, CheckCircle 
@@ -12,6 +13,7 @@ const mainServices = [
   {
     icon: Home,
     title: "Residential Moving",
+    slug: "residential-movers",
     description: "Complete home moving services for families of all sizes. From cozy apartments to sprawling estates, we handle every detail.",
     features: [
       "Professional packing and unpacking",
@@ -25,6 +27,7 @@ const mainServices = [
   {
     icon: Building2,
     title: "Commercial Moving",
+    slug: "long-distance-moving",
     description: "Minimize business disruption with our efficient office and commercial relocation services. We work on your schedule.",
     features: [
       "After-hours and weekend moves",
@@ -38,6 +41,7 @@ const mainServices = [
   {
     icon: Shield,
     title: "Specialty Moving",
+    slug: "heavy-items-moving",
     description: "Expert care for your most valuable and delicate possessions. Our trained specialists handle items requiring extra attention.",
     features: [
       "Piano moving (upright & grand)",
@@ -51,6 +55,7 @@ const mainServices = [
   {
     icon: Warehouse,
     title: "Storage Solutions",
+    slug: "local-moving",
     description: "Climate-controlled storage facilities for short or long-term needs. Secure, accessible, and flexible options available.",
     features: [
       "Climate-controlled units",
@@ -140,7 +145,7 @@ export default function Services() {
                   <div className="flex items-center gap-4">
                     <span className="text-lg font-semibold text-primary">{service.startingPrice}</span>
                     <Button asChild className="gradient-gold text-primary-foreground hover:opacity-90">
-                      <Link to="/quote">Get Quote</Link>
+                      <Link to={`/services/${service.slug}`}>Learn More</Link>
                     </Button>
                   </div>
                 </div>

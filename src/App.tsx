@@ -14,6 +14,18 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Overview, Leads, Conversations, CallLogs, Appointments, Settings } from "./pages/admin";
+import {
+  LocalMoving,
+  ResidentialMovers,
+  LongDistanceMoving,
+  MovingHelpLabor,
+  HeavyItemsMoving,
+  PianoMoving,
+  PoolTableMoving,
+  SafeMoving,
+  SameDayMoving,
+  JunkRemoval,
+} from "./pages/services";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +39,16 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/services/local-moving" element={<LocalMoving />} />
+            <Route path="/services/residential-movers" element={<ResidentialMovers />} />
+            <Route path="/services/long-distance-moving" element={<LongDistanceMoving />} />
+            <Route path="/services/moving-help-labor" element={<MovingHelpLabor />} />
+            <Route path="/services/heavy-items-moving" element={<HeavyItemsMoving />} />
+            <Route path="/services/piano-moving" element={<PianoMoving />} />
+            <Route path="/services/pool-table-moving" element={<PoolTableMoving />} />
+            <Route path="/services/safe-moving" element={<SafeMoving />} />
+            <Route path="/services/same-day-moving" element={<SameDayMoving />} />
+            <Route path="/services/junk-removal" element={<JunkRemoval />} />
             <Route path="/quote" element={<Quote />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
