@@ -72,7 +72,7 @@ interface FeatureCardsProps {
 
 export function FeatureCards({ features }: FeatureCardsProps) {
   return (
-    <section className="py-16 bg-card">
+    <section className="py-16 bg-secondary">
       <Container>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => {
@@ -80,13 +80,13 @@ export function FeatureCards({ features }: FeatureCardsProps) {
             return (
               <div 
                 key={index} 
-                className="group relative bg-background rounded-2xl border border-border overflow-hidden hover:border-primary/50 transition-all"
+                className="group relative bg-background rounded-2xl border border-border overflow-hidden hover:border-primary/50 transition-all shadow-card"
               >
                 {/* Gold ribbon header */}
                 <div className="gradient-gold px-6 py-3">
                   <div className="flex items-center gap-3">
-                    <Icon className="w-5 h-5 text-primary-foreground" />
-                    <h3 className="font-serif text-lg font-semibold text-primary-foreground">
+                    <Icon className="w-5 h-5 text-white" />
+                    <h3 className="font-heading text-lg font-semibold text-white">
                       {feature.title}
                     </h3>
                   </div>

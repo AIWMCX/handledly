@@ -68,7 +68,7 @@ export default {
         },
       },
       fontFamily: {
-        serif: ["Playfair Display", "serif"],
+        heading: ["Poppins", "sans-serif"],
         sans: ["Inter", "sans-serif"],
       },
       borderRadius: {
@@ -77,6 +77,11 @@ export default {
         sm: "calc(var(--radius) - 4px)",
         xl: "calc(var(--radius) + 4px)",
         "2xl": "calc(var(--radius) + 8px)",
+      },
+      boxShadow: {
+        'gold': '0 4px 14px rgba(249, 178, 51, 0.4)',
+        'card': '0 4px 6px rgba(0, 0, 0, 0.05)',
+        'elegant': '0 4px 6px rgba(0, 0, 0, 0.1)',
       },
       keyframes: {
         "accordion-down": {
@@ -92,8 +97,8 @@ export default {
           to: { opacity: "1", transform: "translateY(0)" },
         },
         "pulse-gold": {
-          "0%, 100%": { boxShadow: "0 0 0 0 hsl(43 56% 52% / 0.4)" },
-          "50%": { boxShadow: "0 0 0 15px hsl(43 56% 52% / 0)" },
+          "0%, 100%": { boxShadow: "0 0 0 0 hsl(40 95% 59% / 0.4)" },
+          "50%": { boxShadow: "0 0 0 15px hsl(40 95% 59% / 0)" },
         },
       },
       animation: {

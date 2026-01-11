@@ -2,7 +2,7 @@ import { Shield, CheckCircle } from "lucide-react";
 
 export function AnnouncementBar() {
   return (
-    <div className="bg-primary text-primary-foreground py-2.5">
+    <div className="bg-accent text-primary py-2.5">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center gap-6 text-sm font-medium">
           <div className="flex items-center gap-2">

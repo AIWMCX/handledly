@@ -99,11 +99,11 @@ export default function Services() {
       <Header />
       
       {/* Hero */}
-      <section className="pt-32 pb-16 lg:pt-40 lg:pb-20">
+      <section className="pt-32 pb-16 lg:pt-40 lg:pb-20 bg-background">
         <Container>
           <div className="max-w-3xl">
-            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground mb-6">
-              Our <span className="text-gradient-gold">Services</span>
+            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-semibold mb-6">
+              Our <span className="text-accent">Services</span>
             </h1>
             <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
               Comprehensive moving solutions designed for Denver's diverse needs. 
@@ -125,10 +125,10 @@ export default function Services() {
                 }`}
               >
                 <div className={index % 2 === 1 ? "lg:order-2" : ""}>
-                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
-                    <service.icon className="w-7 h-7 text-primary" />
+                  <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-6">
+                    <service.icon className="w-7 h-7 text-accent" />
                   </div>
-                  <h2 className="font-serif text-3xl font-semibold text-foreground mb-4">
+                  <h2 className="font-heading text-3xl font-semibold text-primary mb-4">
                     {service.title}
                   </h2>
                   <p className="text-muted-foreground mb-6 leading-relaxed">
@@ -137,20 +137,20 @@ export default function Services() {
                   <ul className="space-y-3 mb-6">
                     {service.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+                        <CheckCircle className="w-5 h-5 text-accent mt-0.5 shrink-0" />
                         <span className="text-foreground">{feature}</span>
                       </li>
                     ))}
                   </ul>
                   <div className="flex items-center gap-4">
-                    <span className="text-lg font-semibold text-primary">{service.startingPrice}</span>
-                    <Button asChild className="gradient-gold text-primary-foreground hover:opacity-90">
+                    <span className="text-lg font-semibold text-accent">{service.startingPrice}</span>
+                    <Button asChild className="gradient-gold text-white hover:opacity-90">
                       <Link to={`/services/${service.slug}`}>Learn More</Link>
                     </Button>
                   </div>
                 </div>
                 <div className={`${index % 2 === 1 ? "lg:order-1" : ""}`}>
-                  <div className="aspect-[4/3] rounded-2xl bg-card border border-border flex items-center justify-center">
+                  <div className="aspect-[4/3] rounded-2xl bg-secondary border border-border flex items-center justify-center shadow-card">
                     <service.icon className="w-24 h-24 text-primary/20" />
                   </div>
                 </div>
@@ -161,7 +161,7 @@ export default function Services() {
       </Section>
 
       {/* Specialty Items */}
-      <Section className="bg-card">
+      <Section className="bg-secondary">
         <Container>
           <SectionHeader
             title="Specialty Item Moving"
@@ -172,19 +172,19 @@ export default function Services() {
             {specialtyItems.map((item) => (
               <div
                 key={item.name}
-                className="p-6 rounded-2xl bg-background border border-border text-center"
+                className="p-6 rounded-2xl bg-background border border-border text-center shadow-card"
               >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4">
+                  <item.icon className="w-6 h-6 text-accent" />
                 </div>
-                <h3 className="font-serif text-lg font-semibold text-foreground mb-2">{item.name}</h3>
-                <p className="text-sm text-primary font-medium">{item.price}</p>
+                <h3 className="font-heading text-lg font-semibold text-primary mb-2">{item.name}</h3>
+                <p className="text-sm text-accent font-medium">{item.price}</p>
               </div>
             ))}
           </div>
           
           <p className="text-center text-muted-foreground mt-8">
-            Have something unique? <Link to="/contact" className="text-primary hover:underline">Contact us</Link> for a custom quote.
+            Have something unique? <Link to="/contact" className="text-accent hover:underline">Contact us</Link> for a custom quote.
           </p>
         </Container>
       </Section>
@@ -201,11 +201,11 @@ export default function Services() {
             {packingOptions.map((option) => (
               <div
                 key={option.title}
-                className="p-6 rounded-2xl bg-card border border-border"
+                className="p-6 rounded-2xl bg-background border border-border shadow-card"
               >
-                <h3 className="font-serif text-xl font-semibold text-foreground mb-3">{option.title}</h3>
+                <h3 className="font-heading text-xl font-semibold text-primary mb-3">{option.title}</h3>
                 <p className="text-muted-foreground mb-4">{option.description}</p>
-                <p className="text-primary font-medium">{option.price}</p>
+                <p className="text-accent font-medium">{option.price}</p>
               </div>
             ))}
           </div>
@@ -213,16 +213,16 @@ export default function Services() {
       </Section>
 
       {/* CTA */}
-      <Section className="bg-card">
+      <Section className="bg-secondary">
         <Container size="narrow">
           <div className="text-center">
-            <h2 className="font-serif text-3xl lg:text-4xl font-semibold text-foreground mb-4">
+            <h2 className="font-heading text-3xl lg:text-4xl font-semibold text-primary mb-4">
               Ready to Get Started?
             </h2>
             <p className="text-muted-foreground mb-8">
               Get a free, no-obligation quote in minutes. Our team is ready to help.
             </p>
-            <Button asChild size="lg" className="gradient-gold text-primary-foreground shadow-gold hover:opacity-90">
+            <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90">
               <Link to="/quote">
                 Get Your Free Quote
                 <ArrowRight className="ml-2 w-5 h-5" />

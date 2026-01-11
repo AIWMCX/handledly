@@ -41,8 +41,8 @@ export function HowItWorks() {
     <section className="py-20 bg-background">
       <Container>
         <div className="text-center mb-12">
-          <h2 className="font-serif text-3xl lg:text-4xl font-semibold text-foreground mb-4">
-            How It <span className="text-gradient-gold">Works</span>
+          <h2 className="font-heading text-3xl lg:text-4xl font-semibold mb-4">
+            How It <span className="text-accent">Works</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Getting your quote and scheduling your move is simple. Here's our 5-step process.
@@ -58,15 +58,15 @@ export function HowItWorks() {
               <div key={step.number} className="relative text-center">
                 {/* Step number circle */}
                 <div className="relative mx-auto mb-4">
-                  <div className="w-16 h-16 rounded-full gradient-gold flex items-center justify-center mx-auto relative z-10">
-                    <step.icon className="w-7 h-7 text-primary-foreground" />
+                  <div className="w-16 h-16 rounded-full gradient-gold flex items-center justify-center mx-auto relative z-10 shadow-gold">
+                    <step.icon className="w-7 h-7 text-white" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-foreground flex items-center justify-center">
-                    <span className="text-background text-sm font-bold">{step.number}</span>
+                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-primary flex items-center justify-center">
+                    <span className="text-white text-sm font-bold">{step.number}</span>
                   </div>
                 </div>
                 
-                <h3 className="font-serif text-lg font-semibold text-foreground mb-2">
+                <h3 className="font-heading text-lg font-semibold text-primary mb-2">
                   {step.title}
                 </h3>
                 <p className="text-muted-foreground text-sm">

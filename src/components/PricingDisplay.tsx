@@ -30,11 +30,11 @@ const pricingTiers = [
 
 export function PricingDisplay() {
   return (
-    <section className="py-20 bg-card">
+    <section className="py-20 bg-secondary">
       <Container>
         <div className="text-center mb-12">
-          <h2 className="font-serif text-3xl lg:text-4xl font-semibold text-foreground mb-4">
-            Simple, <span className="text-gradient-gold">Transparent</span> Pricing
+          <h2 className="font-heading text-3xl lg:text-4xl font-semibold mb-4">
+            Simple, <span className="text-accent">Transparent</span> Pricing
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             No hidden fees, no surprises. Just one flat hourly rate that includes everything.
@@ -46,24 +46,24 @@ export function PricingDisplay() {
           {pricingTiers.map((tier) => (
             <div
               key={tier.crew}
-              className={`p-6 rounded-2xl border ${
+              className={`p-6 rounded-2xl border shadow-card ${
                 tier.popular 
                   ? 'bg-primary/5 border-primary' 
                   : 'bg-background border-border'
               } relative`}
             >
               {tier.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 gradient-gold text-primary-foreground text-xs font-medium rounded-full">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 gradient-gold text-white text-xs font-medium rounded-full">
                   Most Popular
                 </div>
               )}
               
               <div className="flex items-center gap-2 mb-4">
-                <Users className="w-5 h-5 text-primary" />
-                <Truck className="w-5 h-5 text-primary" />
+                <Users className="w-5 h-5 text-accent" />
+                <Truck className="w-5 h-5 text-accent" />
               </div>
               
-              <h3 className="font-serif text-lg font-semibold text-foreground mb-2">
+              <h3 className="font-heading text-lg font-semibold text-primary mb-2">
                 {tier.crew}
               </h3>
               
@@ -80,21 +80,21 @@ export function PricingDisplay() {
         </div>
         
         {/* What's Included */}
-        <div className="p-8 rounded-2xl bg-background border border-border">
-          <h3 className="font-serif text-xl font-semibold text-foreground mb-6 text-center">
+        <div className="p-8 rounded-2xl bg-background border border-border shadow-card">
+          <h3 className="font-heading text-xl font-semibold text-primary mb-6 text-center">
             Everything Included — No Extra Charges
           </h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {INCLUDED_WITH_EVERY_MOVE.map((item) => (
               <div key={item} className="flex items-start gap-2">
-                <CheckCircle className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+                <CheckCircle className="w-5 h-5 text-accent mt-0.5 shrink-0" />
                 <span className="text-sm text-foreground">{item}</span>
               </div>
             ))}
           </div>
           
           <div className="text-center mt-8">
-            <Button asChild size="lg" className="gradient-gold text-primary-foreground shadow-gold hover:opacity-90">
+            <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90">
               <Link to="/quote">Get Your Free Quote</Link>
             </Button>
           </div>

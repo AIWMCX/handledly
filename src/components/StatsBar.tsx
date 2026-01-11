@@ -21,14 +21,14 @@ export function StatsBar() {
   }, []);
   
   return (
-    <section className="py-12 bg-primary/5 border-y border-primary/10">
+    <section className="py-12 bg-secondary border-y border-border">
       <Container>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
-              <p className="font-serif text-3xl lg:text-4xl font-bold text-foreground">
+              <p className="font-heading text-3xl lg:text-4xl font-bold text-primary">
                 {stat.animate ? damageFreeCount : stat.value.toLocaleString()}
-                <span className="text-primary">{stat.suffix}</span>
+                <span className="text-accent">{stat.suffix}</span>
               </p>
               <p className="text-sm text-muted-foreground mt-1">{stat.label}</p>
             </div>

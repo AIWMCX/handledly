@@ -17,16 +17,16 @@ export function Header() {
   const location = useLocation();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border shadow-sm">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
             <div className="w-10 h-10 gradient-gold rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-serif font-bold text-xl">D</span>
+              <span className="text-white font-heading font-bold text-xl">D</span>
             </div>
             <div className="hidden sm:block">
-              <p className="font-serif text-lg font-semibold text-foreground">Denver Premium</p>
+              <p className="font-heading text-lg font-semibold text-primary">Denver Premium</p>
               <p className="text-xs text-muted-foreground tracking-widest uppercase">Moving Co.</p>
             </div>
           </Link>
@@ -58,7 +58,7 @@ export function Header() {
               <Phone className="w-4 h-4" />
               (303) 555-1234
             </a>
-            <Button asChild className="hidden sm:flex gradient-gold text-primary-foreground hover:opacity-90 shadow-gold">
+            <Button asChild className="hidden sm:flex gradient-gold text-white hover:opacity-90 shadow-gold">
               <Link to="/quote">Get Free Quote</Link>
             </Button>
 
@@ -75,7 +75,7 @@ export function Header() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-border">
+          <div className="lg:hidden py-4 border-t border-border bg-background">
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
                 <Link
@@ -99,7 +99,7 @@ export function Header() {
                 <Phone className="w-5 h-5" />
                 (303) 555-1234
               </a>
-              <Button asChild className="gradient-gold text-primary-foreground w-full mt-2">
+              <Button asChild className="gradient-gold text-white w-full mt-2">
                 <Link to="/quote" onClick={() => setIsMenuOpen(false)}>
                   Get Free Quote
                 </Link>
