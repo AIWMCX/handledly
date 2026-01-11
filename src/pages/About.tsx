@@ -27,21 +27,21 @@ const values = [
   {
     icon: Users,
     title: "Community",
-    description: "We're Denver locals serving our neighbors. This is our home too.",
+    description: "We're locals serving our neighbors. This is our home too.",
   },
 ];
 
 const milestones = [
-  { year: "2009", event: "Founded in Denver with a single truck and a dream" },
-  { year: "2012", event: "Expanded to 5 trucks and 15 team members" },
-  { year: "2015", event: "Opened specialty moving division for pianos and antiques" },
-  { year: "2018", event: "Recognized as Denver's Best Moving Company" },
-  { year: "2021", event: "Launched commercial moving services" },
-  { year: "2024", event: "Celebrating 15 years and 10,000+ successful moves" },
+  { year: "2010", event: "Founded with a single truck and a dream" },
+  { year: "2013", event: "Expanded to 5 trucks and 15 team members" },
+  { year: "2016", event: "Opened specialty moving division for pianos and antiques" },
+  { year: "2019", event: "Recognized as a top-rated moving company" },
+  { year: "2022", event: "Launched commercial moving services" },
+  { year: "2025", event: "Celebrating 15 years and 10,000+ successful moves" },
 ];
 
 const credentials = [
-  "Colorado PUC Licensed & Registered",
+  "[State] Licensed & Registered",
   "Fully Bonded & Insured",
   "BBB A+ Rated",
   "Member of American Moving & Storage Association",
@@ -59,10 +59,10 @@ export default function About() {
         <Container>
           <div className="max-w-3xl">
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-semibold mb-6">
-              About <span className="text-accent">Denver Premium Moving</span>
+              About <span className="text-accent">Our Company</span>
             </h1>
             <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
-              For over 15 years, we've been Denver's trusted partner for seamless, 
+              For over 15 years, we've been a trusted partner for seamless, 
               stress-free moves. Our story is one of dedication, growth, and an 
               unwavering commitment to excellence.
             </p>
@@ -80,14 +80,14 @@ export default function About() {
               </h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  Denver Premium Moving was born from a simple observation: moving 
-                  doesn't have to be stressful. In 2009, our founder recognized that 
+                  Our company was born from a simple observation: moving 
+                  doesn't have to be stressful. Our founder recognized that 
                   families and businesses deserved better—movers who actually cared 
                   about their belongings and their experience.
                 </p>
                 <p>
                   Starting with a single truck and an uncompromising commitment to 
-                  quality, we've grown into Denver's most trusted moving company. 
+                  quality, we've grown into a trusted moving company. 
                   But growth hasn't changed our values. Every move, whether it's a 
                   studio apartment or a corporate headquarters, receives the same 
                   attention to detail and personal care.
@@ -95,7 +95,7 @@ export default function About() {
                 <p>
                   Today, with a fleet of modern trucks and a team of trained 
                   professionals, we continue to raise the bar for what a moving 
-                  experience should be. Because at Denver Premium Moving, your 
+                  experience should be. Because here, your 
                   next chapter starts with us.
                 </p>
               </div>

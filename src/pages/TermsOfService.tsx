@@ -31,11 +31,11 @@ const TermsOfService = () => {
               <h2 className="text-2xl font-bold text-primary mb-4">Introduction</h2>
               <p className="text-foreground leading-relaxed">
                 Welcome to{" "}
-                <a href="https://fatandskinnymovers.com" className="text-primary hover:underline">
-                  https://fatandskinnymovers.com
+                <a href="https://yourcompany.com" className="text-primary hover:underline">
+                  https://yourcompany.com
                 </a>{" "}
                 ("Website"). These Terms and Conditions ("Terms") govern your use of our Website 
-                and the services provided by Drez LLC ("Company," "we," "our," or "us"). By 
+                and the services provided by [Legal Entity Name] ("Company," "we," "our," or "us"). By 
                 accessing or using our Website, you agree to these Terms. If you do not agree, 
                 you must discontinue use of the Website immediately.
               </p>
@@ -45,8 +45,8 @@ const TermsOfService = () => {
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-primary mb-4">Services</h2>
               <p className="text-foreground leading-relaxed">
-                Our Website provides information about moving services offered by Fat and Skinny 
-                Movers. Specific terms regarding individual services may be detailed in a separate 
+                Our Website provides information about moving services offered by [Company Name]. 
+                Specific terms regarding individual services may be detailed in a separate 
                 agreement between you and the Company.
               </p>
             </div>
@@ -79,7 +79,7 @@ const TermsOfService = () => {
               <h2 className="text-2xl font-bold text-primary mb-4">Intellectual Property</h2>
               <p className="text-foreground leading-relaxed">
                 All content on this Website, including text, graphics, logos, images, and software, 
-                is the property of Drez LLC or its licensors and is protected by copyright and 
+                is the property of [Legal Entity Name] or its licensors and is protected by copyright and 
                 trademark laws. You may not reproduce, distribute, or modify any content without 
                 our prior written consent.
               </p>
@@ -143,8 +143,8 @@ const TermsOfService = () => {
               <p className="text-foreground leading-relaxed mb-4">
                 To opt-in to our messaging service, you must provide explicit consent by checking the 
                 box below the contact form through our website at{" "}
-                <a href="https://fatandskinnymovers.com/contact/" className="text-primary hover:underline">
-                  https://fatandskinnymovers.com/contact/
+                <a href="https://yourcompany.com/contact/" className="text-primary hover:underline">
+                  https://yourcompany.com/contact/
                 </a>.
               </p>
 
@@ -162,17 +162,13 @@ const TermsOfService = () => {
               
               <h3 className="text-xl font-semibold text-primary mt-6 mb-3">SMS Consent Communication</h3>
               <p className="text-foreground leading-relaxed mb-4">
-                The information{" "}
-                <a href="tel:303-557-7762" className="text-primary hover:underline font-medium">
-                  (303)-557-77-62
-                </a>{" "}
-                obtained as part of the SMS consent process will not be shared with third parties 
-                for marketing purposes.
+                The information obtained as part of the SMS consent process will not be shared with 
+                third parties for marketing purposes.
               </p>
 
               <h3 className="text-xl font-semibold text-primary mt-6 mb-3">Types of SMS Communications</h3>
               <p className="text-foreground leading-relaxed mb-4">
-                If you have consented to receive text messages from Fat and Skinny Movers, you may 
+                If you have consented to receive text messages from [Company Name], you may 
                 receive messages related to the following:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-foreground mb-4">
@@ -194,7 +190,7 @@ const TermsOfService = () => {
                   Our priority is to ensure your move is smooth and hassle-free. See you soon and have 
                   an amazing day!
                   <br /><br />
-                  Fat and Skinny Movers team
+                  [Company Name] team
                   <br /><br />
                   Reply STOP to opt out of SMS messaging at any time."
                 </p>
@@ -214,7 +210,7 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold text-primary mt-6 mb-3">Opt-In Method</h3>
               <p className="text-foreground mb-4">
-                You may opt-in to receive SMS messages from Fat and Skinny Movers in the following ways:
+                You may opt-in to receive SMS messages from [Company Name] in the following ways:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-foreground mb-4">
                 <li>Verbally, during a conversation</li>
@@ -281,10 +277,10 @@ const TermsOfService = () => {
               <p className="text-foreground leading-relaxed">
                 If you have any questions or concerns about these Terms, please contact us at:{" "}
                 <a 
-                  href="mailto:fatandskinnymovers@gmail.com" 
+                  href="mailto:info@yourcompany.com" 
                   className="text-primary hover:underline font-medium"
                 >
-                  fatandskinnymovers@gmail.com
+                  info@yourcompany.com
                 </a>
               </p>
             </div>
