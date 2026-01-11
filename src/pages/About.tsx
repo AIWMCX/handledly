@@ -55,11 +55,11 @@ export default function About() {
       <Header />
       
       {/* Hero */}
-      <section className="pt-32 pb-16 lg:pt-40 lg:pb-20">
+      <section className="pt-32 pb-16 lg:pt-40 lg:pb-20 bg-background">
         <Container>
           <div className="max-w-3xl">
-            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground mb-6">
-              About <span className="text-gradient-gold">Denver Premium Moving</span>
+            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-semibold mb-6">
+              About <span className="text-accent">Denver Premium Moving</span>
             </h1>
             <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
               For over 15 years, we've been Denver's trusted partner for seamless, 
@@ -75,7 +75,7 @@ export default function About() {
         <Container>
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="font-serif text-3xl font-semibold text-foreground mb-6">
+              <h2 className="font-heading text-3xl font-semibold text-primary mb-6">
                 Our Story
               </h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
@@ -101,18 +101,18 @@ export default function About() {
               </div>
             </div>
             <div className="relative">
-              <div className="aspect-square rounded-2xl bg-card border border-border flex items-center justify-center">
+              <div className="aspect-square rounded-2xl bg-secondary border border-border flex items-center justify-center shadow-card">
                 <Truck className="w-32 h-32 text-primary/20" />
               </div>
-              <div className="absolute -bottom-6 -left-6 p-6 rounded-xl glass shadow-elegant">
+              <div className="absolute -bottom-6 -left-6 p-6 rounded-xl bg-background border border-border shadow-elegant">
                 <div className="flex items-center gap-3">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-primary fill-primary" />
+                      <Star key={i} className="w-5 h-5 text-accent fill-accent" />
                     ))}
                   </div>
                   <div>
-                    <p className="font-semibold text-foreground">4.9 Rating</p>
+                    <p className="font-semibold text-primary">4.9 Rating</p>
                     <p className="text-sm text-muted-foreground">500+ Reviews</p>
                   </div>
                 </div>
@@ -123,7 +123,7 @@ export default function About() {
       </Section>
 
       {/* Values */}
-      <Section className="bg-card">
+      <Section className="bg-secondary">
         <Container>
           <SectionHeader
             title="Our Values"
@@ -134,12 +134,12 @@ export default function About() {
             {values.map((value) => (
               <div
                 key={value.title}
-                className="p-6 rounded-2xl bg-background border border-border"
+                className="p-6 rounded-2xl bg-background border border-border shadow-card"
               >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                  <value.icon className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
+                  <value.icon className="w-6 h-6 text-accent" />
                 </div>
-                <h3 className="font-serif text-xl font-semibold text-foreground mb-2">
+                <h3 className="font-heading text-xl font-semibold text-primary mb-2">
                   {value.title}
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -169,7 +169,7 @@ export default function About() {
                   )}
                 </div>
                 <div className="pb-8">
-                  <p className="text-primary font-semibold">{milestone.year}</p>
+                  <p className="text-accent font-semibold">{milestone.year}</p>
                   <p className="text-foreground">{milestone.event}</p>
                 </div>
               </div>
@@ -179,7 +179,7 @@ export default function About() {
       </Section>
 
       {/* Credentials */}
-      <Section className="bg-card">
+      <Section className="bg-secondary">
         <Container>
           <SectionHeader
             title="Licensed & Certified"
@@ -190,9 +190,9 @@ export default function About() {
             {credentials.map((credential) => (
               <div
                 key={credential}
-                className="flex items-center gap-3 p-4 rounded-xl bg-background border border-border"
+                className="flex items-center gap-3 p-4 rounded-xl bg-background border border-border shadow-card"
               >
-                <CheckCircle className="w-5 h-5 text-primary shrink-0" />
+                <CheckCircle className="w-5 h-5 text-accent shrink-0" />
                 <span className="text-foreground text-sm">{credential}</span>
               </div>
             ))}
@@ -204,20 +204,20 @@ export default function About() {
       <Section>
         <Container size="narrow">
           <div className="text-center">
-            <h2 className="font-serif text-3xl lg:text-4xl font-semibold text-foreground mb-4">
+            <h2 className="font-heading text-3xl lg:text-4xl font-semibold text-primary mb-4">
               Ready to Experience the Difference?
             </h2>
             <p className="text-muted-foreground mb-8">
               Let us show you what premium moving really means.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="gradient-gold text-primary-foreground shadow-gold hover:opacity-90">
+              <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90">
                 <Link to="/quote">
                   Get Free Quote
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg">
+              <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-white">
                 <Link to="/contact">Contact Us</Link>
               </Button>
             </div>

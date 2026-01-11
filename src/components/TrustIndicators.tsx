@@ -38,11 +38,11 @@ const differentiators = [
 
 export function TrustIndicators() {
   return (
-    <section className="py-16 bg-card border-y border-border">
+    <section className="py-16 bg-secondary border-y border-border">
       <Container>
         <div className="text-center mb-12">
-          <h2 className="font-serif text-3xl lg:text-4xl font-semibold text-foreground mb-4">
-            What Makes Us <span className="text-gradient-gold">Different</span>
+          <h2 className="font-heading text-3xl lg:text-4xl font-semibold mb-4">
+            What Makes Us <span className="text-accent">Different</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             We believe in transparent pricing and exceptional service. Here's what sets us apart.
@@ -53,12 +53,12 @@ export function TrustIndicators() {
           {differentiators.map((item) => (
             <div
               key={item.title}
-              className="p-6 rounded-2xl bg-background border border-border hover:border-primary/50 transition-colors"
+              className="p-6 rounded-2xl bg-background border border-border hover:border-primary/50 transition-colors shadow-card"
             >
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                <item.icon className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
+                <item.icon className="w-6 h-6 text-accent" />
               </div>
-              <h3 className="font-serif text-lg font-semibold text-foreground mb-2">
+              <h3 className="font-heading text-lg font-semibold text-primary mb-2">
                 {item.title}
               </h3>
               <p className="text-muted-foreground text-sm">

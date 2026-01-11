@@ -87,11 +87,11 @@ export default function Contact() {
       <Header />
       
       {/* Hero */}
-      <section className="pt-32 pb-16 lg:pt-40 lg:pb-20">
+      <section className="pt-32 pb-16 lg:pt-40 lg:pb-20 bg-background">
         <Container>
           <div className="max-w-3xl">
-            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground mb-6">
-              Get in <span className="text-gradient-gold">Touch</span>
+            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-semibold mb-6">
+              Get in <span className="text-accent">Touch</span>
             </h1>
             <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
               Ready to plan your move? Have questions? We're here to help. 
@@ -106,8 +106,8 @@ export default function Contact() {
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div>
-              <div className="p-6 lg:p-8 rounded-2xl bg-card border border-border">
-                <h2 className="font-serif text-2xl font-semibold text-foreground mb-6">
+              <div className="p-6 lg:p-8 rounded-2xl bg-background border border-border shadow-card">
+                <h2 className="font-heading text-2xl font-semibold text-primary mb-6">
                   Send Us a Message
                 </h2>
                 
@@ -170,7 +170,7 @@ export default function Contact() {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full gradient-gold text-primary-foreground hover:opacity-90"
+                    className="w-full gradient-gold text-white hover:opacity-90"
                   >
                     {isSubmitting ? (
                       "Sending..."
@@ -192,18 +192,18 @@ export default function Contact() {
                 {contactInfo.map((item) => (
                   <div
                     key={item.title}
-                    className="p-5 rounded-xl bg-card border border-border"
+                    className="p-5 rounded-xl bg-background border border-border shadow-card"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
-                      <item.icon className="w-5 h-5 text-primary" />
+                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mb-3">
+                      <item.icon className="w-5 h-5 text-accent" />
                     </div>
                     <p className="text-sm text-muted-foreground mb-1">{item.title}</p>
                     {item.href ? (
-                      <a href={item.href} className="font-medium text-foreground hover:text-primary transition-colors">
+                      <a href={item.href} className="font-medium text-primary hover:text-accent transition-colors">
                         {item.primary}
                       </a>
                     ) : (
-                      <p className="font-medium text-foreground">{item.primary}</p>
+                      <p className="font-medium text-primary">{item.primary}</p>
                     )}
                     <p className="text-sm text-muted-foreground mt-1">{item.secondary}</p>
                   </div>
@@ -211,13 +211,13 @@ export default function Contact() {
               </div>
 
               {/* Chat Support Card */}
-              <div className="p-6 rounded-2xl bg-card border border-border">
+              <div className="p-6 rounded-2xl bg-background border border-border shadow-card">
                 <div className="flex items-start gap-4 mb-4">
                   <div className="w-12 h-12 rounded-xl gradient-gold flex items-center justify-center shrink-0">
-                    <MessagesSquare className="w-6 h-6 text-primary-foreground" />
+                    <MessagesSquare className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-xl font-semibold text-foreground mb-1">
+                    <h3 className="font-heading text-xl font-semibold text-primary mb-1">
                       Chat with Our AI Assistant
                     </h3>
                     <p className="text-muted-foreground text-sm">
@@ -230,13 +230,13 @@ export default function Contact() {
               </div>
 
               {/* Voice Agent Card */}
-              <div className="p-6 rounded-2xl bg-card border border-border">
+              <div className="p-6 rounded-2xl bg-background border border-border shadow-card">
                 <div className="flex items-start gap-4 mb-6">
                   <div className="w-12 h-12 rounded-xl gradient-gold flex items-center justify-center shrink-0">
-                    <MessageSquare className="w-6 h-6 text-primary-foreground" />
+                    <MessageSquare className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-serif text-xl font-semibold text-foreground mb-1">
+                    <h3 className="font-heading text-xl font-semibold text-primary mb-1">
                       Talk to Our AI Assistant
                     </h3>
                     <p className="text-muted-foreground text-sm">
@@ -249,14 +249,14 @@ export default function Contact() {
               </div>
 
               {/* Quick Call CTA */}
-              <div className="p-6 rounded-2xl glass">
-                <h3 className="font-serif text-lg font-semibold text-foreground mb-2">
+              <div className="p-6 rounded-2xl bg-secondary border border-border">
+                <h3 className="font-heading text-lg font-semibold text-primary mb-2">
                   Prefer to Talk to a Human?
                 </h3>
                 <p className="text-muted-foreground text-sm mb-4">
                   Our friendly team is standing by to help with your move.
                 </p>
-                <Button asChild size="lg" className="w-full gradient-gold text-primary-foreground hover:opacity-90">
+                <Button asChild size="lg" className="w-full gradient-gold text-white hover:opacity-90">
                   <a href="tel:+13035551234">
                     <Phone className="mr-2 w-5 h-5" />
                     Call (303) 555-1234

@@ -24,22 +24,26 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <Section>
+    <Section className="bg-primary">
       <Container>
-        <SectionHeader 
-          title="What Our Clients Say" 
-          subtitle="Real reviews from real customers." 
-        />
+        <div className="text-center mb-12">
+          <h2 className="font-heading text-3xl lg:text-4xl font-semibold text-white mb-4">
+            What Our Clients Say
+          </h2>
+          <p className="text-white/80 max-w-2xl mx-auto">
+            Real reviews from real customers.
+          </p>
+        </div>
         <div className="grid md:grid-cols-3 gap-6">
           {testimonials.map((t) => (
-            <div key={t.name} className="p-6 rounded-2xl bg-card border border-border">
+            <div key={t.name} className="p-6 rounded-2xl bg-white shadow-card">
               <div className="flex gap-1 mb-4">
                 {[...Array(t.rating)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 text-primary fill-primary" />
+                  <Star key={i} className="w-4 h-4 text-accent fill-accent" />
                 ))}
               </div>
               <p className="text-foreground mb-6">"{t.text}"</p>
-              <p className="font-medium text-foreground">{t.name}</p>
+              <p className="font-medium text-primary">{t.name}</p>
               <p className="text-sm text-muted-foreground">{t.location}</p>
             </div>
           ))}

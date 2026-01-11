@@ -48,7 +48,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-card border-t border-border">
+    <footer className="bg-primary text-white">
       <div className="container mx-auto px-4 py-16">
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-6">
@@ -56,60 +56,60 @@ export function Footer() {
           <div className="space-y-6 lg:col-span-1">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 gradient-gold rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-serif font-bold text-xl">D</span>
+                <span className="text-white font-heading font-bold text-xl">D</span>
               </div>
               <div>
-                <p className="font-serif text-lg font-semibold text-foreground">Denver Premium</p>
-                <p className="text-xs text-muted-foreground tracking-widest uppercase">Moving Co.</p>
+                <p className="font-heading text-lg font-semibold text-white">Denver Premium</p>
+                <p className="text-xs text-white/70 tracking-widest uppercase">Moving Co.</p>
               </div>
             </div>
-            <p className="text-muted-foreground text-sm leading-relaxed">
+            <p className="text-white/80 text-sm leading-relaxed">
               Denver's most trusted premium moving service. Flat-rate pricing with no hidden fees.
             </p>
             
             {/* Social Links */}
             <div className="flex gap-4">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Facebook">
+              <a href="#" className="text-white/70 hover:text-accent transition-colors" aria-label="Facebook">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="Instagram">
+              <a href="#" className="text-white/70 hover:text-accent transition-colors" aria-label="Instagram">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors" aria-label="LinkedIn">
+              <a href="#" className="text-white/70 hover:text-accent transition-colors" aria-label="LinkedIn">
                 <Linkedin className="w-5 h-5" />
               </a>
             </div>
 
             {/* License & Insurance Badges */}
-            <div className="space-y-3 pt-4 border-t border-border">
+            <div className="space-y-3 pt-4 border-t border-white/20">
               <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-primary" />
-                <span className="text-xs font-medium text-foreground">Licensed & Insured</span>
+                <Shield className="w-4 h-4 text-accent" />
+                <span className="text-xs font-medium text-white">Licensed & Insured</span>
               </div>
               <div className="flex items-center gap-2">
-                <Award className="w-4 h-4 text-primary" />
-                <span className="text-xs text-muted-foreground">Colorado PUC Licensed</span>
+                <Award className="w-4 h-4 text-accent" />
+                <span className="text-xs text-white/80">Colorado PUC Licensed</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-primary" />
-                <span className="text-xs text-muted-foreground">Fully Bonded</span>
+                <CheckCircle className="w-4 h-4 text-accent" />
+                <span className="text-xs text-white/80">Fully Bonded</span>
               </div>
               <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-primary" />
-                <span className="text-xs text-muted-foreground">Workers' Comp Coverage</span>
+                <Shield className="w-4 h-4 text-accent" />
+                <span className="text-xs text-white/80">Workers' Comp Coverage</span>
               </div>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-serif text-lg font-semibold mb-6 text-foreground">Quick Links</h4>
+            <h4 className="font-heading text-lg font-semibold mb-6 text-white">Quick Links</h4>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     to={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                    className="text-white/80 hover:text-accent transition-colors text-sm"
                   >
                     {link.label}
                   </Link>
@@ -118,24 +118,24 @@ export function Footer() {
             </ul>
 
             {/* Payment Methods */}
-            <div className="mt-8 pt-6 border-t border-border">
-              <h5 className="text-xs font-medium text-foreground mb-3">We Accept</h5>
+            <div className="mt-8 pt-6 border-t border-white/20">
+              <h5 className="text-xs font-medium text-white mb-3">We Accept</h5>
               <div className="flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">Visa, MC, Cash, Check</span>
+                <CreditCard className="w-4 h-4 text-white/70" />
+                <span className="text-xs text-white/70">Visa, MC, Cash, Check</span>
               </div>
             </div>
           </div>
 
           {/* Services */}
           <div>
-            <h4 className="font-serif text-lg font-semibold mb-6 text-foreground">Our Services</h4>
+            <h4 className="font-heading text-lg font-semibold mb-6 text-white">Our Services</h4>
             <ul className="space-y-2">
               {services.map((service) => (
                 <li key={service}>
                   <Link 
                     to="/services" 
-                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
+                    className="text-white/80 hover:text-accent transition-colors text-sm"
                   >
                     {service}
                   </Link>
@@ -146,47 +146,47 @@ export function Footer() {
 
           {/* Contact Info & Hours */}
           <div>
-            <h4 className="font-serif text-lg font-semibold mb-6 text-foreground">Contact Us</h4>
+            <h4 className="font-heading text-lg font-semibold mb-6 text-white">Contact Us</h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
-                <Phone className="w-5 h-5 text-primary mt-0.5" />
+                <Phone className="w-5 h-5 text-accent mt-0.5" />
                 <div>
-                  <a href="tel:+13035551234" className="text-foreground hover:text-primary transition-colors text-sm font-medium">
+                  <a href="tel:+13035551234" className="text-white hover:text-accent transition-colors text-sm font-medium">
                     (303) 555-1234
                   </a>
-                  <p className="text-xs text-muted-foreground">Quote in 10 min or less</p>
+                  <p className="text-xs text-white/70">Quote in 10 min or less</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <Mail className="w-5 h-5 text-primary mt-0.5" />
-                <a href="mailto:info@denverpremiummoving.com" className="text-muted-foreground hover:text-primary transition-colors text-sm">
+                <Mail className="w-5 h-5 text-accent mt-0.5" />
+                <a href="mailto:info@denverpremiummoving.com" className="text-white/80 hover:text-accent transition-colors text-sm">
                   info@denverpremiummoving.com
                 </a>
               </li>
               <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-primary mt-0.5" />
-                <span className="text-muted-foreground text-sm">
+                <MapPin className="w-5 h-5 text-accent mt-0.5" />
+                <span className="text-white/80 text-sm">
                   Serving 30+ Denver Metro Cities
                 </span>
               </li>
             </ul>
 
             {/* Business Hours */}
-            <div className="mt-6 pt-4 border-t border-border">
+            <div className="mt-6 pt-4 border-t border-white/20">
               <div className="flex items-center gap-2 mb-3">
-                <Clock className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-foreground">Business Hours</span>
+                <Clock className="w-4 h-4 text-accent" />
+                <span className="text-sm font-medium text-white">Business Hours</span>
               </div>
-              <div className="text-sm text-muted-foreground space-y-1">
+              <div className="text-sm text-white/80 space-y-1">
                 <p>Mon - Fri: 7:00 AM - 8:00 PM</p>
                 <p>Saturday: 7:00 AM - 6:00 PM</p>
                 <p>Sunday: 8:00 AM - 5:00 PM</p>
               </div>
               <div className="mt-3 flex items-center gap-2">
-                <Zap className="w-4 h-4 text-primary" />
-                <span className="text-xs font-medium text-primary">Same-Day Service Available</span>
+                <Zap className="w-4 h-4 text-accent" />
+                <span className="text-xs font-medium text-accent">Same-Day Service Available</span>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="text-xs text-white/70 mt-2">
                 Emergency & last-minute moves welcome
               </p>
             </div>
@@ -194,12 +194,12 @@ export function Footer() {
 
           {/* Service Areas Column */}
           <div>
-            <h4 className="font-serif text-lg font-semibold mb-6 text-foreground">Service Areas</h4>
+            <h4 className="font-heading text-lg font-semibold mb-6 text-white">Service Areas</h4>
             <div className="space-y-4">
               {Object.entries(serviceAreas).slice(0, 4).map(([region, areas]) => (
                 <div key={region}>
-                  <h5 className="text-xs font-medium text-primary mb-2">{region}</h5>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <h5 className="text-xs font-medium text-accent mb-2">{region}</h5>
+                  <p className="text-xs text-white/70 leading-relaxed">
                     {areas.join(" • ")}
                   </p>
                 </div>
@@ -209,16 +209,16 @@ export function Footer() {
         </div>
 
         {/* Full Service Areas Bar */}
-        <div className="mt-12 pt-8 border-t border-border">
+        <div className="mt-12 pt-8 border-t border-white/20">
           <div className="flex items-center gap-2 mb-4">
-            <MapPin className="w-4 h-4 text-primary" />
-            <h4 className="font-serif text-sm font-semibold text-foreground">All Service Areas (30+ Cities)</h4>
+            <MapPin className="w-4 h-4 text-accent" />
+            <h4 className="font-heading text-sm font-semibold text-white">All Service Areas (30+ Cities)</h4>
           </div>
           <div className="flex flex-wrap gap-2">
             {allAreas.map((area) => (
               <span
                 key={area}
-                className="px-3 py-1 bg-secondary text-secondary-foreground text-xs rounded-full hover:bg-primary hover:text-primary-foreground transition-colors cursor-default"
+                className="px-3 py-1 bg-white/10 text-white/90 text-xs rounded-full hover:bg-accent hover:text-primary transition-colors cursor-default"
               >
                 {area}
               </span>
@@ -227,28 +227,28 @@ export function Footer() {
         </div>
 
         {/* Quote Promise Banner */}
-        <div className="mt-8 p-4 bg-primary/10 border border-primary/20 rounded-lg text-center">
-          <p className="text-sm font-medium text-foreground">
-            🚚 Get Your Personal Moving Quote in <span className="text-primary">10 Minutes or Less</span> — Call Now or Fill Out Our Form
+        <div className="mt-8 p-4 bg-accent/20 border border-accent/30 rounded-lg text-center">
+          <p className="text-sm font-medium text-white">
+            🚚 Get Your Personal Moving Quote in <span className="text-accent">10 Minutes or Less</span> — Call Now or Fill Out Our Form
           </p>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="mt-8 pt-8 border-t border-white/20 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
-            <p className="text-muted-foreground text-xs">
+            <p className="text-white/70 text-xs">
               © {currentYear} Denver Premium Moving. All rights reserved.
             </p>
-            <span className="hidden sm:inline text-muted-foreground">|</span>
-            <p className="text-xs text-muted-foreground">
+            <span className="hidden sm:inline text-white/50">|</span>
+            <p className="text-xs text-white/70">
               USDOT #XXXXXXX • CO PUC #XXXXX
             </p>
           </div>
           <div className="flex gap-6">
-            <Link to="/privacy" className="text-muted-foreground hover:text-primary text-xs transition-colors">
+            <Link to="/privacy" className="text-white/70 hover:text-accent text-xs transition-colors">
               Privacy Policy
             </Link>
-            <Link to="/terms" className="text-muted-foreground hover:text-primary text-xs transition-colors">
+            <Link to="/terms" className="text-white/70 hover:text-accent text-xs transition-colors">
               Terms of Service
             </Link>
           </div>
