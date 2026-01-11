@@ -23,14 +23,58 @@ const Auth = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const { signIn, signUp, user, isLoading } = useAuth();
+  const { signIn, signUp, signOut, user, isAdmin, isLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && !isLoading) {
+    // Only redirect if user is logged in AND is admin
+    if (user && isAdmin && !isLoading) {
       navigate('/admin');
     }
-  }, [user, isLoading, navigate]);
+  }, [user, isAdmin, isLoading, navigate]);
+
+  // If user is logged in but not an admin, show a message
+  if (user && !isAdmin && !isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <header className="border-b border-border/50 bg-background/80 backdrop-blur-sm">
+          <div className="container mx-auto px-4 py-4">
+            <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Home
+            </Link>
+          </div>
+        </header>
+        <main className="flex-1 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md border-border/50 bg-card/50 backdrop-blur-sm">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl font-bold text-foreground">
+                Access Restricted
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                You're signed in as {user.email}, but you don't have admin privileges.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button
+                onClick={() => navigate('/')}
+                className="w-full"
+              >
+                Return to Home
+              </Button>
+              <Button
+                onClick={() => signOut()}
+                variant="outline"
+                className="w-full"
+              >
+                Sign Out
+              </Button>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
