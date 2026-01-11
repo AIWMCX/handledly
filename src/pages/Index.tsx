@@ -2,6 +2,7 @@ import { Header, Footer, Container, Section, SectionHeader } from "@/components/
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { VoiceAgent } from "@/components/VoiceAgent";
+import { ChatWidget } from "@/components/ChatWidget";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { TrustIndicators } from "@/components/TrustIndicators";
 import { HowItWorks } from "@/components/HowItWorks";
@@ -198,6 +199,7 @@ export default function Index() {
       </Section>
 
       <Footer />
+      <ChatWidget />
       <VoiceAgent />
     </div>
   );
