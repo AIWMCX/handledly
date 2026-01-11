@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { VoiceAgent } from "@/components/VoiceAgent";
+import { ChatWidget } from "@/components/ChatWidget";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Phone, Mail, MapPin, Clock, Send, MessageSquare } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Send, MessageSquare, MessagesSquare } from "lucide-react";
 
 const contactInfo = [
   {
@@ -209,6 +210,25 @@ export default function Contact() {
                 ))}
               </div>
 
+              {/* Chat Support Card */}
+              <div className="p-6 rounded-2xl bg-card border border-border">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-xl gradient-gold flex items-center justify-center shrink-0">
+                    <MessagesSquare className="w-6 h-6 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-xl font-semibold text-foreground mb-1">
+                      Chat with Our AI Assistant
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      Get instant answers, quotes, and schedule your move via text.
+                    </p>
+                  </div>
+                </div>
+                
+                <ChatWidget variant="inline" />
+              </div>
+
               {/* Voice Agent Card */}
               <div className="p-6 rounded-2xl bg-card border border-border">
                 <div className="flex items-start gap-4 mb-6">
@@ -220,7 +240,7 @@ export default function Contact() {
                       Talk to Our AI Assistant
                     </h3>
                     <p className="text-muted-foreground text-sm">
-                      Get instant answers, quotes, and schedule your move by voice.
+                      Prefer voice? Get instant answers by talking to our AI.
                     </p>
                   </div>
                 </div>
@@ -249,6 +269,7 @@ export default function Contact() {
       </Section>
 
       <Footer />
+      <ChatWidget />
       <VoiceAgent />
     </div>
   );

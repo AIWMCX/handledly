@@ -2,6 +2,7 @@ import { Header, Footer, Container, Section, SectionHeader } from "@/components/
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { VoiceAgent } from "@/components/VoiceAgent";
+import { ChatWidget } from "@/components/ChatWidget";
 import { 
   Truck, Package, Shield, Users, Home, Building2, 
   Warehouse, Piano, Wine, Dumbbell, ArrowRight, CheckCircle 
@@ -227,6 +228,7 @@ export default function Services() {
       </Section>
 
       <Footer />
+      <ChatWidget />
       <VoiceAgent />
     </div>
   );
