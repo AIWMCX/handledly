@@ -4,21 +4,21 @@ import { Container, Section, SectionHeader } from "@/components/layout";
 const testimonials = [
   { 
     name: "Sarah Mitchell", 
-    location: "Cherry Creek", 
+    location: "Suburbs", 
     rating: 5, 
     text: "Absolutely flawless experience. The flat rate pricing was exactly what they quoted — no surprises!" 
   },
   { 
     name: "Michael Chen", 
-    location: "Highlands", 
+    location: "Downtown", 
     rating: 5, 
     text: "Moved my grand piano and antique collection without a scratch. These guys know what they're doing." 
   },
   { 
     name: "Emily Rodriguez", 
-    location: "Downtown Denver", 
+    location: "Midtown", 
     rating: 5, 
-    text: "Third time using Denver Premium Moving. Same great service, same fair prices every time." 
+    text: "Third time using this company. Same great service, same fair prices every time." 
   },
 ];
 

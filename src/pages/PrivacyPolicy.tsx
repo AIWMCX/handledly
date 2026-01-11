@@ -28,10 +28,10 @@ const PrivacyPolicy = () => {
             {/* Introduction */}
             <div className="mb-8">
               <p className="text-foreground leading-relaxed">
-                Fat and Skinny Movers, operated by Drez LLC ("Company," "we," "our," or "us"), 
+                [Company Name], operated by [Legal Entity Name] ("Company," "we," "our," or "us"), 
                 provides moving services through our website at{" "}
-                <a href="https://fatandskinnymovers.com" className="text-primary hover:underline">
-                  https://fatandskinnymovers.com
+                <a href="https://yourcompany.com" className="text-primary hover:underline">
+                  https://yourcompany.com
                 </a>{" "}
                 (the "Service"). This Privacy Policy describes how we collect, use, and protect 
                 your personal information. By using our Service, you agree to the practices 
@@ -164,10 +164,10 @@ const PrivacyPolicy = () => {
               <p className="text-foreground leading-relaxed">
                 For privacy-related inquiries, please contact us at:{" "}
                 <a 
-                  href="mailto:fatandskinnymovers@gmail.com" 
+                  href="mailto:info@yourcompany.com" 
                   className="text-primary hover:underline font-medium"
                 >
-                  fatandskinnymovers@gmail.com
+                  info@yourcompany.com
                 </a>
               </p>
             </div>

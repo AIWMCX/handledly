@@ -14,21 +14,21 @@ const contactInfo = [
   {
     icon: Phone,
     title: "Phone",
-    primary: "(303) 555-1234",
+    primary: "(555) 000-0000",
     secondary: "Call for a free quote",
-    href: "tel:+13035551234",
+    href: "tel:+15550000000",
   },
   {
     icon: Mail,
     title: "Email",
-    primary: "info@denverpremiummoving.com",
+    primary: "info@yourcompany.com",
     secondary: "We respond within 2 hours",
-    href: "mailto:info@denverpremiummoving.com",
+    href: "mailto:info@yourcompany.com",
   },
   {
     icon: MapPin,
     title: "Service Area",
-    primary: "Denver Metro Area",
+    primary: "[City] Metro Area",
     secondary: "And surrounding counties",
   },
   {
@@ -147,7 +147,7 @@ export default function Contact() {
                         type="tel"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="(303) 555-1234"
+                        placeholder="(555) 000-0000"
                         required
                         className="mt-2"
                       />
@@ -257,9 +257,9 @@ export default function Contact() {
                   Our friendly team is standing by to help with your move.
                 </p>
                 <Button asChild size="lg" className="w-full gradient-gold text-white hover:opacity-90">
-                  <a href="tel:+13035551234">
+                  <a href="tel:+15550000000">
                     <Phone className="mr-2 w-5 h-5" />
-                    Call (303) 555-1234
+                    Call (555) 000-0000
                   </a>
                 </Button>
               </div>
