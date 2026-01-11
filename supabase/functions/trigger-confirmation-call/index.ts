@@ -29,6 +29,14 @@ const SERVICE_LABELS: Record<string, string> = {
   'same-day': 'Same-Day Moving',
 };
 
+// Format phone number to E.164 format for Twilio
+function formatToE164(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith('1')) return `+${digits}`;
+  return `+${digits}`;
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -38,6 +46,7 @@ serve(async (req) => {
   try {
     const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
     const ELEVENLABS_AGENT_ID = Deno.env.get('ELEVENLABS_AGENT_ID');
+    const ELEVENLABS_PHONE_NUMBER_ID = Deno.env.get('ELEVENLABS_PHONE_NUMBER_ID');
     
     if (!ELEVENLABS_API_KEY) {
       console.error('ELEVENLABS_API_KEY is not configured');
@@ -55,6 +64,14 @@ serve(async (req) => {
       );
     }
 
+    if (!ELEVENLABS_PHONE_NUMBER_ID) {
+      console.error('ELEVENLABS_PHONE_NUMBER_ID is not configured');
+      return new Response(
+        JSON.stringify({ error: 'ElevenLabs phone number ID not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const data: CallRequest = await req.json();
     console.log(`Initiating confirmation call to ${data.phone} for lead ${data.leadId}`);
 
@@ -63,89 +80,114 @@ serve(async (req) => {
       ? new Date(data.moveDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
       : 'not yet scheduled';
 
-    // Build context for the AI agent
-    const callContext = {
-      customer_name: data.customerName,
-      quote_total: data.totalQuote,
-      service_type: serviceLabel,
-      crew_size: data.crewSize,
-      estimated_hours: data.estimatedHours,
-      move_date: moveDateFormatted,
-      call_purpose: "Confirm quote details and offer to schedule the move",
-      greeting: `Hi ${data.customerName}, this is Denver Premium Moving calling to follow up on the moving quote you just received.`,
-      key_points: [
-        `Quote total: $${data.totalQuote}`,
-        `Service: ${serviceLabel}`,
-        `${data.crewSize} movers with truck at our flat hourly rate`,
-        `Estimated ${data.estimatedHours} hours`,
-        `Move date: ${moveDateFormatted}`,
-        "Remind them: NO hidden fees, everything is included"
-      ]
-    };
+    // Format phone number to E.164
+    const formattedPhone = formatToE164(data.phone);
+    console.log(`Formatted phone number: ${formattedPhone}`);
 
-    // For now, we'll store the call intent and context in the database
-    // The actual outbound call would require Twilio or similar integration
-    // which needs phone number verification and additional setup
-    
+    // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Update the lead with call scheduling info
+    // Build dynamic variables for the AI agent
+    const dynamicVariables = {
+      customer_name: data.customerName,
+      quote_total: data.totalQuote.toString(),
+      service_type: serviceLabel,
+      crew_size: data.crewSize.toString(),
+      estimated_hours: data.estimatedHours.toString(),
+      move_date: moveDateFormatted,
+    };
+
+    console.log('Making ElevenLabs outbound call with variables:', dynamicVariables);
+
+    // Make the actual outbound call via ElevenLabs Twilio integration
+    const response = await fetch(
+      'https://api.elevenlabs.io/v1/convai/twilio/outbound-call',
+      {
+        method: 'POST',
+        headers: {
+          'xi-api-key': ELEVENLABS_API_KEY,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          agent_id: ELEVENLABS_AGENT_ID,
+          agent_phone_number_id: ELEVENLABS_PHONE_NUMBER_ID,
+          to_number: formattedPhone,
+          conversation_initiation_client_data: {
+            dynamic_variables: dynamicVariables
+          }
+        }),
+      }
+    );
+
+    const responseText = await response.text();
+    console.log(`ElevenLabs API response status: ${response.status}`);
+    console.log(`ElevenLabs API response: ${responseText}`);
+
+    if (!response.ok) {
+      console.error('ElevenLabs outbound call failed:', responseText);
+      
+      // Update lead with failure status
+      await supabase
+        .from('leads')
+        .update({
+          confirmation_call_status: 'failed',
+          call_notes: JSON.stringify({
+            error: responseText,
+            attempted_at: new Date().toISOString(),
+            phone: formattedPhone,
+          }),
+        })
+        .eq('id', data.leadId);
+
+      return new Response(
+        JSON.stringify({ 
+          error: 'Failed to initiate outbound call', 
+          details: responseText 
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Parse the successful response
+    let callResult;
+    try {
+      callResult = JSON.parse(responseText);
+    } catch {
+      callResult = { raw_response: responseText };
+    }
+
+    console.log('Outbound call initiated successfully:', callResult);
+
+    // Update the lead with call details
     const { error: updateError } = await supabase
       .from('leads')
       .update({
-        confirmation_call_status: 'scheduled',
+        confirmation_call_status: 'calling',
+        confirmation_call_time: new Date().toISOString(),
         call_notes: JSON.stringify({
-          scheduled_at: new Date().toISOString(),
-          context: callContext,
-          phone: data.phone,
+          conversation_id: callResult.conversation_id || callResult.call_sid || null,
+          call_sid: callResult.call_sid || callResult.callSid || null,
+          initiated_at: new Date().toISOString(),
+          phone: formattedPhone,
+          dynamic_variables: dynamicVariables,
+          api_response: callResult,
         }),
       })
       .eq('id', data.leadId);
 
     if (updateError) {
-      console.error('Error updating lead:', updateError);
-      throw updateError;
+      console.error('Error updating lead after call initiation:', updateError);
     }
-
-    console.log('Call scheduled for lead:', data.leadId);
-
-    // Note: To enable actual outbound calling, you would need to:
-    // 1. Set up a Twilio account with verified phone numbers
-    // 2. Connect ElevenLabs to Twilio for voice synthesis
-    // 3. Use the ElevenLabs Outbound Call API with Twilio credentials
-    //
-    // Example API call (requires additional setup):
-    // const response = await fetch(
-    //   'https://api.elevenlabs.io/v1/convai/conversation/call',
-    //   {
-    //     method: 'POST',
-    //     headers: {
-    //       'xi-api-key': ELEVENLABS_API_KEY,
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       agent_id: ELEVENLABS_AGENT_ID,
-    //       to: data.phone,
-    //       from: BUSINESS_PHONE, // Requires verified Twilio number
-    //       twilio_config: { ... },
-    //       conversation_config_override: {
-    //         agent: {
-    //           first_message: callContext.greeting,
-    //           prompt: { prompt: JSON.stringify(callContext) }
-    //         }
-    //       }
-    //     }),
-    //   }
-    // );
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Confirmation call scheduled',
+        message: 'Confirmation call initiated',
         leadId: data.leadId,
-        note: 'Outbound calling requires Twilio integration. Call context has been saved.',
+        conversationId: callResult.conversation_id || null,
+        callSid: callResult.call_sid || callResult.callSid || null,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
