@@ -58,6 +58,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
   const maxRetries = 3;
 
   const conversation = useConversation({
+    textOnly: true,
     onConnect: () => {
       console.log("Chat connected");
       retryCountRef.current = 0;
@@ -403,7 +404,10 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
           <div className="flex gap-2">
             <Input
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={(e) => {
+                setInputValue(e.target.value);
+                if (isConnected) conversation.sendUserActivity();
+              }}
               onKeyPress={handleKeyPress}
               placeholder="Type a message..."
               className="flex-1 text-sm"
@@ -582,7 +586,10 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
             <div className="flex gap-2">
               <Input
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={(e) => {
+                  setInputValue(e.target.value);
+                  if (isConnected) conversation.sendUserActivity();
+                }}
                 onKeyPress={handleKeyPress}
                 placeholder="Type a message..."
                 className="flex-1"
