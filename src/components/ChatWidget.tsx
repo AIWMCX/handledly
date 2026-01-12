@@ -65,7 +65,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
         role: 'agent',
-        content: "Hi! I'm the Denver Premium Moving assistant. How can I help you today? I can provide instant quotes, answer questions about our services, or help schedule your move.",
+        content: "Hi! I'm the Handled moving assistant. How can I help you today? I can provide instant quotes, answer questions about our services, or help schedule your move.",
         timestamp: new Date(),
       }]);
     },
@@ -435,7 +435,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
         <button
           onClick={handleOpen}
           className={cn(
-            "fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full",
+            "fixed bottom-[6.5rem] right-6 z-50 w-14 h-14 rounded-full",
             "bg-secondary hover:bg-secondary/80 border border-border",
             "shadow-lg transition-all duration-300 hover:scale-105",
             "flex items-center justify-center",
@@ -450,7 +450,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
       {/* Chat Window */}
       {isOpen && (
         <div className={cn(
-          "fixed bottom-24 right-6 z-50 w-[380px] h-[520px]",
+          "fixed bottom-[6.5rem] right-6 z-50 w-[380px] h-[520px]",
           "bg-card border border-border rounded-2xl shadow-elegant",
           "flex flex-col overflow-hidden",
           className
@@ -462,7 +462,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
                 <Bot className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <p className="font-medium text-foreground text-sm">Denver Premium Moving</p>
+                <p className="font-medium text-foreground text-sm">Handled</p>
                 <p className="text-xs text-muted-foreground">
                   {isConnected ? (
                     <span className="flex items-center gap-1">
