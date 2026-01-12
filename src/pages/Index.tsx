@@ -13,9 +13,15 @@ import { Badge } from "@/components/ui/badge";
 import { MeshGradientHero } from "@/components/ui/BackgroundEffects";
 import { HOURLY_RATES } from "@/lib/quoteCalculator";
 import { 
-  Phone, ArrowRight, Shield, Clock, Star, Truck, 
-  Dumbbell, Users, Award, CheckCircle, MapPin, Building, Home, Zap
+  Phone, ArrowRight, Star, 
+  Dumbbell, Users, CheckCircle, Building, Home, Zap
 } from "lucide-react";
+import {
+  AwardWinningIcon,
+  OnTimeGuaranteeIcon,
+  FullyInsuredIcon,
+  LocalExpertsIcon
+} from "@/components/icons/TrustIcons";
 
 const services = [
   { 
@@ -181,25 +187,45 @@ export default function Index() {
                 <Link to="/quote">Get Your Free Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-4">
-                <div className="p-6 rounded-2xl bg-background border border-border shadow-depth-2 hover:shadow-depth-3 transition-shadow hover-lift">
-                  <Award className="w-8 h-8 text-accent mb-3" />
-                  <p className="font-heading text-lg font-semibold text-primary">Award Winning</p>
+            <div className="grid grid-cols-2 gap-5">
+              <div className="space-y-5">
+                <div className="group relative p-7 rounded-3xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-depth-2 hover:shadow-depth-3 hover:border-accent/30 transition-all duration-300 hover-lift overflow-hidden">
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center mb-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] group-hover:shadow-glow-gold transition-all duration-300">
+                    <AwardWinningIcon size="list" color="gold" />
+                  </div>
+                  <p className="font-heading text-xl font-bold text-primary tracking-tight">Award Winning</p>
+                  <p className="text-sm text-muted-foreground mt-1">Top-rated Denver movers</p>
+                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-3xl" />
                 </div>
-                <div className="p-6 rounded-2xl bg-background border border-border shadow-depth-2 hover:shadow-depth-3 transition-shadow hover-lift">
-                  <Shield className="w-8 h-8 text-accent mb-3" />
-                  <p className="font-heading text-lg font-semibold text-primary">Fully Insured</p>
+                <div className="group relative p-7 rounded-3xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-depth-2 hover:shadow-depth-3 hover:border-accent/30 transition-all duration-300 hover-lift overflow-hidden">
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center mb-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] group-hover:shadow-glow-gold transition-all duration-300">
+                    <FullyInsuredIcon size="list" color="gold" />
+                  </div>
+                  <p className="font-heading text-xl font-bold text-primary tracking-tight">Fully Insured</p>
+                  <p className="text-sm text-muted-foreground mt-1">Complete protection</p>
+                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-3xl" />
                 </div>
               </div>
-              <div className="space-y-4 mt-8">
-                <div className="p-6 rounded-2xl bg-background border border-border shadow-depth-2 hover:shadow-depth-3 transition-shadow hover-lift">
-                  <Clock className="w-8 h-8 text-accent mb-3" />
-                  <p className="font-heading text-lg font-semibold text-primary">On Time</p>
+              <div className="space-y-5 mt-10">
+                <div className="group relative p-7 rounded-3xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-depth-2 hover:shadow-depth-3 hover:border-accent/30 transition-all duration-300 hover-lift overflow-hidden">
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center mb-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] group-hover:shadow-glow-gold transition-all duration-300">
+                    <OnTimeGuaranteeIcon size="list" color="gold" />
+                  </div>
+                  <p className="font-heading text-xl font-bold text-primary tracking-tight">On Time</p>
+                  <p className="text-sm text-muted-foreground mt-1">Punctuality guaranteed</p>
+                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-3xl" />
                 </div>
-                <div className="p-6 rounded-2xl bg-background border border-border shadow-depth-2 hover:shadow-depth-3 transition-shadow hover-lift">
-                  <MapPin className="w-8 h-8 text-accent mb-3" />
-                  <p className="font-heading text-lg font-semibold text-primary">Local Experts</p>
+                <div className="group relative p-7 rounded-3xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-depth-2 hover:shadow-depth-3 hover:border-accent/30 transition-all duration-300 hover-lift overflow-hidden">
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center mb-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] group-hover:shadow-glow-gold transition-all duration-300">
+                    <LocalExpertsIcon size="list" color="gold" />
+                  </div>
+                  <p className="font-heading text-xl font-bold text-primary tracking-tight">Local Experts</p>
+                  <p className="text-sm text-muted-foreground mt-1">Denver Metro specialists</p>
+                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-3xl" />
                 </div>
               </div>
             </div>
