@@ -223,7 +223,7 @@ export default function Quote() {
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      placeholder="(555) 123-4567"
+                      placeholder="(878) 218-7397"
                       required
                       className="bg-background"
                     />

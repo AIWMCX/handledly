@@ -14,16 +14,16 @@ const contactInfo = [
   {
     icon: Phone,
     title: "Phone",
-    primary: "(555) 000-0000",
+    primary: "(878) 218-7397",
     secondary: "Call for a free quote",
-    href: "tel:+15550000000",
+    href: "tel:+18782187397",
   },
   {
     icon: Mail,
     title: "Email",
-    primary: "info@yourcompany.com",
+    primary: "hello@handled.com",
     secondary: "We respond within 2 hours",
-    href: "mailto:info@yourcompany.com",
+    href: "mailto:hello@handled.com",
   },
   {
     icon: MapPin,
@@ -257,9 +257,9 @@ export default function Contact() {
                   Our friendly team is standing by to help with your move.
                 </p>
                 <Button asChild size="lg" className="w-full gradient-gold text-white hover:opacity-90">
-                  <a href="tel:+15550000000">
+                  <a href="tel:+18782187397">
                     <Phone className="mr-2 w-5 h-5" />
-                    Call (555) 000-0000
+                    Call (878) 218-7397
                   </a>
                 </Button>
               </div>

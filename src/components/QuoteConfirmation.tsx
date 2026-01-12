@@ -99,7 +99,7 @@ export function QuoteConfirmation({
       {/* CTA Buttons */}
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Button asChild className="gradient-gold text-primary-foreground font-semibold shadow-gold">
-          <a href="tel:+13035551234">
+          <a href="tel:+18782187397">
             <Phone className="mr-2 w-4 h-4" />
             Call Us Now
           </a>
