@@ -31,6 +31,11 @@ const services = [
   "Heavy Items Moving",
 ];
 
+const denverAreas = [
+  "Capitol Hill", "Cherry Creek", "LoDo", "Highlands", "RiNo",
+  "Wash Park", "Park Hill", "Aurora", "Lakewood", "Arvada",
+];
+
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
@@ -43,6 +48,27 @@ export function Footer() {
       </div>
       
       <div className="container mx-auto px-4 py-16 relative z-10">
+        {/* Denver Service Area Badge */}
+        <div className="mb-12 p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <MapPin className="w-5 h-5 text-accent" />
+            <h3 className="font-heading text-lg font-semibold text-white">Proudly Serving Denver Metro</h3>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {denverAreas.map((area) => (
+              <span 
+                key={area}
+                className="px-3 py-1 rounded-full bg-white/10 text-white/80 text-xs font-medium"
+              >
+                {area}
+              </span>
+            ))}
+            <span className="px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-medium">
+              + 20 More Cities
+            </span>
+          </div>
+        </div>
+        
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
           {/* Brand Column with Trust Badges */}
@@ -57,7 +83,7 @@ export function Footer() {
               </div>
             </div>
             <p className="text-white/80 text-sm leading-relaxed">
-              Your trusted partner for stress-free moves. Flat-rate pricing with no hidden fees.
+              Denver's trusted partner for stress-free moves. Flat-rate pricing with no hidden fees.
             </p>
             
             {/* Social Links */}
@@ -77,11 +103,11 @@ export function Footer() {
             <div className="space-y-3 pt-4 border-t border-white/20">
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-accent" />
-                <span className="text-xs font-medium text-white">Licensed & Insured</span>
+                <span className="text-xs font-medium text-white">USDOT Licensed & $2M+ Insured</span>
               </div>
               <div className="flex items-center gap-2">
                 <Award className="w-4 h-4 text-accent" />
-                <span className="text-xs text-white/80">Fully Bonded</span>
+                <span className="text-xs text-white/80">BBB A+ Rated</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-accent" />
@@ -155,7 +181,7 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-accent mt-0.5" />
                 <span className="text-white/80 text-sm">
-                  Serving Your Metro Area
+                  Denver Metro Area • 30+ Cities
                 </span>
               </li>
             </ul>

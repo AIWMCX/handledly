@@ -3,10 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { VoiceAgent } from "@/components/VoiceAgent";
 import { ChatWidget } from "@/components/ChatWidget";
+import { StickyCTA } from "@/components/StickyCTA";
+import { TrustBadges } from "@/components/TrustBadges";
+import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
 import { HOURLY_RATES, CREW_CONFIGURATIONS, ELECTRONIC_PAYMENT_FEE } from "@/lib/quoteCalculator";
 import { 
   Truck, Dumbbell, Users, ArrowRight, CheckCircle, Phone,
-  Piano, Shield, Zap, Info, Building, Home, Package, Clock
+  Piano, Shield, Zap, Info, Building, Home, Package, Clock, MapPin, Star
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -17,6 +20,7 @@ const localMovingServices = [
     title: "Apartment & Condo Moving",
     description: "Studios to 4+ BR apartments, high-rise condos, lofts. Elevator and stairs — no extra fees.",
     features: ["High-rise experience", "Elevator coordination", "No stair fees"],
+    popular: true,
   },
   {
     icon: Home,
@@ -92,20 +96,35 @@ export default function Services() {
       <Header />
       
       {/* Hero */}
-      <section className="pt-32 pb-16 lg:pt-40 lg:pb-20 bg-background">
-        <Container>
+      <section className="pt-32 pb-16 lg:pt-40 lg:pb-20 bg-background relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-20 right-10 w-72 h-72 bg-accent/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 left-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        </div>
+        
+        <Container className="relative z-10">
           <div className="max-w-3xl">
+            {/* Denver Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-6">
+              <MapPin className="w-4 h-4 text-accent" />
+              <span className="text-sm font-medium text-accent">Denver Metro Moving Services</span>
+            </div>
+            
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-semibold mb-6">
-              Our <span className="text-accent">Services</span>
+              Denver <span className="text-accent">Moving</span> Services
             </h1>
             <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed mb-6">
               Professional moving solutions with transparent, flat-rate pricing. 
-              No hidden fees, no surprises — just reliable service you can trust.
+              No hidden fees, no surprises — just reliable Denver service you can trust.
             </p>
-            <div className="flex flex-wrap gap-3">
+            
+            {/* Trust indicators */}
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <GoogleReviewsBadge compact />
               <Badge variant="outline" className="px-4 py-2 text-sm border-accent text-accent">
                 <Zap className="w-4 h-4 mr-2" />
-                Same-Day Service Available
+                Same-Day Available
               </Badge>
               <Badge variant="outline" className="px-4 py-2 text-sm border-primary text-primary">
                 <CheckCircle className="w-4 h-4 mr-2" />
@@ -116,17 +135,19 @@ export default function Services() {
         </Container>
       </section>
 
+      <TrustBadges />
+
       {/* LOCAL MOVING Category */}
-      <Section className="pt-0">
+      <Section className="pt-12">
         <Container>
           <div className="mb-12">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center">
+              <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center shadow-depth-2">
                 <Truck className="w-7 h-7 text-accent" />
               </div>
               <div>
                 <h2 className="font-heading text-3xl font-semibold text-primary">Local Moving</h2>
-                <p className="text-muted-foreground">Apartments, houses, labor-only & same-day moves</p>
+                <p className="text-muted-foreground">Denver apartments, houses, labor-only & same-day moves</p>
               </div>
             </div>
             <div className="flex items-center gap-2 mt-4">
@@ -134,18 +155,30 @@ export default function Services() {
                 <Zap className="w-3 h-3 mr-1" />
                 Same-Day Service Available
               </Badge>
+              <Badge className="bg-primary/10 text-primary border-primary/30">
+                From $149/hr
+              </Badge>
             </div>
           </div>
 
           {/* Local Moving Sub-Services Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {localMovingServices.map((service) => (
+            {localMovingServices.map((service, index) => (
               <div
                 key={service.title}
-                className={`p-6 rounded-2xl bg-background border shadow-card transition-all hover:border-primary/50 ${
-                  service.isSameDay ? 'border-accent/50 ring-1 ring-accent/20' : 'border-border'
+                className={`p-6 rounded-2xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all hover-lift animate-fade-in relative ${
+                  service.isSameDay ? 'border-accent/50 ring-1 ring-accent/20' : ''
                 }`}
+                style={{ animationDelay: `${index * 100}ms` }}
               >
+                {service.popular && (
+                  <div className="absolute -top-3 right-4">
+                    <Badge className="bg-accent text-white shadow-gold">
+                      <Star className="w-3 h-3 mr-1 fill-white" />
+                      Most Popular
+                    </Badge>
+                  </div>
+                )}
                 <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
                   <service.icon className="w-6 h-6 text-accent" />
                 </div>
@@ -172,7 +205,7 @@ export default function Services() {
           {/* Local Moving Pricing */}
           <div className="grid md:grid-cols-2 gap-8 mb-8">
             {/* Full Service Pricing */}
-            <div className="p-6 rounded-2xl bg-secondary border border-border">
+            <div className="p-6 rounded-2xl glass-card shadow-depth-2">
               <h3 className="font-heading text-lg font-semibold text-primary mb-4 flex items-center gap-2">
                 <Truck className="w-5 h-5 text-accent" />
                 Full Service (Movers + Truck)
@@ -182,7 +215,7 @@ export default function Services() {
                   <div 
                     key={tier.label}
                     className={`flex justify-between items-center p-3 rounded-lg ${
-                      tier.popular ? 'bg-primary/5 border border-primary/20' : 'bg-background'
+                      tier.popular ? 'bg-accent/10 border border-accent/20' : 'bg-background'
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -201,7 +234,7 @@ export default function Services() {
             </div>
 
             {/* Labor Only Pricing */}
-            <div className="p-6 rounded-2xl bg-secondary border border-border">
+            <div className="p-6 rounded-2xl glass-card shadow-depth-2">
               <h3 className="font-heading text-lg font-semibold text-primary mb-4 flex items-center gap-2">
                 <Users className="w-5 h-5 text-accent" />
                 Labor Only (No Truck)
@@ -233,7 +266,7 @@ export default function Services() {
                 <Zap className="w-6 h-6 text-accent" />
               </div>
               <div>
-                <h4 className="font-heading font-semibold text-primary">Need to Move Today?</h4>
+                <h4 className="font-heading font-semibold text-primary">Need to Move Today in Denver?</h4>
                 <p className="text-sm text-muted-foreground">Same-day service available — call now for immediate assistance</p>
               </div>
             </div>
@@ -244,7 +277,7 @@ export default function Services() {
                   Call Now
                 </a>
               </Button>
-              <Button asChild className="gradient-gold text-white hover:opacity-90">
+              <Button asChild className="gradient-gold text-white hover:opacity-90 shadow-gold">
                 <Link to="/quote">Book Weekend Slot</Link>
               </Button>
             </div>
@@ -257,12 +290,12 @@ export default function Services() {
         <Container>
           <div className="mb-12">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center">
+              <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center shadow-depth-2">
                 <Dumbbell className="w-7 h-7 text-accent" />
               </div>
               <div>
                 <h2 className="font-heading text-3xl font-semibold text-primary">Heavy Items Moving</h2>
-                <p className="text-muted-foreground">Pianos, pool tables, safes & oversized items</p>
+                <p className="text-muted-foreground">Denver pianos, pool tables, safes & oversized items</p>
               </div>
             </div>
             <div className="flex items-center gap-2 mt-4">
@@ -270,17 +303,21 @@ export default function Services() {
                 <Zap className="w-3 h-3 mr-1" />
                 Same-Day Service Available
               </Badge>
+              <Badge className="bg-primary/10 text-primary border-primary/30">
+                From $159/hr
+              </Badge>
             </div>
           </div>
 
           {/* Heavy Items Sub-Services Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
-            {heavyItemsServices.map((service) => (
+            {heavyItemsServices.map((service, index) => (
               <div
                 key={service.title}
-                className={`p-6 rounded-2xl bg-background border shadow-card transition-all hover:border-primary/50 ${
-                  service.isSameDay ? 'border-accent/50 ring-1 ring-accent/20' : 'border-border'
+                className={`p-6 rounded-2xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all hover-lift animate-fade-in ${
+                  service.isSameDay ? 'border-accent/50 ring-1 ring-accent/20' : ''
                 }`}
+                style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
                   <service.icon className="w-6 h-6 text-accent" />
@@ -307,7 +344,7 @@ export default function Services() {
 
           {/* Heavy Items Pricing */}
           <div className="max-w-2xl mx-auto mb-8">
-            <div className="p-8 rounded-2xl bg-background border border-border shadow-card text-center">
+            <div className="p-8 rounded-2xl glass-card shadow-depth-3 text-center">
               <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4">
                 <Dumbbell className="w-8 h-8 text-accent" />
               </div>
@@ -322,7 +359,7 @@ export default function Services() {
               </div>
               
               <p className="text-muted-foreground mb-6">
-                Professional handling for oversized and heavy items
+                Professional handling for oversized and heavy items in Denver
               </p>
               
               <div className="flex flex-wrap justify-center gap-2 text-sm mb-4">
@@ -346,7 +383,7 @@ export default function Services() {
                 <Zap className="w-6 h-6 text-accent" />
               </div>
               <div>
-                <h4 className="font-heading font-semibold text-primary">Emergency Heavy Item Move?</h4>
+                <h4 className="font-heading font-semibold text-primary">Emergency Heavy Item Move in Denver?</h4>
                 <p className="text-sm text-muted-foreground">Same-day service for urgent heavy item needs — call now</p>
               </div>
             </div>
@@ -357,7 +394,7 @@ export default function Services() {
                   Call Now
                 </a>
               </Button>
-              <Button asChild className="gradient-gold text-white hover:opacity-90">
+              <Button asChild className="gradient-gold text-white hover:opacity-90 shadow-gold">
                 <Link to="/quote">Get Quote</Link>
               </Button>
             </div>
@@ -382,13 +419,13 @@ export default function Services() {
         <Container size="narrow">
           <div className="text-center">
             <h2 className="font-heading text-3xl lg:text-4xl font-semibold text-primary mb-4">
-              Ready to Get Started?
+              Ready to Get Started in Denver?
             </h2>
             <p className="text-muted-foreground mb-8">
-              Get a free, no-obligation quote in minutes. Our team is ready to help.
+              Get a free, no-obligation quote in minutes. Our Denver team is ready to help.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90">
+              <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90 animate-glow-pulse">
                 <Link to="/quote">
                   Get Your Free Quote
                   <ArrowRight className="ml-2 w-5 h-5" />
@@ -396,8 +433,8 @@ export default function Services() {
               </Button>
               <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-white">
                 <a href="tel:+18782187397">
-                  <Phone className="mr-2 w-5 h-5" />
-                  (878) 218-7397
+                  <Phone className="w-5 h-5 mr-2" />
+                  Call (878) 218-7397
                 </a>
               </Button>
             </div>
@@ -406,6 +443,7 @@ export default function Services() {
       </Section>
 
       <Footer />
+      <StickyCTA />
       <ChatWidget />
       <VoiceAgent />
     </div>

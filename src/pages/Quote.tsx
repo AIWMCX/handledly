@@ -16,6 +16,8 @@ import { VoiceAgent } from "@/components/VoiceAgent";
 import { ChatWidget } from "@/components/ChatWidget";
 import { QuoteConfirmation } from "@/components/QuoteConfirmation";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
+import { TrustBadges } from "@/components/TrustBadges";
+import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -24,7 +26,7 @@ import {
   CREW_CONFIGURATIONS,
   type ServiceType,
 } from "@/lib/quoteCalculator";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Shield, Clock, Star, MapPin, Zap } from "lucide-react";
 
 const BEDROOM_OPTIONS = [
   { value: "0", label: "Studio" },
@@ -177,26 +179,66 @@ export default function Quote() {
       <AnnouncementBar />
       <Header />
       
-      <section className="pt-32 pb-20 lg:pt-40 lg:pb-28">
-        <Container>
+      <section className="pt-32 pb-20 lg:pt-40 lg:pb-28 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-20 right-10 w-72 h-72 bg-accent/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 left-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        </div>
+        
+        <Container className="relative z-10">
           {!isSubmitted ? (
             <div className="max-w-3xl mx-auto">
               {/* Header */}
-              <div className="text-center mb-10">
+              <div className="text-center mb-8">
+                {/* Denver Badge */}
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-6">
+                  <MapPin className="w-4 h-4 text-accent" />
+                  <span className="text-sm font-medium text-accent">Denver's Top-Rated Movers</span>
+                </div>
+                
                 <h1 className="font-heading text-4xl sm:text-5xl font-semibold text-primary mb-4">
-                  Get Your Free Quote
+                  Get Your Free Quote in <span className="text-accent">60 Seconds</span>
                 </h1>
-                <p className="text-muted-foreground text-lg mb-4">
+                <p className="text-muted-foreground text-lg mb-6">
                   Fill out the form below and we'll contact you shortly with a detailed estimate.
                 </p>
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+                
+                {/* Trust indicators row */}
+                <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
+                  <GoogleReviewsBadge compact />
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/5 border border-primary/10">
+                    <Clock className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium text-primary">Same-Day Response</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Trust Badge Strip */}
+              <div className="flex flex-wrap items-center justify-center gap-4 mb-8 p-4 rounded-xl bg-primary/5 border border-primary/10">
+                <div className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-primary font-medium">USDOT Licensed</span>
+                </div>
+                <div className="w-px h-4 bg-border hidden sm:block" />
+                <div className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-primary font-medium">$2M+ Insured</span>
+                </div>
+                <div className="w-px h-4 bg-border hidden sm:block" />
+                <div className="flex items-center gap-2">
+                  <Star className="w-4 h-4 text-accent fill-accent" />
+                  <span className="text-sm text-primary font-medium">BBB A+ Rated</span>
+                </div>
+                <div className="w-px h-4 bg-border hidden sm:block" />
+                <div className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Same-Day Response Guaranteed</span>
+                  <span className="text-sm text-primary font-medium">No Hidden Fees</span>
                 </div>
               </div>
 
               {/* Form Card */}
-              <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-8 shadow-card">
+              <form onSubmit={handleSubmit} className="glass-card border border-border rounded-2xl p-8 shadow-depth-3">
                 {/* 2-Column Grid */}
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* Full Name */}
@@ -406,15 +448,27 @@ export default function Quote() {
 
                 {/* Submit Button */}
                 <div className="mt-8">
+                  {/* Mini testimonial */}
+                  <div className="flex items-center justify-center gap-2 mb-4 p-3 rounded-lg bg-accent/5 border border-accent/20">
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 text-accent fill-accent" />
+                      ))}
+                    </div>
+                    <span className="text-sm text-muted-foreground">
+                      "Best moving experience in Denver!" — Sarah M.
+                    </span>
+                  </div>
+                  
                   <Button
                     type="submit"
                     disabled={!canSubmit || isSubmitting}
-                    className="w-full gradient-gold text-primary-foreground font-semibold py-6 text-lg shadow-gold hover:shadow-gold-lg transition-all"
+                    className="w-full gradient-gold text-primary-foreground font-semibold py-6 text-lg shadow-gold hover:shadow-gold-lg transition-all animate-glow-pulse"
                   >
                     {isSubmitting ? "Submitting..." : "Get My Free Quote"}
                   </Button>
                   <p className="text-center text-xs text-muted-foreground mt-3">
-                    No obligation • Free estimate • Same-day response
+                    No obligation • Free estimate • Same-day response • Join 10,000+ happy Denver customers
                   </p>
                 </div>
               </form>

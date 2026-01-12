@@ -2,6 +2,8 @@ import { Header, Footer } from "@/components/layout";
 import { ChatWidget } from "@/components/ChatWidget";
 import { VoiceAgent } from "@/components/VoiceAgent";
 import { Testimonials } from "@/components/Testimonials";
+import { TrustBadges } from "@/components/TrustBadges";
+import { StickyCTA } from "@/components/StickyCTA";
 import { ServiceHeroBanner } from "./ServiceHeroBanner";
 import { ServiceIntro } from "./ServiceIntro";
 import { FeatureCards } from "./FeatureCards";
@@ -23,6 +25,8 @@ export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
         serviceName={data.title} 
         tagline={data.tagline} 
       />
+      
+      <TrustBadges />
       
       <ServiceIntro
         headline={data.headline}
@@ -46,6 +50,7 @@ export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
       <Testimonials />
       
       <Footer />
+      <StickyCTA />
       <ChatWidget />
       <VoiceAgent />
     </div>

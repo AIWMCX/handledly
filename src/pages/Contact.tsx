@@ -6,16 +6,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { VoiceAgent } from "@/components/VoiceAgent";
 import { ChatWidget } from "@/components/ChatWidget";
+import { StickyCTA } from "@/components/StickyCTA";
+import { TrustBadges } from "@/components/TrustBadges";
+import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Phone, Mail, MapPin, Clock, Send, MessageSquare, MessagesSquare } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Send, MessageSquare, MessagesSquare, Shield, CheckCircle, Zap } from "lucide-react";
 
 const contactInfo = [
   {
     icon: Phone,
     title: "Phone",
     primary: "(878) 218-7397",
-    secondary: "Call for a free quote",
+    secondary: "Average response: Under 10 min",
     href: "tel:+18782187397",
   },
   {
@@ -28,8 +31,8 @@ const contactInfo = [
   {
     icon: MapPin,
     title: "Service Area",
-    primary: "[City] Metro Area",
-    secondary: "And surrounding counties",
+    primary: "Denver Metro Area",
+    secondary: "30+ Cities Covered",
   },
   {
     icon: Clock,
@@ -87,29 +90,71 @@ export default function Contact() {
       <Header />
       
       {/* Hero */}
-      <section className="pt-32 pb-16 lg:pt-40 lg:pb-20 bg-background">
-        <Container>
+      <section className="pt-32 pb-16 lg:pt-40 lg:pb-20 bg-background relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-20 right-10 w-72 h-72 bg-accent/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 left-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        </div>
+        
+        <Container className="relative z-10">
           <div className="max-w-3xl">
+            {/* Denver Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-6">
+              <MapPin className="w-4 h-4 text-accent" />
+              <span className="text-sm font-medium text-accent">Denver's Top-Rated Movers</span>
+            </div>
+            
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-semibold mb-6">
-              Get in <span className="text-accent">Touch</span>
+              Contact <span className="text-accent">Denver's</span> Best Movers
             </h1>
-            <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
+            <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed mb-6">
               Ready to plan your move? Have questions? We're here to help. 
               Reach out through any channel—we respond fast.
             </p>
+            
+            {/* Trust indicators */}
+            <div className="flex flex-wrap items-center gap-4">
+              <GoogleReviewsBadge compact />
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/5 border border-primary/10">
+                <Zap className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-primary">Under 10 Min Response</span>
+              </div>
+            </div>
           </div>
         </Container>
       </section>
 
-      <Section className="pt-0">
+      <TrustBadges />
+
+      <Section className="pt-12">
         <Container>
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div>
-              <div className="p-6 lg:p-8 rounded-2xl bg-background border border-border shadow-card">
-                <h2 className="font-heading text-2xl font-semibold text-primary mb-6">
+              {/* Trust strip above form */}
+              <div className="flex flex-wrap items-center gap-4 mb-6 p-4 rounded-xl bg-primary/5 border border-primary/10">
+                <div className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-primary font-medium">Licensed</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-primary font-medium">Insured</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-primary font-medium">No Hidden Fees</span>
+                </div>
+              </div>
+              
+              <div className="p-6 lg:p-8 rounded-2xl glass-card shadow-depth-3 hover-lift transition-all">
+                <h2 className="font-heading text-2xl font-semibold text-primary mb-2">
                   Send Us a Message
                 </h2>
+                <p className="text-muted-foreground text-sm mb-6">
+                  We typically respond within 10 minutes during business hours
+                </p>
                 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
@@ -170,7 +215,7 @@ export default function Contact() {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full gradient-gold text-white hover:opacity-90"
+                    className="w-full gradient-gold text-white hover:opacity-90 shadow-gold"
                   >
                     {isSubmitting ? (
                       "Sending..."
@@ -187,14 +232,14 @@ export default function Contact() {
 
             {/* Contact Info & Voice Agent */}
             <div className="space-y-6">
-              {/* Contact Cards */}
+              {/* Contact Cards - Premium glassmorphism */}
               <div className="grid sm:grid-cols-2 gap-4">
                 {contactInfo.map((item) => (
                   <div
                     key={item.title}
-                    className="p-5 rounded-xl bg-background border border-border shadow-card"
+                    className="p-5 rounded-xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all hover-lift group"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mb-3">
+                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mb-3 group-hover:bg-accent/20 transition-colors">
                       <item.icon className="w-5 h-5 text-accent" />
                     </div>
                     <p className="text-sm text-muted-foreground mb-1">{item.title}</p>
@@ -211,9 +256,9 @@ export default function Contact() {
               </div>
 
               {/* Chat Support Card */}
-              <div className="p-6 rounded-2xl bg-background border border-border shadow-card">
+              <div className="p-6 rounded-2xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all">
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-xl gradient-gold flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 rounded-xl gradient-gold flex items-center justify-center shrink-0 shadow-gold">
                     <MessagesSquare className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -230,9 +275,9 @@ export default function Contact() {
               </div>
 
               {/* Voice Agent Card */}
-              <div className="p-6 rounded-2xl bg-background border border-border shadow-card">
+              <div className="p-6 rounded-2xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all">
                 <div className="flex items-start gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-xl gradient-gold flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 rounded-xl gradient-gold flex items-center justify-center shrink-0 shadow-gold">
                     <MessageSquare className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -249,19 +294,24 @@ export default function Contact() {
               </div>
 
               {/* Quick Call CTA */}
-              <div className="p-6 rounded-2xl bg-secondary border border-border">
-                <h3 className="font-heading text-lg font-semibold text-primary mb-2">
-                  Prefer to Talk to a Human?
-                </h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Our friendly team is standing by to help with your move.
-                </p>
-                <Button asChild size="lg" className="w-full gradient-gold text-white hover:opacity-90">
-                  <a href="tel:+18782187397">
-                    <Phone className="mr-2 w-5 h-5" />
-                    Call (878) 218-7397
-                  </a>
-                </Button>
+              <div className="p-6 rounded-2xl bg-primary text-white relative overflow-hidden">
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-accent rounded-full blur-2xl" />
+                </div>
+                <div className="relative z-10">
+                  <h3 className="font-heading text-lg font-semibold mb-2">
+                    Prefer to Talk to a Human?
+                  </h3>
+                  <p className="text-white/80 text-sm mb-4">
+                    Our friendly Denver team is standing by to help with your move.
+                  </p>
+                  <Button asChild size="lg" className="w-full bg-accent hover:bg-accent/90 text-white">
+                    <a href="tel:+18782187397">
+                      <Phone className="mr-2 w-5 h-5" />
+                      Call (878) 218-7397
+                    </a>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -269,6 +319,7 @@ export default function Contact() {
       </Section>
 
       <Footer />
+      <StickyCTA />
       <ChatWidget />
       <VoiceAgent />
     </div>
