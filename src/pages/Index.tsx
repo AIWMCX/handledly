@@ -5,15 +5,18 @@ import { VoiceAgent } from "@/components/VoiceAgent";
 import { ChatWidget } from "@/components/ChatWidget";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { TrustIndicators } from "@/components/TrustIndicators";
+import { TrustBadges } from "@/components/TrustBadges";
 import { HowItWorks } from "@/components/HowItWorks";
 import { StatsBar } from "@/components/StatsBar";
 import { PricingDisplay } from "@/components/PricingDisplay";
 import { Testimonials } from "@/components/Testimonials";
+import { StickyCTA } from "@/components/StickyCTA";
+import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
 import { Badge } from "@/components/ui/badge";
 import { MeshGradientHero } from "@/components/ui/BackgroundEffects";
 import { HOURLY_RATES } from "@/lib/quoteCalculator";
 import { 
-  Phone, ArrowRight, Star, 
+  Phone, ArrowRight, Star, MapPin,
   Dumbbell, Users, CheckCircle, Building, Home, Zap
 } from "lucide-react";
 import {
@@ -74,53 +77,109 @@ export default function Index() {
         <MeshGradientHero />
         
         <Container className="relative z-10">
-          <div className="max-w-3xl">
-            {/* Glass Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-6 shadow-depth-1">
-              <Star className="w-4 h-4 text-accent fill-accent" />
-              <span className="text-sm font-medium text-foreground">97% Happy Customers — 500+ Damage-Free Days</span>
-            </div>
-            
-            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold leading-tight mb-6">
-              Moving Made <span className="text-accent">Simple</span>
-            </h1>
-            
-            <p className="text-lg lg:text-xl text-muted-foreground mb-4 max-w-2xl leading-relaxed">
-              No hidden fees, no surprises. Just one simple hourly rate that includes everything — 
-              truck, materials, assembly, and protection.
-            </p>
-
-            <div className="flex flex-wrap items-center gap-4 mb-8 text-sm">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-card shadow-depth-1">
-                <Users className="w-4 h-4 text-accent" />
-                <span className="text-foreground font-medium">2 Movers + Truck: ${HOURLY_RATES['moving-2-movers']}/hr</span>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Content */}
+            <div>
+              {/* Denver anchor badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-6 shadow-depth-1">
+                <MapPin className="w-4 h-4 text-accent" />
+                <span className="text-sm font-medium text-foreground">Denver's #1 Rated Moving Company</span>
               </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-card shadow-depth-1">
-                <CheckCircle className="w-4 h-4 text-accent" />
-                <span className="text-foreground font-medium">All materials included</span>
+              
+              <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold leading-tight mb-6">
+                Moving Made <span className="text-accent">Simple</span>
+              </h1>
+              
+              <p className="text-lg lg:text-xl text-muted-foreground mb-4 max-w-2xl leading-relaxed">
+                No hidden fees, no surprises. Just one simple hourly rate that includes everything — 
+                truck, materials, assembly, and protection.
+              </p>
+
+              <div className="flex flex-wrap items-center gap-4 mb-6 text-sm">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-card shadow-depth-1">
+                  <Users className="w-4 h-4 text-accent" />
+                  <span className="text-foreground font-medium">2 Movers + Truck: ${HOURLY_RATES['moving-2-movers']}/hr</span>
+                </div>
+                <Badge className="px-3 py-1.5 bg-accent/10 text-accent border-accent/30 hover:bg-accent/20 shadow-depth-1">
+                  <Zap className="w-3 h-3 mr-1" />
+                  Same-Day Available
+                </Badge>
               </div>
-              <Badge className="px-3 py-1.5 bg-accent/10 text-accent border-accent/30 hover:bg-accent/20 shadow-depth-1">
-                <Zap className="w-3 h-3 mr-1" />
-                Same-Day Available
-              </Badge>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90 h-12 px-8 hover-lift animate-glow-pulse">
-                <Link to="/quote">Get Instant Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="h-12 px-8 border-primary text-primary hover:bg-primary hover:text-white glass-card">
-                <a href="tel:+18782187397"><Phone className="mr-2 w-5 h-5" />(878) 218-7397</a>
-              </Button>
+              
+              {/* Google Reviews Badge */}
+              <div className="mb-8">
+                <GoogleReviewsBadge rating={4.9} reviewCount={500} />
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90 h-14 px-8 text-lg hover-lift animate-glow-pulse">
+                  <Link to="/quote">Get Instant Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="h-14 px-8 border-primary text-primary hover:bg-primary hover:text-white glass-card">
+                  <a href="tel:+18782187397"><Phone className="mr-2 w-5 h-5" />(878) 218-7397</a>
+                </Button>
+              </div>
+
+              <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-accent" />
+                  <span>Free quote in 60 seconds</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-accent" />
+                  <span>30+ Denver cities</span>
+                </div>
+              </div>
             </div>
 
-            <p className="text-sm text-muted-foreground">
-              <CheckCircle className="w-4 h-4 inline mr-1 text-accent" />
-              Get your personalized quote in less than 10 minutes
-            </p>
+            {/* Right: Trust visual / Quick stats */}
+            <div className="hidden lg:block">
+              <div className="relative">
+                {/* Main trust card */}
+                <div className="relative p-8 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-depth-3">
+                  <div className="text-center mb-6">
+                    <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">Trusted By Denver Families</p>
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-6 h-6 text-amber-400 fill-amber-400" />
+                      ))}
+                    </div>
+                    <p className="text-3xl font-bold text-primary">4.9 out of 5</p>
+                    <p className="text-sm text-muted-foreground">Based on 500+ verified reviews</p>
+                  </div>
+                  
+                  {/* Quick stats grid */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 rounded-2xl bg-primary/5 text-center">
+                      <p className="text-2xl font-bold text-primary">500+</p>
+                      <p className="text-xs text-muted-foreground">Damage-Free Days</p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-accent/10 text-center">
+                      <p className="text-2xl font-bold text-primary">$0</p>
+                      <p className="text-xs text-muted-foreground">Hidden Fees</p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-accent/10 text-center">
+                      <p className="text-2xl font-bold text-primary">30+</p>
+                      <p className="text-xs text-muted-foreground">Cities Served</p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-primary/5 text-center">
+                      <p className="text-2xl font-bold text-primary">24hr</p>
+                      <p className="text-xs text-muted-foreground">Response Time</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Floating accent elements */}
+                <div className="absolute -top-4 -right-4 w-24 h-24 rounded-full bg-accent/20 blur-2xl" />
+                <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full bg-primary/10 blur-3xl" />
+              </div>
+            </div>
           </div>
         </Container>
       </section>
+
+      {/* Trust Badges Strip */}
+      <TrustBadges />
 
       {/* Stats Bar */}
       <StatsBar />
@@ -258,6 +317,7 @@ export default function Index() {
       <Footer />
       <ChatWidget />
       <VoiceAgent />
+      <StickyCTA />
     </div>
   );
 }
