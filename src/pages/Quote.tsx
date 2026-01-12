@@ -21,11 +21,13 @@ import { toast } from "sonner";
 import {
   calculateQuote,
   SERVICE_TYPES,
+  CREW_CONFIGURATIONS,
   type ServiceType,
 } from "@/lib/quoteCalculator";
 import { CheckCircle } from "lucide-react";
 
 const BEDROOM_OPTIONS = [
+  { value: "0", label: "Studio" },
   { value: "1", label: "1 Bedroom" },
   { value: "2", label: "2 Bedrooms" },
   { value: "3", label: "3 Bedrooms" },
@@ -39,6 +41,7 @@ export default function Quote() {
   
   // Form state
   const [serviceType, setServiceType] = useState<ServiceType | "">("");
+  const [crewConfig, setCrewConfig] = useState<string>("");
   const [bedrooms, setBedrooms] = useState<string>("");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -52,21 +55,23 @@ export default function Quote() {
   const [callScheduled, setCallScheduled] = useState(false);
   const [submittedQuote, setSubmittedQuote] = useState<number>(0);
 
-  // Determine if bedrooms field is needed
-  const needsBedrooms = ['apartment-condo', 'house-townhouse', 'same-day'].includes(serviceType);
+  // Determine if bedrooms/crew config fields are needed
+  const isLocalMoving = serviceType === 'local-moving';
+  const isHeavyItems = serviceType === 'heavy-items';
 
   // Calculate quote (hidden from user)
   const quote = useMemo(() => {
     if (!serviceType) return null;
     return calculateQuote({
       serviceType: serviceType as ServiceType,
-      bedrooms: needsBedrooms && bedrooms ? parseInt(bedrooms) : undefined,
+      bedrooms: isLocalMoving && bedrooms ? parseInt(bedrooms) : undefined,
+      crewConfig: isLocalMoving ? crewConfig : undefined,
     });
-  }, [serviceType, bedrooms, needsBedrooms]);
+  }, [serviceType, bedrooms, crewConfig, isLocalMoving]);
 
   // Form validation
   const canSubmit = phone && email && moveFrom && moveTo && serviceType && 
-                    (!needsBedrooms || bedrooms);
+                    (isHeavyItems || (isLocalMoving && crewConfig));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,7 +87,7 @@ export default function Quote() {
           email,
           phone,
           property_type: serviceType,
-          bedrooms: needsBedrooms && bedrooms ? parseInt(bedrooms) : null,
+          bedrooms: isLocalMoving && bedrooms ? parseInt(bedrooms) : null,
           move_from_address: moveFrom,
           move_to_address: moveTo,
           move_date: moveDate || null,
@@ -102,7 +107,7 @@ export default function Quote() {
         .insert({
           lead_id: lead.id,
           property_type: serviceType,
-          bedrooms: needsBedrooms && bedrooms ? parseInt(bedrooms) : null,
+          bedrooms: isLocalMoving && bedrooms ? parseInt(bedrooms) : null,
           total_quote: quote.total,
         });
 
@@ -218,7 +223,7 @@ export default function Quote() {
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      placeholder="(303) 555-1234"
+                      placeholder="(555) 123-4567"
                       required
                       className="bg-background"
                     />
@@ -297,6 +302,7 @@ export default function Quote() {
                       value={serviceType}
                       onValueChange={(value) => {
                         setServiceType(value as ServiceType);
+                        setCrewConfig("");
                         setBedrooms("");
                       }}
                     >
@@ -306,18 +312,48 @@ export default function Quote() {
                       <SelectContent>
                         {SERVICE_TYPES.map((service) => (
                           <SelectItem key={service.value} value={service.value}>
-                            {service.label}
+                            <div className="flex flex-col">
+                              <span>{service.label}</span>
+                              <span className="text-xs text-muted-foreground">{service.description}</span>
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
 
-                  {/* Bedrooms - Conditional */}
-                  {needsBedrooms && (
+                  {/* Crew Configuration - Only for Local Moving */}
+                  {isLocalMoving && (
+                    <div className="space-y-2">
+                      <Label htmlFor="crewConfig" className="text-primary font-medium">
+                        Crew & Truck Configuration <span className="text-red-500">*</span>
+                      </Label>
+                      <Select value={crewConfig} onValueChange={setCrewConfig}>
+                        <SelectTrigger className="bg-background">
+                          <SelectValue placeholder="Select crew size and service type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CREW_CONFIGURATIONS.map((config) => (
+                            <SelectItem key={config.value} value={config.value}>
+                              <div className="flex justify-between items-center gap-4">
+                                <span>{config.label}</span>
+                                <span className="text-accent font-semibold">${config.rate}/hr</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        Labor Only = loading/unloading help without truck • Full Service = movers + truck included
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Bedrooms - Optional for Local Moving */}
+                  {isLocalMoving && (
                     <div className="space-y-2">
                       <Label htmlFor="bedrooms" className="text-primary font-medium">
-                        How Many Bedrooms? <span className="text-red-500">*</span>
+                        Property Size (Optional)
                       </Label>
                       <Select value={bedrooms} onValueChange={setBedrooms}>
                         <SelectTrigger className="bg-background">
@@ -337,13 +373,19 @@ export default function Quote() {
                   {/* Notes Textarea */}
                   <div className="space-y-2">
                     <Label htmlFor="notes" className="text-primary font-medium">
-                      Briefly Tell Us About Your Move
+                      {isHeavyItems 
+                        ? "Describe the Items You Need Moved" 
+                        : "Briefly Tell Us About Your Move"
+                      }
                     </Label>
                     <Textarea
                       id="notes"
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Any special requirements, heavy items, stairs, elevator access, etc."
+                      placeholder={isHeavyItems 
+                        ? "Describe the heavy items (piano type, safe weight, appliance details, etc.)"
+                        : "Any special requirements, heavy items, stairs, elevator access, etc."
+                      }
                       rows={4}
                       className="bg-background resize-none"
                     />

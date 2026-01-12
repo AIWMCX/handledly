@@ -12,16 +12,28 @@ import { Testimonials } from "@/components/Testimonials";
 import { HOURLY_RATES } from "@/lib/quoteCalculator";
 import { 
   Phone, ArrowRight, Shield, Clock, Star, Truck, 
-  Package, Users, Award, CheckCircle, MapPin, Zap
+  Dumbbell, Users, Award, CheckCircle, MapPin
 } from "lucide-react";
 
 const services = [
-  { icon: Truck, title: "Residential Moving", description: "Full-service home moving with flat hourly rates. No hidden fees." },
-  { icon: Package, title: "Commercial Moving", description: "Minimize downtime with efficient office and business relocation." },
-  { icon: Shield, title: "Specialty Items", description: "Expert handling for pianos, safes, pool tables, and heavy items." },
-  { icon: Users, title: "Labor Only / Help", description: "Need help loading your truck or pod? We've got you covered." },
-  { icon: Zap, title: "Same-Day Moving", description: "Urgent move? We offer same-day service when you need it fast." },
-  { icon: Package, title: "Junk Removal", description: "Furniture, appliances, and debris removal from your property." },
+  { 
+    icon: Truck, 
+    title: "Local Moving", 
+    description: "Full-service moves with professional crew and truck. Flat hourly rates, no hidden fees.",
+    link: "/services/local-moving"
+  },
+  { 
+    icon: Dumbbell, 
+    title: "Heavy Items", 
+    description: "Expert handling for pianos, safes, appliances, pool tables, and oversized items.",
+    link: "/services/heavy-items-moving"
+  },
+  { 
+    icon: Users, 
+    title: "Labor Only", 
+    description: "Need help loading your truck or pod? Professional muscle at affordable rates.",
+    link: "/quote"
+  },
 ];
 
 const whyChooseUs = [
@@ -51,7 +63,7 @@ export default function Index() {
             </div>
             
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold leading-tight mb-6">
-              Denver's <span className="text-accent">Flat-Rate</span> Moving Experts
+              Moving Made <span className="text-accent">Simple</span>
             </h1>
             
             <p className="text-lg lg:text-xl text-muted-foreground mb-4 max-w-2xl leading-relaxed">
@@ -62,7 +74,7 @@ export default function Index() {
             <div className="flex flex-wrap items-center gap-4 mb-8 text-sm">
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary border border-border">
                 <Users className="w-4 h-4 text-accent" />
-                <span className="text-foreground font-medium">2 Movers + Truck: ${HOURLY_RATES['2-movers']}/hr</span>
+                <span className="text-foreground font-medium">2 Movers + Truck: ${HOURLY_RATES['moving-2-movers']}/hr</span>
               </div>
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary border border-border">
                 <CheckCircle className="w-4 h-4 text-accent" />
@@ -75,7 +87,7 @@ export default function Index() {
                 <Link to="/quote">Get Instant Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="h-12 px-8 border-primary text-primary hover:bg-primary hover:text-white">
-                <a href="tel:+13035551234"><Phone className="mr-2 w-5 h-5" />(303) 555-1234</a>
+                <a href="tel:+15551234567"><Phone className="mr-2 w-5 h-5" />(555) 123-4567</a>
               </Button>
             </div>
 
@@ -95,17 +107,24 @@ export default function Index() {
         <Container>
           <SectionHeader 
             title="Our Services" 
-            subtitle="Flat-rate moving solutions for every need — residential, commercial, and specialty." 
+            subtitle="Professional moving solutions with transparent, flat-rate pricing." 
           />
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
             {services.map((service) => (
-              <div key={service.title} className="group p-6 rounded-2xl bg-background border border-border hover:border-primary/50 transition-all shadow-card">
+              <Link 
+                key={service.title} 
+                to={service.link}
+                className="group p-6 rounded-2xl bg-background border border-border hover:border-primary/50 transition-all shadow-card"
+              >
                 <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
                   <service.icon className="w-6 h-6 text-accent" />
                 </div>
                 <h3 className="font-heading text-xl font-semibold text-primary mb-2">{service.title}</h3>
-                <p className="text-muted-foreground text-sm">{service.description}</p>
-              </div>
+                <p className="text-muted-foreground text-sm mb-4">{service.description}</p>
+                <span className="text-accent font-medium text-sm group-hover:underline">
+                  Learn More →
+                </span>
+              </Link>
             ))}
           </div>
           <div className="text-center mt-8">
@@ -130,7 +149,7 @@ export default function Index() {
         <Container>
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <SectionHeader title="Why Denver Chooses Us" subtitle="No gimmicks, just honest service at fair prices." align="left" />
+              <SectionHeader title="Why People Choose Handled" subtitle="No gimmicks, just honest service at fair prices." align="left" />
               <ul className="space-y-4">
                 {whyChooseUs.map((item) => (
                   <li key={item} className="flex items-start gap-3">
@@ -150,7 +169,7 @@ export default function Index() {
               </div>
               <div className="space-y-4 mt-8">
                 <div className="p-6 rounded-2xl bg-background border border-border shadow-card"><Clock className="w-8 h-8 text-accent mb-3" /><p className="font-heading text-lg font-semibold text-primary">On Time</p></div>
-                <div className="p-6 rounded-2xl bg-background border border-border shadow-card"><MapPin className="w-8 h-8 text-accent mb-3" /><p className="font-heading text-lg font-semibold text-primary">30+ Cities</p></div>
+                <div className="p-6 rounded-2xl bg-background border border-border shadow-card"><MapPin className="w-8 h-8 text-accent mb-3" /><p className="font-heading text-lg font-semibold text-primary">Local Experts</p></div>
               </div>
             </div>
           </div>
@@ -171,7 +190,7 @@ export default function Index() {
                 <Link to="/quote">Get Free Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-white">
-                <a href="tel:+13035551234"><Phone className="mr-2 w-5 h-5" />Call Now</a>
+                <a href="tel:+15551234567"><Phone className="mr-2 w-5 h-5" />Call Now</a>
               </Button>
             </div>
           </div>
