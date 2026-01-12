@@ -2,14 +2,18 @@
 // Flat Hourly Rate Model - NO HIDDEN FEES
 
 export type ServiceType = 'local-moving' | 'heavy-items';
+export type LocalMovingSubType = 'apartment-condo' | 'house-townhouse' | 'labor-only' | 'same-day-local';
+export type HeavyItemsSubType = 'piano' | 'pool-table' | 'heavy-under-300' | 'heavy-over-300' | 'same-day-heavy';
 
 export interface QuoteInput {
   serviceType: ServiceType;
+  subType?: LocalMovingSubType | HeavyItemsSubType;
   bedrooms?: number;
   estimatedHours?: number;
   crewConfig?: string;
   specialtyItems?: string[];
   moveDate?: Date;
+  isSameDay?: boolean;
 }
 
 export interface QuoteBreakdown {
@@ -157,19 +161,32 @@ export function calculateQuote(input: QuoteInput): QuoteBreakdown {
   };
 }
 
-// Service types for the form - SIMPLIFIED to only 2 services
+// Main service categories with sub-types
 export const SERVICE_TYPES = [
   { 
     value: 'local-moving', 
     label: 'Local Moving',
-    description: 'Full-service local moves with professional crew',
+    description: 'Apartments, houses, labor-only & same-day moves',
     icon: 'truck',
+    subTypes: [
+      { value: 'apartment-condo', label: 'Apartment & Condo Moving', description: 'Studios to 4+ BR apartments and condos' },
+      { value: 'house-townhouse', label: 'House & Townhouse Moving', description: 'Single-family homes and townhouses' },
+      { value: 'labor-only', label: 'Labor-Only Moving Help', description: 'Loading/unloading for your truck or pod' },
+      { value: 'same-day-local', label: 'Same-Day Moving', description: 'Emergency moves - call now!' },
+    ]
   },
   { 
     value: 'heavy-items', 
     label: 'Heavy Items Moving',
-    description: 'Pianos, safes, appliances, and specialty items',
+    description: 'Pianos, pool tables, safes & oversized items',
     icon: 'weight',
+    subTypes: [
+      { value: 'piano', label: 'Piano Moving', description: 'Upright and grand pianos' },
+      { value: 'pool-table', label: 'Pool Table Moving', description: 'Disassembly, move & reassembly' },
+      { value: 'heavy-under-300', label: 'Heavy Items (Under 300 lbs)', description: 'Appliances, large furniture, gym equipment' },
+      { value: 'heavy-over-300', label: 'Heavy Items (300+ lbs)', description: 'Safes, gun safes, hot tubs, commercial equipment' },
+      { value: 'same-day-heavy', label: 'Same-Day Heavy Items', description: 'Emergency heavy item moves' },
+    ]
   },
 ];
 
