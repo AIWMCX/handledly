@@ -56,53 +56,165 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const retryCountRef = useRef(0);
   const maxRetries = 3;
+  
+  // Persistence state
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const sessionIdRef = useRef<string>(crypto.randomUUID());
+
+  // Helper to save messages to database
+  const saveMessage = useCallback(async (
+    role: 'user' | 'agent', 
+    content: string, 
+    toolData?: Record<string, unknown> | null
+  ) => {
+    if (!conversationId) return;
+    
+    try {
+      await supabase.from('chat_messages').insert([{
+        conversation_id: conversationId,
+        role,
+        content,
+        message_type: toolData ? 'tool_call' : 'text',
+        tool_data: (toolData as any) || null,
+      }]);
+    } catch (error) {
+      console.error('Failed to save message:', error);
+    }
+  }, [conversationId]);
+
+  // Helper to create a new conversation
+  const createConversation = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('chat_conversations')
+        .insert({
+          session_id: sessionIdRef.current,
+          source_page: window.location.pathname,
+          status: 'active',
+          metadata: {
+            user_agent: navigator.userAgent,
+            referrer: document.referrer,
+            started_at: new Date().toISOString(),
+          },
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      if (data) {
+        setConversationId(data.id);
+        return data.id;
+      }
+    } catch (error) {
+      console.error('Failed to create conversation:', error);
+    }
+    return null;
+  }, []);
+
+  // Helper to end the conversation
+  const endConversation = useCallback(async () => {
+    if (!conversationId) return;
+    
+    try {
+      await supabase
+        .from('chat_conversations')
+        .update({
+          status: 'ended',
+          ended_at: new Date().toISOString(),
+        })
+        .eq('id', conversationId);
+    } catch (error) {
+      console.error('Failed to end conversation:', error);
+    }
+  }, [conversationId]);
+
+  // Helper to link lead to conversation
+  const linkLeadToConversation = useCallback(async (leadId: string) => {
+    if (!conversationId) return;
+    
+    try {
+      await supabase
+        .from('chat_conversations')
+        .update({ lead_id: leadId })
+        .eq('id', conversationId);
+    } catch (error) {
+      console.error('Failed to link lead to conversation:', error);
+    }
+  }, [conversationId]);
 
   const conversation = useConversation({
     textOnly: true,
-    onConnect: () => {
+    onConnect: async () => {
       console.log("Chat connected");
       retryCountRef.current = 0;
+      
+      // Create conversation in database
+      const newConversationId = await createConversation();
+      
+      const greetingMessage = "Hi! I'm the Handled moving assistant. How can I help you today? I can provide instant quotes, answer questions about our services, or help schedule your move.";
+      
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
         role: 'agent',
-        content: "Hi! I'm the Handled moving assistant. How can I help you today? I can provide instant quotes, answer questions about our services, or help schedule your move.",
+        content: greetingMessage,
         timestamp: new Date(),
       }]);
+      
+      // Save greeting message after conversation is created
+      if (newConversationId) {
+        await supabase.from('chat_messages').insert({
+          conversation_id: newConversationId,
+          role: 'agent',
+          content: greetingMessage,
+          message_type: 'text',
+        });
+      }
     },
     onDisconnect: () => {
       console.log("Chat disconnected");
     },
-    onMessage: (message) => {
+    onMessage: async (message) => {
       console.log("Received message:", message);
       const msg = message as any;
       
       // Handle agent response events
       if (msg.type === 'agent_response' && msg.agent_response_event?.agent_response) {
         setIsSending(false);
+        const agentContent = msg.agent_response_event.agent_response;
+        
         setMessages(prev => [...prev, {
           id: Date.now().toString(),
           role: 'agent',
-          content: msg.agent_response_event.agent_response,
+          content: agentContent,
           timestamp: new Date(),
         }]);
+        
+        // Save agent message to database
+        await saveMessage('agent', agentContent);
       }
       
       // Handle agent response correction (when interrupted)
       if (msg.type === 'agent_response_correction' && msg.agent_response_correction_event?.corrected_agent_response) {
         setIsSending(false);
+        const correctedContent = msg.agent_response_correction_event.corrected_agent_response;
+        
         setMessages(prev => {
           const updated = [...prev];
           for (let i = updated.length - 1; i >= 0; i--) {
             if (updated[i].role === 'agent') {
               updated[i] = {
                 ...updated[i],
-                content: msg.agent_response_correction_event.corrected_agent_response,
+                content: correctedContent,
               };
               break;
             }
           }
           return updated;
         });
+        
+        // Save corrected message
+        await saveMessage('agent', correctedContent);
       }
     },
     onError: (error) => {
@@ -130,6 +242,20 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
             .single();
 
           if (error) throw error;
+          
+          // Link lead to conversation
+          if (data?.id) {
+            await linkLeadToConversation(data.id);
+          }
+          
+          // Save tool execution
+          await saveMessage('agent', `Lead created for ${params.fullName}`, {
+            tool: 'createLead',
+            params,
+            result: 'success',
+            lead_id: data?.id,
+          });
+          
           return `Lead created successfully for ${params.fullName}. We'll follow up shortly!`;
         } catch (error) {
           console.error("Error creating lead:", error);
@@ -151,6 +277,15 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
             .single();
 
           if (error) throw error;
+          
+          // Save tool execution
+          await saveMessage('agent', `Appointment scheduled for ${params.date} at ${params.time}`, {
+            tool: 'scheduleAppointment',
+            params,
+            result: 'success',
+            appointment_id: data?.id,
+          });
+          
           return `Appointment scheduled for ${params.date} at ${params.time}. We'll send you a confirmation!`;
         } catch (error) {
           console.error("Error scheduling appointment:", error);
@@ -160,13 +295,24 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
       checkAvailability: async (params: CheckAvailabilityParams) => {
         console.log("Checking availability via chat for:", params.date);
         const dayOfWeek = new Date(params.date).getDay();
+        let response: string;
+        
         if (dayOfWeek === 0) {
-          return "We have limited availability on Sundays. Our hours are 8am to 5pm.";
+          response = "We have limited availability on Sundays. Our hours are 8am to 5pm.";
+        } else if (dayOfWeek === 6) {
+          response = "Saturday is a popular day! We have morning slots at 7am, 8am, and an afternoon slot at 1pm available.";
+        } else {
+          response = "We have great availability on that date! We can start as early as 7am or schedule you for any time up to 4pm.";
         }
-        if (dayOfWeek === 6) {
-          return "Saturday is a popular day! We have morning slots at 7am, 8am, and an afternoon slot at 1pm available.";
-        }
-        return "We have great availability on that date! We can start as early as 7am or schedule you for any time up to 4pm.";
+        
+        // Save tool execution
+        await saveMessage('agent', response, {
+          tool: 'checkAvailability',
+          params,
+          result: 'success',
+        });
+        
+        return response;
       },
     },
   });
@@ -185,6 +331,11 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
 
   const startChat = useCallback(async () => {
     setIsConnecting(true);
+    
+    // Generate new session ID for new chat
+    sessionIdRef.current = crypto.randomUUID();
+    setConversationId(null);
+    
     try {
       const { data, error } = await supabase.functions.invoke('elevenlabs-conversation-token');
       
@@ -218,10 +369,12 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
   }, [conversation]);
 
   const endChat = useCallback(async () => {
+    await endConversation();
     await conversation.endSession();
     setMessages([]);
     setShowQuickActions(true);
-  }, [conversation]);
+    setConversationId(null);
+  }, [conversation, endConversation]);
 
   const handleOpen = async () => {
     setIsOpen(true);
@@ -251,6 +404,9 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
     setMessages(prev => [...prev, userMessage]);
     setIsSending(true);
     setShowQuickActions(false);
+    
+    // Save user message to database
+    await saveMessage('user', messageText);
     
     try {
       await conversation.sendUserMessage(messageText);
