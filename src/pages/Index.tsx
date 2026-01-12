@@ -104,7 +104,7 @@ export default function Index() {
                 <Link to="/quote">Get Instant Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="h-12 px-8 border-primary text-primary hover:bg-primary hover:text-white glass-card">
-                <a href="tel:+15551234567"><Phone className="mr-2 w-5 h-5" />(555) 123-4567</a>
+                <a href="tel:+18782187397"><Phone className="mr-2 w-5 h-5" />(878) 218-7397</a>
               </Button>
             </div>
 
@@ -222,7 +222,7 @@ export default function Index() {
                 <Link to="/quote">Get Free Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-white">
-                <a href="tel:+15551234567"><Phone className="mr-2 w-5 h-5" />Call Now</a>
+                <a href="tel:+18782187397"><Phone className="mr-2 w-5 h-5" />Call Now</a>
               </Button>
             </div>
           </div>

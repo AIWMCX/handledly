@@ -239,7 +239,7 @@ export default function Services() {
             </div>
             <div className="flex gap-3">
               <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
-                <a href="tel:+15551234567">
+                <a href="tel:+18782187397">
                   <Phone className="w-4 h-4 mr-2" />
                   Call Now
                 </a>
@@ -352,7 +352,7 @@ export default function Services() {
             </div>
             <div className="flex gap-3">
               <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
-                <a href="tel:+15551234567">
+                <a href="tel:+18782187397">
                   <Phone className="w-4 h-4 mr-2" />
                   Call Now
                 </a>
@@ -395,9 +395,9 @@ export default function Services() {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-white">
-                <a href="tel:+15551234567">
+                <a href="tel:+18782187397">
                   <Phone className="mr-2 w-5 h-5" />
-                  (555) 123-4567
+                  (878) 218-7397
                 </a>
               </Button>
             </div>

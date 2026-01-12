@@ -71,11 +71,11 @@ export function Header() {
           {/* CTA Button */}
           <div className="flex items-center gap-4">
             <a
-              href="tel:+15551234567"
+              href="tel:+18782187397"
               className="hidden md:flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
               <Phone className="w-4 h-4" />
-              (555) 123-4567
+              (878) 218-7397
             </a>
             <Button asChild className="hidden sm:flex gradient-gold text-white hover:opacity-90 shadow-gold hover:shadow-glow-gold transition-shadow">
               <Link to="/quote">Get Free Quote</Link>
@@ -112,11 +112,11 @@ export function Header() {
                 </Link>
               ))}
               <a
-                href="tel:+15551234567"
+                href="tel:+18782187397"
                 className="flex items-center gap-2 text-base font-medium text-primary py-2"
               >
                 <Phone className="w-5 h-5" />
-                (555) 123-4567
+                (878) 218-7397
               </a>
               <Button asChild className="gradient-gold text-white w-full mt-2 shadow-gold">
                 <Link to="/quote" onClick={() => setIsMenuOpen(false)}>

@@ -43,8 +43,8 @@ export function ServiceCTA({ steps }: ServiceCTAProps) {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg">
-                <a href="tel:+13035551234">
-                  Call (303) 555-1234
+                <a href="tel:+18782187397">
+                  Call (878) 218-7397
                 </a>
               </Button>
             </div>
