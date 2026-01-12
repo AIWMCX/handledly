@@ -67,7 +67,7 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Moving Quote from Denver Premium Moving</title>
+  <title>Your Moving Quote from Handled</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0C0A09; color: #FAFAF9;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0C0A09;">
@@ -79,8 +79,9 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
           <tr>
             <td style="text-align: center; padding-bottom: 30px;">
               <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #FAFAF9;">
-                🏠 DENVER PREMIUM MOVING
+                🏠 HANDLED
               </h1>
+              <p style="margin: 10px 0 0; font-size: 14px; color: #A8A29E;">Moving Made Simple</p>
               <p style="margin: 10px 0 0; font-size: 16px; color: #D4AF37;">
                 Your Quote is Ready
               </p>
@@ -96,7 +97,7 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                 Hi ${data.customerName},
               </p>
               <p style="margin: 0 0 30px; font-size: 16px; color: #A8A29E; line-height: 1.6;">
-                Thank you for choosing Denver Premium Moving! Here's your personalized quote with our transparent, flat-rate pricing.
+                Thank you for choosing Handled! Here's your personalized quote with our transparent, flat-rate pricing.
               </p>
               
               <!-- Quote Box -->
@@ -246,7 +247,7 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                   <td align="center" style="padding: 10px 5px;">
-                    <a href="tel:+13035551234" style="display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #0C0A09; text-decoration: none; font-weight: 700; font-size: 16px; border-radius: 8px;">
+                    <a href="tel:+18782187397" style="display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #0C0A09; text-decoration: none; font-weight: 700; font-size: 16px; border-radius: 8px;">
                       📞 SCHEDULE MY MOVE
                     </a>
                   </td>
@@ -268,10 +269,10 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
           <tr>
             <td style="padding: 30px 20px; text-align: center;">
               <p style="margin: 0 0 10px; font-size: 14px; color: #78716C;">
-                Denver Premium Moving • Licensed & Insured
+                Handled • Licensed & Insured • Serving Denver Metro
               </p>
               <p style="margin: 0 0 10px; font-size: 14px; color: #78716C;">
-                📞 (303) 555-1234 • 📧 info@denverpremiummoving.com
+                📞 (878) 218-7397 • 📧 hello@handled.com
               </p>
               <p style="margin: 0; font-size: 12px; color: #57534E;">
                 Business Hours: Mon-Fri 7am-8pm, Sat 7am-6pm, Sun 8am-5pm
@@ -300,9 +301,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send the email
     const emailResponse = await resend.emails.send({
-      from: "Denver Premium Moving <onboarding@resend.dev>",
+      from: "Handled <onboarding@resend.dev>",
       to: [data.email],
-      subject: `Your Moving Quote: $${data.totalQuote} - Denver Premium Moving`,
+      subject: `Your Moving Quote: $${data.totalQuote} - Handled`,
       html: generateEmailHtml(data),
     });
 
