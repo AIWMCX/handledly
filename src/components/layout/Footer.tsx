@@ -35,14 +35,20 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-primary text-white">
-      <div className="container mx-auto px-4 py-16">
+    <footer className="relative bg-primary text-white overflow-hidden">
+      {/* Subtle mesh overlay */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-radial from-accent/30 to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-radial from-white/10 to-transparent rounded-full blur-3xl" />
+      </div>
+      
+      <div className="container mx-auto px-4 py-16 relative z-10">
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
           {/* Brand Column with Trust Badges */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 gradient-gold rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 gradient-gold rounded-lg flex items-center justify-center shadow-gold">
                 <span className="text-white font-heading font-bold text-xl">H</span>
               </div>
               <div>
@@ -56,13 +62,13 @@ export function Footer() {
             
             {/* Social Links */}
             <div className="flex gap-4">
-              <a href="#" className="text-white/70 hover:text-accent transition-colors" aria-label="Facebook">
+              <a href="#" className="text-white/70 hover:text-accent transition-colors p-2 rounded-lg hover:bg-white/10" aria-label="Facebook">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="text-white/70 hover:text-accent transition-colors" aria-label="Instagram">
+              <a href="#" className="text-white/70 hover:text-accent transition-colors p-2 rounded-lg hover:bg-white/10" aria-label="Instagram">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="text-white/70 hover:text-accent transition-colors" aria-label="LinkedIn">
+              <a href="#" className="text-white/70 hover:text-accent transition-colors p-2 rounded-lg hover:bg-white/10" aria-label="LinkedIn">
                 <Linkedin className="w-5 h-5" />
               </a>
             </div>
@@ -177,7 +183,7 @@ export function Footer() {
         </div>
 
         {/* Quote Promise Banner */}
-        <div className="mt-12 p-4 bg-accent/20 border border-accent/30 rounded-lg text-center">
+        <div className="mt-12 p-4 bg-accent/20 border border-accent/30 rounded-lg text-center backdrop-blur-sm">
           <p className="text-sm font-medium text-white">
             🚚 Get Your Personal Moving Quote in <span className="text-accent">10 Minutes or Less</span> — Call Now or Fill Out Our Form
           </p>

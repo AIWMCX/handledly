@@ -38,8 +38,11 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="py-20 bg-background">
-      <Container>
+    <section className="relative py-20 bg-background overflow-hidden">
+      {/* Subtle mesh background */}
+      <div className="absolute inset-0 bg-mesh-section opacity-50 pointer-events-none" />
+      
+      <Container className="relative z-10">
         <div className="text-center mb-12">
           <h2 className="font-heading text-3xl lg:text-4xl font-semibold mb-4">
             How It <span className="text-accent">Works</span>
@@ -50,18 +53,18 @@ export function HowItWorks() {
         </div>
         
         <div className="relative">
-          {/* Connection line */}
-          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-border -translate-y-1/2" />
+          {/* Connection line with gradient */}
+          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent/30 to-transparent -translate-y-1/2" />
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-            {steps.map((step) => (
-              <div key={step.number} className="relative text-center">
-                {/* Step number circle */}
+            {steps.map((step, index) => (
+              <div key={step.number} className="relative text-center group">
+                {/* Step number circle with glow */}
                 <div className="relative mx-auto mb-4">
-                  <div className="w-16 h-16 rounded-full gradient-gold flex items-center justify-center mx-auto relative z-10 shadow-gold">
+                  <div className="w-16 h-16 rounded-full gradient-gold flex items-center justify-center mx-auto relative z-10 shadow-gold group-hover:shadow-glow-gold transition-shadow">
                     <step.icon className="w-7 h-7 text-white" />
                   </div>
-                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-primary flex items-center justify-center">
+                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-primary flex items-center justify-center shadow-depth-2">
                     <span className="text-white text-sm font-bold">{step.number}</span>
                   </div>
                 </div>

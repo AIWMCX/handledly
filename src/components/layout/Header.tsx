@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Phone, Menu, X } from "lucide-react";
@@ -14,15 +14,32 @@ const navLinks = [
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
 
+  // Add scroll listener for glass effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border shadow-sm">
+    <header 
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        isScrolled 
+          ? "glass-nav border-b border-border/50 shadow-depth-2" 
+          : "bg-background/80 backdrop-blur-sm border-b border-border"
+      )}
+    >
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 gradient-gold rounded-lg flex items-center justify-center">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 gradient-gold rounded-lg flex items-center justify-center shadow-gold group-hover:shadow-glow-gold transition-shadow">
               <span className="text-white font-heading font-bold text-xl">H</span>
             </div>
             <div className="hidden sm:block">
@@ -38,10 +55,12 @@ export function Header() {
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
+                  "text-sm font-medium transition-colors relative",
                   location.pathname === link.href
                     ? "text-primary"
-                    : "text-muted-foreground"
+                    : "text-muted-foreground hover:text-primary",
+                  "after:content-[''] after:absolute after:w-full after:h-0.5 after:bg-accent after:left-0 after:-bottom-1 after:scale-x-0 after:origin-right after:transition-transform hover:after:scale-x-100 hover:after:origin-left",
+                  location.pathname === link.href && "after:scale-x-100"
                 )}
               >
                 {link.label}
@@ -58,7 +77,7 @@ export function Header() {
               <Phone className="w-4 h-4" />
               (555) 123-4567
             </a>
-            <Button asChild className="hidden sm:flex gradient-gold text-white hover:opacity-90 shadow-gold">
+            <Button asChild className="hidden sm:flex gradient-gold text-white hover:opacity-90 shadow-gold hover:shadow-glow-gold transition-shadow">
               <Link to="/quote">Get Free Quote</Link>
             </Button>
 
@@ -75,7 +94,7 @@ export function Header() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-border bg-background">
+          <div className="lg:hidden py-4 border-t border-border glass-nav">
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
                 <Link
@@ -99,7 +118,7 @@ export function Header() {
                 <Phone className="w-5 h-5" />
                 (555) 123-4567
               </a>
-              <Button asChild className="gradient-gold text-white w-full mt-2">
+              <Button asChild className="gradient-gold text-white w-full mt-2 shadow-gold">
                 <Link to="/quote" onClick={() => setIsMenuOpen(false)}>
                   Get Free Quote
                 </Link>

@@ -14,8 +14,11 @@ const localMovingTiers = CREW_CONFIGURATIONS.map(config => ({
 
 export function PricingDisplay() {
   return (
-    <section className="py-20 bg-secondary">
-      <Container>
+    <section className="relative py-20 bg-secondary overflow-hidden">
+      {/* Mesh background */}
+      <div className="absolute inset-0 bg-mesh-section pointer-events-none" />
+      
+      <Container className="relative z-10">
         <div className="text-center mb-12">
           <h2 className="font-heading text-3xl lg:text-4xl font-semibold mb-4">
             Simple, <span className="text-accent">Transparent</span> Pricing
@@ -23,19 +26,19 @@ export function PricingDisplay() {
           <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
             No hidden fees, no surprises. Flat hourly rates that include everything.
           </p>
-          <Badge className="bg-accent/10 text-accent border-accent/30">
+          <Badge className="bg-accent/10 text-accent border-accent/30 shadow-depth-1">
             <Zap className="w-3 h-3 mr-1" />
             Same-Day Service Available for All Services
           </Badge>
         </div>
         
         <Tabs defaultValue="local-moving" className="w-full">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
-            <TabsTrigger value="local-moving" className="flex items-center gap-2">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8 glass-card p-1">
+            <TabsTrigger value="local-moving" className="flex items-center gap-2 data-[state=active]:shadow-depth-1">
               <Truck className="w-4 h-4" />
               Local Moving
             </TabsTrigger>
-            <TabsTrigger value="heavy-items" className="flex items-center gap-2">
+            <TabsTrigger value="heavy-items" className="flex items-center gap-2 data-[state=active]:shadow-depth-1">
               <Dumbbell className="w-4 h-4" />
               Heavy Items
             </TabsTrigger>
@@ -45,15 +48,15 @@ export function PricingDisplay() {
           <TabsContent value="local-moving">
             {/* Service Types */}
             <div className="flex flex-wrap justify-center gap-4 mb-8">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full glass-card shadow-depth-1">
                 <Building className="w-4 h-4 text-accent" />
                 <span className="text-sm font-medium">Apartments & Condos</span>
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full glass-card shadow-depth-1">
                 <Home className="w-4 h-4 text-accent" />
                 <span className="text-sm font-medium">Houses & Townhouses</span>
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full glass-card shadow-depth-1">
                 <Users className="w-4 h-4 text-accent" />
                 <span className="text-sm font-medium">Labor-Only Help</span>
               </div>
@@ -65,14 +68,14 @@ export function PricingDisplay() {
                 return (
                 <div
                   key={tier.value}
-                  className={`p-5 rounded-2xl border shadow-card relative ${
+                  className={`p-5 rounded-2xl border relative transition-all hover-lift ${
                     isPopular 
-                      ? 'bg-primary/5 border-primary ring-2 ring-primary/20' 
-                      : 'bg-background border-border'
+                      ? 'bg-primary/5 border-primary ring-2 ring-primary/20 shadow-glow-primary' 
+                      : 'bg-background border-border shadow-depth-2 hover:shadow-depth-3'
                   }`}
                 >
                   {isPopular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 gradient-gold text-white text-xs font-medium rounded-full whitespace-nowrap">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 gradient-gold text-white text-xs font-medium rounded-full whitespace-nowrap shadow-gold">
                       Most Popular
                     </div>
                   )}
@@ -112,8 +115,8 @@ export function PricingDisplay() {
           {/* Heavy Items Tab */}
           <TabsContent value="heavy-items">
             <div className="max-w-2xl mx-auto">
-              <div className="p-8 rounded-2xl bg-background border border-border shadow-card text-center">
-                <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4">
+              <div className="p-8 rounded-2xl bg-background border border-border shadow-depth-3 text-center hover-lift">
+                <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4 shadow-glow-gold">
                   <Dumbbell className="w-8 h-8 text-accent" />
                 </div>
                 
@@ -142,7 +145,7 @@ export function PricingDisplay() {
                     'Gun Safes',
                     'Commercial Equipment'
                   ].map((item) => (
-                    <span key={item} className="px-3 py-2 rounded-lg bg-secondary border border-border text-xs">
+                    <span key={item} className="px-3 py-2 rounded-lg bg-secondary border border-border text-xs shadow-depth-1">
                       {item}
                     </span>
                   ))}
@@ -157,7 +160,7 @@ export function PricingDisplay() {
         </Tabs>
         
         {/* Electronic Payment Fee Notice */}
-        <div className="flex items-center justify-center gap-2 mt-6 p-3 rounded-lg bg-muted/50 border border-border max-w-md mx-auto">
+        <div className="flex items-center justify-center gap-2 mt-6 p-3 rounded-lg glass-card max-w-md mx-auto">
           <Info className="w-4 h-4 text-muted-foreground shrink-0" />
           <p className="text-sm text-muted-foreground">
             +${ELECTRONIC_PAYMENT_FEE} processing fee for card/electronic payments
@@ -165,7 +168,7 @@ export function PricingDisplay() {
         </div>
         
         {/* What's Included */}
-        <div className="p-8 rounded-2xl bg-background border border-border shadow-card mt-12">
+        <div className="p-8 rounded-2xl bg-background border border-border shadow-depth-3 mt-12">
           <h3 className="font-heading text-xl font-semibold text-primary mb-6 text-center">
             Everything Included — No Extra Charges
           </h3>
@@ -179,7 +182,7 @@ export function PricingDisplay() {
           </div>
           
           <div className="text-center mt-8">
-            <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90">
+            <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90 hover-lift animate-glow-pulse">
               <Link to="/quote">Get Your Free Quote</Link>
             </Button>
           </div>
