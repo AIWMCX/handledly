@@ -1,9 +1,10 @@
 import { Container } from "@/components/layout";
 import { HOURLY_RATES, INCLUDED_WITH_EVERY_MOVE, ELECTRONIC_PAYMENT_FEE, CREW_CONFIGURATIONS } from "@/lib/quoteCalculator";
-import { CheckCircle, Users, Truck, Dumbbell, Info } from "lucide-react";
+import { CheckCircle, Users, Truck, Dumbbell, Info, Zap, Building, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
 // Local Moving pricing tiers
 const localMovingTiers = CREW_CONFIGURATIONS.map(config => ({
@@ -19,9 +20,13 @@ export function PricingDisplay() {
           <h2 className="font-heading text-3xl lg:text-4xl font-semibold mb-4">
             Simple, <span className="text-accent">Transparent</span> Pricing
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
             No hidden fees, no surprises. Flat hourly rates that include everything.
           </p>
+          <Badge className="bg-accent/10 text-accent border-accent/30">
+            <Zap className="w-3 h-3 mr-1" />
+            Same-Day Service Available for All Services
+          </Badge>
         </div>
         
         <Tabs defaultValue="local-moving" className="w-full">
@@ -38,6 +43,22 @@ export function PricingDisplay() {
           
           {/* Local Moving Tab */}
           <TabsContent value="local-moving">
+            {/* Service Types */}
+            <div className="flex flex-wrap justify-center gap-4 mb-8">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border">
+                <Building className="w-4 h-4 text-accent" />
+                <span className="text-sm font-medium">Apartments & Condos</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border">
+                <Home className="w-4 h-4 text-accent" />
+                <span className="text-sm font-medium">Houses & Townhouses</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-background border border-border">
+                <Users className="w-4 h-4 text-accent" />
+                <span className="text-sm font-medium">Labor-Only Help</span>
+              </div>
+            </div>
+
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
               {localMovingTiers.map((tier) => {
                 const isPopular = 'popular' in tier && tier.popular;
@@ -109,15 +130,25 @@ export function PricingDisplay() {
                   Professional handling for oversized and heavy items
                 </p>
                 
-                <div className="flex flex-wrap justify-center gap-2 text-sm">
-                  {['Pianos', 'Safes', 'Appliances', 'Pool Tables', 'Gym Equipment', 'Hot Tubs'].map((item) => (
-                    <span key={item} className="px-3 py-1 rounded-full bg-secondary border border-border">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm mb-6">
+                  {[
+                    'Pianos (Upright & Grand)',
+                    'Pool Tables',
+                    'Safes (Under 300 lbs)',
+                    'Safes (300+ lbs)',
+                    'Appliances',
+                    'Gym Equipment',
+                    'Hot Tubs',
+                    'Gun Safes',
+                    'Commercial Equipment'
+                  ].map((item) => (
+                    <span key={item} className="px-3 py-2 rounded-lg bg-secondary border border-border text-xs">
                       {item}
                     </span>
                   ))}
                 </div>
                 
-                <p className="text-sm text-muted-foreground mt-4">
+                <p className="text-sm text-muted-foreground">
                   Final quote varies based on item complexity and access
                 </p>
               </div>

@@ -23,11 +23,11 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
             <div className="w-10 h-10 gradient-gold rounded-lg flex items-center justify-center">
-              <span className="text-white font-heading font-bold text-xl">D</span>
+              <span className="text-white font-heading font-bold text-xl">H</span>
             </div>
             <div className="hidden sm:block">
-              <p className="font-heading text-lg font-semibold text-primary">Denver Premium</p>
-              <p className="text-xs text-muted-foreground tracking-widest uppercase">Moving Co.</p>
+              <p className="font-heading text-lg font-semibold text-primary">Handled</p>
+              <p className="text-xs text-muted-foreground tracking-widest uppercase">Moving Made Simple</p>
             </div>
           </Link>
 
@@ -52,11 +52,11 @@ export function Header() {
           {/* CTA Button */}
           <div className="flex items-center gap-4">
             <a
-              href="tel:+13035551234"
+              href="tel:+15551234567"
               className="hidden md:flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
             >
               <Phone className="w-4 h-4" />
-              (303) 555-1234
+              (555) 123-4567
             </a>
             <Button asChild className="hidden sm:flex gradient-gold text-white hover:opacity-90 shadow-gold">
               <Link to="/quote">Get Free Quote</Link>
@@ -93,11 +93,11 @@ export function Header() {
                 </Link>
               ))}
               <a
-                href="tel:+13035551234"
+                href="tel:+15551234567"
                 className="flex items-center gap-2 text-base font-medium text-primary py-2"
               >
                 <Phone className="w-5 h-5" />
-                (303) 555-1234
+                (555) 123-4567
               </a>
               <Button asChild className="gradient-gold text-white w-full mt-2">
                 <Link to="/quote" onClick={() => setIsMenuOpen(false)}>

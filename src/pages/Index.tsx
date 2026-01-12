@@ -9,30 +9,41 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { StatsBar } from "@/components/StatsBar";
 import { PricingDisplay } from "@/components/PricingDisplay";
 import { Testimonials } from "@/components/Testimonials";
+import { Badge } from "@/components/ui/badge";
 import { HOURLY_RATES } from "@/lib/quoteCalculator";
 import { 
   Phone, ArrowRight, Shield, Clock, Star, Truck, 
-  Dumbbell, Users, Award, CheckCircle, MapPin
+  Dumbbell, Users, Award, CheckCircle, MapPin, Building, Home, Zap
 } from "lucide-react";
 
 const services = [
   { 
-    icon: Truck, 
-    title: "Local Moving", 
-    description: "Full-service moves with professional crew and truck. Flat hourly rates, no hidden fees.",
-    link: "/services/local-moving"
+    icon: Building, 
+    title: "Apartment & Condo", 
+    description: "Studios to 4+ BR apartments and high-rise condos. No elevator or stair fees.",
+    link: "/services/local-moving",
+    badge: null,
+  },
+  { 
+    icon: Home, 
+    title: "House & Townhouse", 
+    description: "Single-family homes, townhouses, and duplexes. Complete protection included.",
+    link: "/services/local-moving",
+    badge: null,
+  },
+  { 
+    icon: Users, 
+    title: "Labor-Only Help", 
+    description: "Have your own truck or pod? We provide the professional muscle.",
+    link: "/quote",
+    badge: null,
   },
   { 
     icon: Dumbbell, 
     title: "Heavy Items", 
-    description: "Expert handling for pianos, safes, appliances, pool tables, and oversized items.",
-    link: "/services/heavy-items-moving"
-  },
-  { 
-    icon: Users, 
-    title: "Labor Only", 
-    description: "Need help loading your truck or pod? Professional muscle at affordable rates.",
-    link: "/quote"
+    description: "Pianos, safes, pool tables, appliances, and oversized items.",
+    link: "/services/heavy-items-moving",
+    badge: null,
   },
 ];
 
@@ -80,6 +91,10 @@ export default function Index() {
                 <CheckCircle className="w-4 h-4 text-accent" />
                 <span className="text-foreground font-medium">All materials included</span>
               </div>
+              <Badge className="px-3 py-1.5 bg-accent/10 text-accent border-accent/30 hover:bg-accent/20">
+                <Zap className="w-3 h-3 mr-1" />
+                Same-Day Available
+              </Badge>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
@@ -109,7 +124,7 @@ export default function Index() {
             title="Our Services" 
             subtitle="Professional moving solutions with transparent, flat-rate pricing." 
           />
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {services.map((service) => (
               <Link 
                 key={service.title} 

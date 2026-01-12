@@ -24,25 +24,12 @@ const quickLinks = [
 const services = [
   "Apartment & Condo Moving",
   "House & Townhouse Moving",
-  "Commercial/Office Moving",
   "Labor-Only Moving Help",
-  "Junk Removal",
   "Same-Day Moving",
   "Piano Moving",
   "Pool Table Moving",
-  "Heavy Item Moving",
+  "Heavy Items Moving",
 ];
-
-const serviceAreas = {
-  "Denver Core": ["Downtown Denver", "Capitol Hill", "City Park", "Five Points", "RiNo", "Baker"],
-  "North Denver": ["Highlands/LoHi", "Berkeley", "Sloan's Lake", "Regis", "Sunnyside"],
-  "South Denver": ["Cherry Creek", "Washington Park", "Platt Park", "University Hills", "Glendale"],
-  "East Metro": ["Aurora", "Centennial", "Parker", "Greenwood Village", "Englewood", "Littleton"],
-  "West Metro": ["Lakewood", "Golden", "Wheat Ridge", "Arvada", "Edgewater"],
-  "North Metro": ["Westminster", "Thornton", "Broomfield", "Northglenn", "Commerce City", "Brighton"],
-};
-
-const allAreas = Object.values(serviceAreas).flat();
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -51,20 +38,20 @@ export function Footer() {
     <footer className="bg-primary text-white">
       <div className="container mx-auto px-4 py-16">
         {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
           {/* Brand Column with Trust Badges */}
-          <div className="space-y-6 lg:col-span-1">
+          <div className="space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 gradient-gold rounded-lg flex items-center justify-center">
-                <span className="text-white font-heading font-bold text-xl">D</span>
+                <span className="text-white font-heading font-bold text-xl">H</span>
               </div>
               <div>
-                <p className="font-heading text-lg font-semibold text-white">Denver Premium</p>
-                <p className="text-xs text-white/70 tracking-widest uppercase">Moving Co.</p>
+                <p className="font-heading text-lg font-semibold text-white">Handled</p>
+                <p className="text-xs text-white/70 tracking-widest uppercase">Moving Made Simple</p>
               </div>
             </div>
             <p className="text-white/80 text-sm leading-relaxed">
-              Denver's most trusted premium moving service. Flat-rate pricing with no hidden fees.
+              Your trusted partner for stress-free moves. Flat-rate pricing with no hidden fees.
             </p>
             
             {/* Social Links */}
@@ -88,14 +75,10 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2">
                 <Award className="w-4 h-4 text-accent" />
-                <span className="text-xs text-white/80">Colorado PUC Licensed</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-accent" />
                 <span className="text-xs text-white/80">Fully Bonded</span>
               </div>
               <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-accent" />
+                <CheckCircle className="w-4 h-4 text-accent" />
                 <span className="text-xs text-white/80">Workers' Comp Coverage</span>
               </div>
             </div>
@@ -151,22 +134,22 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <Phone className="w-5 h-5 text-accent mt-0.5" />
                 <div>
-                  <a href="tel:+13035551234" className="text-white hover:text-accent transition-colors text-sm font-medium">
-                    (303) 555-1234
+                  <a href="tel:+15551234567" className="text-white hover:text-accent transition-colors text-sm font-medium">
+                    (555) 123-4567
                   </a>
                   <p className="text-xs text-white/70">Quote in 10 min or less</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <Mail className="w-5 h-5 text-accent mt-0.5" />
-                <a href="mailto:info@denverpremiummoving.com" className="text-white/80 hover:text-accent transition-colors text-sm">
-                  info@denverpremiummoving.com
+                <a href="mailto:hello@handled.com" className="text-white/80 hover:text-accent transition-colors text-sm">
+                  hello@handled.com
                 </a>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-accent mt-0.5" />
                 <span className="text-white/80 text-sm">
-                  Serving 30+ Denver Metro Cities
+                  Serving Your Metro Area
                 </span>
               </li>
             </ul>
@@ -191,43 +174,10 @@ export function Footer() {
               </p>
             </div>
           </div>
-
-          {/* Service Areas Column */}
-          <div>
-            <h4 className="font-heading text-lg font-semibold mb-6 text-white">Service Areas</h4>
-            <div className="space-y-4">
-              {Object.entries(serviceAreas).slice(0, 4).map(([region, areas]) => (
-                <div key={region}>
-                  <h5 className="text-xs font-medium text-accent mb-2">{region}</h5>
-                  <p className="text-xs text-white/70 leading-relaxed">
-                    {areas.join(" • ")}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Full Service Areas Bar */}
-        <div className="mt-12 pt-8 border-t border-white/20">
-          <div className="flex items-center gap-2 mb-4">
-            <MapPin className="w-4 h-4 text-accent" />
-            <h4 className="font-heading text-sm font-semibold text-white">All Service Areas (30+ Cities)</h4>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {allAreas.map((area) => (
-              <span
-                key={area}
-                className="px-3 py-1 bg-white/10 text-white/90 text-xs rounded-full hover:bg-accent hover:text-primary transition-colors cursor-default"
-              >
-                {area}
-              </span>
-            ))}
-          </div>
         </div>
 
         {/* Quote Promise Banner */}
-        <div className="mt-8 p-4 bg-accent/20 border border-accent/30 rounded-lg text-center">
+        <div className="mt-12 p-4 bg-accent/20 border border-accent/30 rounded-lg text-center">
           <p className="text-sm font-medium text-white">
             🚚 Get Your Personal Moving Quote in <span className="text-accent">10 Minutes or Less</span> — Call Now or Fill Out Our Form
           </p>
@@ -237,11 +187,7 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t border-white/20 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
             <p className="text-white/70 text-xs">
-              © {currentYear} Denver Premium Moving. All rights reserved.
-            </p>
-            <span className="hidden sm:inline text-white/50">|</span>
-            <p className="text-xs text-white/70">
-              USDOT #XXXXXXX • CO PUC #XXXXX
+              © {currentYear} Handled Inc. All rights reserved.
             </p>
           </div>
           <div className="flex gap-6">

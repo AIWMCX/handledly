@@ -1,5 +1,5 @@
 import { 
-  Truck, Dumbbell, LucideIcon 
+  Truck, Dumbbell, Building, Home, Users, Zap, Piano, Package, Shield, LucideIcon 
 } from "lucide-react";
 
 export interface ServiceFeature {
@@ -19,6 +19,12 @@ export interface RelatedService {
   description: string;
 }
 
+export interface SubService {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}
+
 export interface ServiceData {
   title: string;
   slug: string;
@@ -34,6 +40,8 @@ export interface ServiceData {
   challenges: ServiceChallenge[];
   relatedServices: RelatedService[];
   ctaSteps: string[];
+  subServices?: SubService[];
+  hasSameDay?: boolean;
 }
 
 export const servicesData: Record<string, ServiceData> = {
@@ -44,7 +52,7 @@ export const servicesData: Record<string, ServiceData> = {
     tagline: 'Your Trusted Partner for Stress-Free Local Moves',
     headline: 'Professional Local Moving',
     highlightText: 'Made Simple',
-    subheading: 'Why Our Local Movers Stand Out',
+    subheading: 'Apartments, Houses, Labor-Only & Same-Day Moves',
     introParagraphs: [
       "Moving locally doesn't have to be stressful. Our team specializes in efficient, damage-free local moves that get you settled quickly. With flat hourly rates and no hidden fees, you'll know exactly what to expect.",
       "From studio apartments to family homes, we handle every detail with care. Our professional movers are trained, insured, and committed to making your move as smooth as possible."
@@ -75,6 +83,13 @@ export const servicesData: Record<string, ServiceData> = {
       'Careful loading and transport',
       'You\'re settled in your new home',
     ],
+    subServices: [
+      { title: 'Apartment & Condo Moving', description: 'Studios to 4+ BR apartments and high-rise condos', icon: Building },
+      { title: 'House & Townhouse Moving', description: 'Single-family homes, townhouses, and duplexes', icon: Home },
+      { title: 'Labor-Only Moving Help', description: 'Loading/unloading for your truck, pod, or container', icon: Users },
+      { title: 'Same-Day Moving', description: 'Emergency moves — call now for immediate service', icon: Zap },
+    ],
+    hasSameDay: true,
   },
   'heavy-items-moving': {
     title: 'Heavy Items Moving',
@@ -83,7 +98,7 @@ export const servicesData: Record<string, ServiceData> = {
     tagline: 'Specialized Moving for Oversized & Heavy Items',
     headline: 'Professional Heavy Items Moving',
     highlightText: 'Done Right',
-    subheading: 'Why Heavy Items Require Specialty Movers',
+    subheading: 'Pianos, Pool Tables, Safes & Oversized Items',
     introParagraphs: [
       "Some items are too heavy, too awkward, or too valuable for standard moving. Our heavy item specialists have the equipment, training, and experience to safely move even the most challenging pieces.",
       "From 800-pound safes to commercial gym equipment, we handle items that other movers refuse. Proper rigging, specialized dollies, and experienced crews ensure safe transport."
@@ -114,6 +129,14 @@ export const servicesData: Record<string, ServiceData> = {
       'Careful extraction and transport',
       'Safe placement at destination',
     ],
+    subServices: [
+      { title: 'Piano Moving', description: 'Upright and grand pianos moved with precision', icon: Piano },
+      { title: 'Pool Table Moving', description: 'Disassembly, transport, and expert reassembly', icon: Package },
+      { title: 'Heavy Items (Under 300 lbs)', description: 'Appliances, large furniture, gym equipment', icon: Dumbbell },
+      { title: 'Heavy Items (300+ lbs)', description: 'Safes, gun safes, hot tubs, commercial equipment', icon: Shield },
+      { title: 'Same-Day Heavy Items', description: 'Emergency heavy item moves available', icon: Zap },
+    ],
+    hasSameDay: true,
   },
 };
 
