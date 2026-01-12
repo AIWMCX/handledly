@@ -1,20 +1,13 @@
-// Quote Calculation Engine for Denver Premium Moving
+// Quote Calculation Engine for Handled
 // Flat Hourly Rate Model - NO HIDDEN FEES
 
-export type ServiceType = 
-  | 'apartment-condo'
-  | 'house-townhouse'
-  | 'labor-only'
-  | 'commercial'
-  | 'heavy-items'
-  | 'pool-table'
-  | 'junk-removal'
-  | 'same-day';
+export type ServiceType = 'local-moving' | 'heavy-items';
 
 export interface QuoteInput {
   serviceType: ServiceType;
   bedrooms?: number;
   estimatedHours?: number;
+  crewConfig?: string;
   specialtyItems?: string[];
   moveDate?: Date;
 }
@@ -27,25 +20,36 @@ export interface QuoteBreakdown {
   specialtyFee: number;
   total: number;
   inclusions: string[];
+  hasTruck: boolean;
 }
 
-// FLAT HOURLY RATES - NO HIDDEN FEES
+// FLAT HOURLY RATES - Professional Pricing
 export const HOURLY_RATES = {
-  '2-movers': 149,
-  '3-movers': 189,
-  '4-movers': 229,
-  '5-movers': 269,
+  // Labor Only (no truck)
+  'labor-2-movers': 129,
+  'labor-3-movers': 159,
+  'labor-4-movers': 229,
+  // Moving (with truck)
+  'moving-2-movers': 149,
+  'moving-3-movers': 179,
+  'moving-3-movers-2-trucks': 199,
+  'moving-4-movers': 249,
+  // Heavy Items
+  'heavy-items': 159,
 } as const;
 
-// Specialty item flat fees (these are for heavy/specialty items only)
+// Electronic payment processing fee
+export const ELECTRONIC_PAYMENT_FEE = 5;
+
+// Specialty item flat fees (for heavy/specialty items)
 const SPECIALTY_RATES: Record<string, number> = {
   'piano-upright': 250,
   'piano-grand': 450,
   'pool-table-move': 350,
-  'pool-table-full': 550, // includes disassembly, move, reassembly, leveling
-  'safe-small': 150, // under 300lbs
-  'safe-large': 300, // 300-800lbs
-  'safe-gun': 400, // gun safes
+  'pool-table-full': 550,
+  'safe-small': 150,
+  'safe-large': 300,
+  'safe-gun': 400,
   'hot-tub': 400,
   'gym-equipment': 125,
   'motorcycle': 200,
@@ -63,28 +67,28 @@ export const INCLUDED_WITH_EVERY_MOVE = [
   'Free basic packing supplies',
 ];
 
+// Crew configurations for local moving
+export const CREW_CONFIGURATIONS = [
+  { value: 'labor-2-movers', label: 'Labor Only - 2 Movers', rate: 129, hasTruck: false, crew: 2, description: 'Loading/unloading help' },
+  { value: 'moving-2-movers', label: '2 Movers + Truck', rate: 149, hasTruck: true, crew: 2, description: 'Studios & 1-2 BR', popular: true },
+  { value: 'labor-3-movers', label: 'Labor Only - 3 Movers', rate: 159, hasTruck: false, crew: 3, description: 'Larger load/unload jobs' },
+  { value: 'moving-3-movers', label: '3 Movers + Truck', rate: 179, hasTruck: true, crew: 3, description: '2-3 BR apartments & small homes' },
+  { value: 'moving-3-movers-2-trucks', label: '3 Movers + 2 Trucks', rate: 199, hasTruck: true, crew: 3, description: 'When more capacity needed' },
+  { value: 'labor-4-movers', label: 'Labor Only - 4 Movers', rate: 229, hasTruck: false, crew: 4, description: 'Large loading projects' },
+  { value: 'moving-4-movers', label: '4 Movers + Truck', rate: 249, hasTruck: true, crew: 4, description: '3-4 BR homes' },
+] as const;
+
 // Estimate crew size based on service and property
 function estimateCrewSize(input: QuoteInput): number {
   const bedrooms = input.bedrooms || 0;
   
   switch (input.serviceType) {
-    case 'labor-only':
-      return 2;
-    case 'apartment-condo':
-      return bedrooms <= 2 ? 2 : 3;
-    case 'house-townhouse':
-      return bedrooms <= 3 ? 3 : bedrooms <= 5 ? 4 : 5;
-    case 'commercial':
-      return 4;
+    case 'local-moving':
+      return bedrooms <= 2 ? 2 : bedrooms <= 3 ? 3 : 4;
     case 'heavy-items':
-    case 'pool-table':
-      return 3;
-    case 'junk-removal':
       return 2;
-    case 'same-day':
-      return bedrooms <= 2 ? 2 : 3;
     default:
-      return 3;
+      return 2;
   }
 }
 
@@ -95,39 +99,33 @@ function estimateHours(input: QuoteInput): number {
   const bedrooms = input.bedrooms || 0;
   
   switch (input.serviceType) {
-    case 'labor-only':
-      return 3; // minimum
-    case 'apartment-condo':
+    case 'local-moving':
       return Math.max(2, 2 + bedrooms);
-    case 'house-townhouse':
-      return Math.max(3, 3 + bedrooms * 1.2);
-    case 'commercial':
-      return 6;
     case 'heavy-items':
       return 2;
-    case 'pool-table':
-      return 3;
-    case 'junk-removal':
-      return 2;
-    case 'same-day':
-      return Math.max(2, 2 + bedrooms);
     default:
-      return 4;
+      return 3;
   }
 }
 
-// Get hourly rate based on crew size
-function getHourlyRate(crewSize: number): number {
-  if (crewSize <= 2) return HOURLY_RATES['2-movers'];
-  if (crewSize === 3) return HOURLY_RATES['3-movers'];
-  if (crewSize === 4) return HOURLY_RATES['4-movers'];
-  return HOURLY_RATES['5-movers'];
+// Get hourly rate based on crew configuration
+function getHourlyRate(crewConfig: string | undefined, crewSize: number): number {
+  if (crewConfig && HOURLY_RATES[crewConfig as keyof typeof HOURLY_RATES]) {
+    return HOURLY_RATES[crewConfig as keyof typeof HOURLY_RATES];
+  }
+  
+  // Default to moving with truck rates
+  if (crewSize <= 2) return HOURLY_RATES['moving-2-movers'];
+  if (crewSize === 3) return HOURLY_RATES['moving-3-movers'];
+  return HOURLY_RATES['moving-4-movers'];
 }
 
 export function calculateQuote(input: QuoteInput): QuoteBreakdown {
   const crewSize = estimateCrewSize(input);
   const estimatedHours = Math.ceil(estimateHours(input));
-  const hourlyRate = getHourlyRate(crewSize);
+  const hourlyRate = input.serviceType === 'heavy-items' 
+    ? HOURLY_RATES['heavy-items']
+    : getHourlyRate(input.crewConfig, crewSize);
   
   // Base labor cost
   const laborCost = hourlyRate * estimatedHours;
@@ -143,6 +141,10 @@ export function calculateQuote(input: QuoteInput): QuoteBreakdown {
   // Total with NO hidden fees
   const total = laborCost + specialtyFee;
   
+  const hasTruck = input.crewConfig 
+    ? input.crewConfig.startsWith('moving-')
+    : true;
+  
   return {
     hourlyRate,
     crewSize,
@@ -151,88 +153,41 @@ export function calculateQuote(input: QuoteInput): QuoteBreakdown {
     specialtyFee,
     total,
     inclusions: INCLUDED_WITH_EVERY_MOVE,
+    hasTruck,
   };
 }
 
-// Service types for the form
+// Service types for the form - SIMPLIFIED to only 2 services
 export const SERVICE_TYPES = [
   { 
-    value: 'apartment-condo', 
-    label: 'Apartment & Condo Moving',
-    description: 'Studios, apartments, and condos of any size',
-    icon: 'building',
-  },
-  { 
-    value: 'house-townhouse', 
-    label: 'House & Townhouse Moving',
-    description: 'Single-family homes and townhouses',
-    icon: 'home',
-  },
-  { 
-    value: 'labor-only', 
-    label: 'Labor / Moving Help',
-    description: 'Load/unload your truck, pod, or storage unit',
-    icon: 'users',
-  },
-  { 
-    value: 'commercial', 
-    label: 'Commercial / Office Moving',
-    description: 'Offices, retail spaces, and businesses',
-    icon: 'building-2',
+    value: 'local-moving', 
+    label: 'Local Moving',
+    description: 'Full-service local moves with professional crew',
+    icon: 'truck',
   },
   { 
     value: 'heavy-items', 
     label: 'Heavy Items Moving',
-    description: 'Safes, appliances, and heavy furniture',
+    description: 'Pianos, safes, appliances, and specialty items',
     icon: 'weight',
-  },
-  { 
-    value: 'pool-table', 
-    label: 'Pool Table Moving',
-    description: 'Professional pool table relocation',
-    icon: 'gamepad',
-  },
-  { 
-    value: 'junk-removal', 
-    label: 'Junk Removal',
-    description: 'Furniture, appliances, and debris removal',
-    icon: 'trash',
-  },
-  { 
-    value: 'same-day', 
-    label: 'Same-Day Moving',
-    description: 'Urgent, last-minute moves',
-    icon: 'zap',
   },
 ];
 
-// Bedroom options by service type
+// Bedroom options for local moving
 export const BEDROOM_OPTIONS = {
-  'apartment-condo': [
+  'local-moving': [
     { value: 0, label: 'Studio' },
     { value: 1, label: '1 Bedroom' },
     { value: 2, label: '2 Bedrooms' },
     { value: 3, label: '3 Bedrooms' },
     { value: 4, label: '4 Bedrooms' },
-  ],
-  'house-townhouse': [
-    { value: 2, label: '2 Bedrooms' },
-    { value: 3, label: '3 Bedrooms' },
-    { value: 4, label: '4 Bedrooms' },
-    { value: 5, label: '5 Bedrooms' },
-    { value: 6, label: '6+ Bedrooms' },
-  ],
-  'same-day': [
-    { value: 0, label: 'Studio' },
-    { value: 1, label: '1 Bedroom' },
-    { value: 2, label: '2 Bedrooms' },
-    { value: 3, label: '3 Bedrooms' },
+    { value: 5, label: '5+ Bedrooms' },
   ],
 };
 
-// Hours options for labor-only
+// Hours options for services
 export const HOURS_OPTIONS = [
-  { value: 2, label: '2 Hours' },
+  { value: 2, label: '2 Hours (Minimum)' },
   { value: 3, label: '3 Hours' },
   { value: 4, label: '4 Hours' },
   { value: 5, label: '5 Hours' },
@@ -254,13 +209,8 @@ export const SPECIALTY_ITEMS = [
   { value: 'motorcycle', label: 'Motorcycle', price: 200 },
 ];
 
-// Denver service areas (30+ cities)
+// Service areas
 export const SERVICE_AREAS = [
-  'Downtown Denver', 'Capitol Hill', 'City Park', 'Cherry Creek',
-  'Washington Park', 'Highlands', 'LoHi', 'RiNo', 'Baker',
-  'Aurora', 'Centennial', 'Lakewood', 'Golden', 'Westminster',
-  'Thornton', 'Arvada', 'Littleton', 'Englewood', 'Greenwood Village',
-  'Parker', 'Castle Rock', 'Boulder', 'Broomfield', 'Commerce City',
-  'Federal Heights', 'Wheat Ridge', 'Edgewater', 'Glendale',
-  'Sheridan', 'Lone Tree', 'Highlands Ranch',
+  'Downtown', 'Midtown', 'Uptown', 'Suburbs',
+  'Metro Area', 'Greater Region',
 ];
