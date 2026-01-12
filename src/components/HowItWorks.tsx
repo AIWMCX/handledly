@@ -59,13 +59,10 @@ export function HowItWorks() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
             {steps.map((step, index) => (
               <div key={step.number} className="relative text-center group">
-                {/* Step number circle with glow */}
+                {/* Step icon circle with glow */}
                 <div className="relative mx-auto mb-4">
                   <div className="w-16 h-16 rounded-full gradient-gold flex items-center justify-center mx-auto relative z-10 shadow-gold group-hover:shadow-glow-gold transition-shadow">
                     <step.icon className="w-7 h-7 text-white" />
-                  </div>
-                  <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-primary flex items-center justify-center shadow-depth-2">
-                    <span className="text-white text-sm font-bold">{step.number}</span>
                   </div>
                 </div>
                 
