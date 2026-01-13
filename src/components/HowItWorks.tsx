@@ -1,36 +1,40 @@
 import { Container } from "@/components/layout";
 import { 
-  MessageSquare, ClipboardList, DollarSign, CalendarCheck, Truck 
-} from "lucide-react";
+  ContactUsIcon,
+  DescribeMoveIcon,
+  UpfrontPricingIcon,
+  ScheduleDateIcon,
+  WeHandleItIcon,
+} from "@/components/icons/ProcessIcons";
 
 const steps = [
   {
     number: 1,
-    icon: MessageSquare,
+    Icon: ContactUsIcon,
     title: "Contact Us",
     description: "Fill out our form or give us a call — we respond fast!",
   },
   {
     number: 2,
-    icon: ClipboardList,
+    Icon: DescribeMoveIcon,
     title: "Describe Your Move",
     description: "Tell us about your property, items, and timeline.",
   },
   {
     number: 3,
-    icon: DollarSign,
+    Icon: UpfrontPricingIcon,
     title: "Get Upfront Pricing",
     description: "Receive a clear quote with no hidden fees or surprises.",
   },
   {
     number: 4,
-    icon: CalendarCheck,
+    Icon: ScheduleDateIcon,
     title: "Schedule Your Date",
     description: "Pick a date that works for you — including same-day!",
   },
   {
     number: 5,
-    icon: Truck,
+    Icon: WeHandleItIcon,
     title: "We Handle the Rest",
     description: "Our team arrives on time and completes your move with care.",
   },
@@ -58,15 +62,28 @@ export function HowItWorks() {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
             {steps.map((step, index) => (
-              <div key={step.number} className="relative text-center group">
-                {/* Step icon circle with glow */}
+              <div 
+                key={step.number} 
+                className="relative text-center group animate-fade-in"
+                style={{ animationDelay: `${index * 150}ms` }}
+              >
+                {/* Step icon circle with enhanced styling */}
                 <div className="relative mx-auto mb-4">
-                  <div className="w-16 h-16 rounded-full gradient-gold flex items-center justify-center mx-auto relative z-10 shadow-gold group-hover:shadow-glow-gold transition-shadow">
-                    <step.icon className="w-7 h-7 text-white" />
+                  {/* Outer glow ring */}
+                  <div className="absolute inset-0 w-20 h-20 mx-auto rounded-full bg-accent/10 blur-md group-hover:bg-accent/20 transition-all duration-300" style={{ transform: 'translate(-2px, -2px)' }} />
+                  
+                  {/* Main icon circle */}
+                  <div className="relative w-16 h-16 rounded-full gradient-gold flex items-center justify-center mx-auto z-10 shadow-gold group-hover:shadow-glow-gold transition-all duration-300 group-hover:scale-110">
+                    <step.Icon size="list" color="white" />
+                  </div>
+                  
+                  {/* Step number badge */}
+                  <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center shadow-depth-2 z-20">
+                    {step.number}
                   </div>
                 </div>
                 
-                <h3 className="font-heading text-lg font-semibold text-primary mb-2">
+                <h3 className="font-heading text-lg font-semibold text-primary mb-2 group-hover:text-accent transition-colors">
                   {step.title}
                 </h3>
                 <p className="text-muted-foreground text-sm">

@@ -12,6 +12,7 @@ import { PricingDisplay } from "@/components/PricingDisplay";
 import { Testimonials } from "@/components/Testimonials";
 import { StickyCTA } from "@/components/StickyCTA";
 import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
+import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { Badge } from "@/components/ui/badge";
 import { MeshGradientHero } from "@/components/ui/BackgroundEffects";
 import { HOURLY_RATES } from "@/lib/quoteCalculator";
@@ -318,6 +319,7 @@ export default function Index() {
       <ChatWidget />
       <VoiceAgent />
       <StickyCTA />
+      <ExitIntentModal />
     </div>
   );
 }
