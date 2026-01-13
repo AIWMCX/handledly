@@ -20,9 +20,14 @@ export {
   ScheduleIcon,
   MovingTruckIcon,
   CheckmarkIcon,
+  ContactUsIcon,
+  DescribeMoveIcon,
+  UpfrontPricingIcon,
+  ScheduleDateIcon,
+  WeHandleItIcon,
 } from "./ProcessIcons";
 
-// Trust & Value Icons
+// Trust & Value Icons (Including Premium Badge Icons)
 export {
   NoHiddenFeesIcon,
   DamageProtectionIcon,
@@ -30,6 +35,27 @@ export {
   ProfessionalTeamIcon,
   TransparentPricingIcon,
   OnTimeIcon,
+  AwardWinningIcon,
+  OnTimeGuaranteeIcon,
+  FullyInsuredIcon,
+  LocalExpertsIcon,
+  FlatPricingIcon,
+  FreePackingIcon,
+  NoStairFeesIcon,
+  NoTruckFeesIcon,
+  FreeAssemblyIcon,
+  DamageFreeDaysIcon,
+  // Premium Trust Badge Icons
+  USDOTIcon,
+  ColoradoPUCIcon,
+  BBBAccreditedIcon,
+  InsuranceCoverageIcon,
+  WorkersCompIcon,
+  // Premium Stats Icons
+  GoogleRatingIcon,
+  ReviewCountIcon,
+  CityCountIcon,
+  ZeroFeesIcon,
 } from "./TrustIcons";
 
 // Technology / AI Icons

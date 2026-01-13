@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Phone, ArrowRight, X } from "lucide-react";
+import { Phone, ArrowRight, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function StickyCTA() {
@@ -31,9 +31,13 @@ export function StickyCTA() {
     >
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-4">
-          {/* Left: Message */}
+          {/* Left: Message with urgency */}
           <div className="hidden sm:flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+            {/* Online indicator */}
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-green-400 font-medium text-xs uppercase tracking-wide">Online Now</span>
+            </div>
             <span className="text-white font-medium text-sm">
               Ready to move? Get your free quote now
             </span>
@@ -43,9 +47,13 @@ export function StickyCTA() {
           <div className="flex items-center gap-3 flex-1 sm:flex-none justify-center sm:justify-end">
             <a
               href="tel:+18782187397"
-              className="flex items-center gap-2 text-white/90 hover:text-white transition-colors text-sm font-medium"
+              className="flex items-center gap-2 text-white/90 hover:text-white transition-colors text-sm font-medium group"
             >
-              <Phone className="w-4 h-4" />
+              {/* Pulsing phone icon */}
+              <div className="relative">
+                <Phone className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                <div className="absolute inset-0 bg-white/30 rounded-full animate-ping" />
+              </div>
               <span className="hidden md:inline">(878) 218-7397</span>
               <span className="md:hidden">Call</span>
             </a>
@@ -53,11 +61,12 @@ export function StickyCTA() {
             <Button 
               asChild 
               size="sm"
-              className="gradient-gold text-white shadow-gold hover:opacity-90"
+              className="gradient-gold text-white shadow-gold hover:opacity-90 relative overflow-hidden group"
             >
               <Link to="/quote">
+                <Sparkles className="w-3.5 h-3.5 mr-1.5 group-hover:animate-pulse" />
                 Get Free Quote
-                <ArrowRight className="ml-1.5 w-4 h-4" />
+                <ArrowRight className="ml-1.5 w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             </Button>
           </div>

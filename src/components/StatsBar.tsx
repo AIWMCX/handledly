@@ -1,34 +1,39 @@
 import { useEffect, useState, useRef } from "react";
 import { Container } from "@/components/layout";
-import { Star, MapPin, Shield, Calendar } from "lucide-react";
+import {
+  GoogleRatingIcon,
+  ReviewCountIcon,
+  CityCountIcon,
+  ZeroFeesIcon,
+} from "@/components/icons/TrustIcons";
 
 const stats = [
   { 
     value: 4.9, 
     suffix: "/5", 
     label: "Google Rating",
-    icon: Star,
+    Icon: GoogleRatingIcon,
     highlight: true,
   },
   { 
     value: 500, 
     suffix: "+", 
     label: "5-Star Reviews",
-    icon: Star,
+    Icon: ReviewCountIcon,
     highlight: false,
   },
   { 
     value: 30, 
     suffix: "+", 
     label: "Denver Metro Cities",
-    icon: MapPin,
+    Icon: CityCountIcon,
     highlight: false,
   },
   { 
     value: 0, 
     suffix: "", 
     label: "Hidden Fees - Guaranteed",
-    icon: Shield,
+    Icon: ZeroFeesIcon,
     highlight: true,
     prefix: "$",
   },
@@ -84,17 +89,25 @@ export function StatsBar() {
     <section className="py-10 bg-background border-y border-border/50">
       <Container>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          {stats.map((stat) => (
+          {stats.map((stat, index) => (
             <div 
               key={stat.label} 
-              className={`text-center p-4 rounded-2xl transition-all ${
+              className={`text-center p-5 rounded-2xl transition-all duration-300 group animate-fade-in hover-lift ${
                 stat.highlight 
-                  ? "bg-primary/5 border border-primary/10" 
-                  : ""
+                  ? "bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/10" 
+                  : "hover:bg-secondary"
               }`}
+              style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <stat.icon className={`w-5 h-5 ${stat.highlight ? "text-accent fill-accent" : "text-accent"}`} />
+              {/* Premium icon with golden glow */}
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <div className="relative">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] group-hover:shadow-glow-gold transition-all duration-300">
+                    <stat.Icon size="nav" color="gold" />
+                  </div>
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 rounded-xl bg-accent/20 blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300 -z-10" />
+                </div>
               </div>
               <p className="font-heading text-3xl lg:text-4xl font-bold text-primary">
                 <AnimatedNumber value={stat.value} suffix={stat.suffix} prefix={stat.prefix} />

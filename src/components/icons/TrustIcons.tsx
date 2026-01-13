@@ -1,5 +1,163 @@
 import { IconWrapper, type IconProps } from "./IconWrapper";
 
+// ==========================================
+// PREMIUM TRUST BADGE ICONS (New)
+// ==========================================
+
+export function USDOTIcon({ size = 'feature', color = 'current', className }: Omit<IconProps, 'children'>) {
+  return (
+    <IconWrapper size={size} color={color} className={className}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        {/* Federal document with seal */}
+        <rect x="4" y="2" width="16" height="20" rx="2" fill="currentColor" fillOpacity="0.1" />
+        <circle cx="12" cy="9" r="4" fill="currentColor" fillOpacity="0.2" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M12 7v4l2.5 1.5" strokeWidth="1.5" />
+        <path d="M8 16h8" strokeWidth="2" />
+        <path d="M9 19h6" strokeWidth="1.5" />
+        <circle cx="18" cy="4" r="2" fill="currentColor" />
+        <path d="M17.3 4.7l1.4-1.4" strokeWidth="1.5" />
+      </svg>
+    </IconWrapper>
+  );
+}
+
+export function ColoradoPUCIcon({ size = 'feature', color = 'current', className }: Omit<IconProps, 'children'>) {
+  return (
+    <IconWrapper size={size} color={color} className={className}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        {/* State capitol/building */}
+        <path d="M3 21h18" strokeWidth="2.5" />
+        <rect x="5" y="11" width="14" height="10" fill="currentColor" fillOpacity="0.1" />
+        <path d="M5 11l7-7 7 7" fill="currentColor" fillOpacity="0.15" />
+        <rect x="7" y="14" width="3" height="4" fill="currentColor" fillOpacity="0.2" />
+        <rect x="14" y="14" width="3" height="4" fill="currentColor" fillOpacity="0.2" />
+        <path d="M12 4v2" strokeWidth="2" />
+        <circle cx="12" cy="3" r="1" fill="currentColor" />
+        <path d="M10 11h4v3h-4z" fill="currentColor" fillOpacity="0.3" />
+      </svg>
+    </IconWrapper>
+  );
+}
+
+export function BBBAccreditedIcon({ size = 'feature', color = 'current', className }: Omit<IconProps, 'children'>) {
+  return (
+    <IconWrapper size={size} color={color} className={className}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        {/* Torch with A+ badge */}
+        <path d="M12 2c-1 2-2 3-2 5s1 3 2 3 2-1 2-3-1-3-2-5z" fill="currentColor" fillOpacity="0.2" />
+        <path d="M10 10h4v12h-4z" fill="currentColor" fillOpacity="0.1" />
+        <path d="M8 10h8" strokeWidth="2.5" />
+        <path d="M9 14h6" />
+        <circle cx="18" cy="6" r="4" fill="currentColor" fillOpacity="0.15" stroke="currentColor" />
+        <text x="18" y="8" textAnchor="middle" fontSize="5" fill="currentColor" fontWeight="bold">A+</text>
+      </svg>
+    </IconWrapper>
+  );
+}
+
+export function InsuranceCoverageIcon({ size = 'feature', color = 'current', className }: Omit<IconProps, 'children'>) {
+  return (
+    <IconWrapper size={size} color={color} className={className}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        {/* Shield with dollar amount */}
+        <path d="M12 2l8 4v6c0 5.5-3.8 10.7-8 12-4.2-1.3-8-6.5-8-12V6l8-4z" fill="currentColor" fillOpacity="0.15" />
+        <path d="M12 7v2" strokeWidth="2" />
+        <path d="M12 15v2" strokeWidth="2" />
+        <path d="M9 11c0-1.1.9-2 2-2h2a2 2 0 110 4h-2a2 2 0 100 4h2a2 2 0 002-2" strokeWidth="2" />
+        <circle cx="12" cy="12" r="5" fill="currentColor" fillOpacity="0.1" />
+      </svg>
+    </IconWrapper>
+  );
+}
+
+export function WorkersCompIcon({ size = 'feature', color = 'current', className }: Omit<IconProps, 'children'>) {
+  return (
+    <IconWrapper size={size} color={color} className={className}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        {/* Hard hat with person */}
+        <path d="M4 12a8 8 0 0116 0" fill="currentColor" fillOpacity="0.1" />
+        <ellipse cx="12" cy="12" rx="8" ry="3" fill="currentColor" fillOpacity="0.15" />
+        <path d="M4 12h16" strokeWidth="2.5" />
+        <path d="M8 12V9a4 4 0 018 0v3" />
+        <circle cx="12" cy="18" r="2" fill="currentColor" fillOpacity="0.2" />
+        <path d="M12 14v2" strokeWidth="2" />
+        <path d="M9 22h6" />
+      </svg>
+    </IconWrapper>
+  );
+}
+
+// ==========================================
+// PREMIUM STATS ICONS (New)
+// ==========================================
+
+export function GoogleRatingIcon({ size = 'feature', color = 'current', className }: Omit<IconProps, 'children'>) {
+  return (
+    <IconWrapper size={size} color={color} className={className}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        {/* 5 stars with Google G hint */}
+        <path d="M12 2l1.5 4.5H18l-3.5 2.5L16 14l-4-3-4 3 1.5-5L6 6.5h4.5L12 2z" fill="currentColor" fillOpacity="0.3" stroke="currentColor" strokeWidth="1.5" />
+        <circle cx="5" cy="17" r="2" fill="currentColor" fillOpacity="0.15" />
+        <path d="M5 15l.5 1" strokeWidth="1" />
+        <circle cx="19" cy="17" r="2" fill="currentColor" fillOpacity="0.15" />
+        <path d="M19 15l-.5 1" strokeWidth="1" />
+        <path d="M9 20l3-2 3 2" strokeWidth="1.5" fill="currentColor" fillOpacity="0.1" />
+      </svg>
+    </IconWrapper>
+  );
+}
+
+export function ReviewCountIcon({ size = 'feature', color = 'current', className }: Omit<IconProps, 'children'>) {
+  return (
+    <IconWrapper size={size} color={color} className={className}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        {/* Stacked review cards */}
+        <rect x="2" y="4" width="16" height="12" rx="2" fill="currentColor" fillOpacity="0.05" />
+        <rect x="4" y="6" width="16" height="12" rx="2" fill="currentColor" fillOpacity="0.1" />
+        <rect x="6" y="8" width="16" height="12" rx="2" fill="currentColor" fillOpacity="0.15" />
+        <path d="M14 14l1 2 2-1" strokeWidth="2" />
+        <path d="M10 11h4" />
+        <path d="M10 14h2" />
+      </svg>
+    </IconWrapper>
+  );
+}
+
+export function CityCountIcon({ size = 'feature', color = 'current', className }: Omit<IconProps, 'children'>) {
+  return (
+    <IconWrapper size={size} color={color} className={className}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        {/* Map pins cluster */}
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="currentColor" fillOpacity="0.2" />
+        <circle cx="12" cy="9" r="2.5" fill="currentColor" />
+        <circle cx="6" cy="16" r="1.5" fill="currentColor" fillOpacity="0.3" />
+        <circle cx="18" cy="14" r="1.5" fill="currentColor" fillOpacity="0.3" />
+        <circle cx="8" cy="19" r="1" fill="currentColor" fillOpacity="0.2" />
+        <circle cx="16" cy="18" r="1" fill="currentColor" fillOpacity="0.2" />
+      </svg>
+    </IconWrapper>
+  );
+}
+
+export function ZeroFeesIcon({ size = 'feature', color = 'current', className }: Omit<IconProps, 'children'>) {
+  return (
+    <IconWrapper size={size} color={color} className={className}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        {/* Dollar with shield and strike */}
+        <path d="M12 2l8 4v6c0 5.5-3.8 10.7-8 12-4.2-1.3-8-6.5-8-12V6l8-4z" fill="currentColor" fillOpacity="0.1" />
+        <path d="M12 8v8" strokeWidth="2" />
+        <path d="M9 11h6" strokeWidth="2" />
+        <path d="M9 14h6" strokeWidth="2" />
+        <path d="M6 6l12 12" strokeWidth="2.5" stroke="currentColor" />
+      </svg>
+    </IconWrapper>
+  );
+}
+
+// ==========================================
+// ORIGINAL TRUST ICONS (Enhanced)
+// ==========================================
+
 export function NoHiddenFeesIcon({ size = 'feature', color = 'current', className }: Omit<IconProps, 'children'>) {
   return (
     <IconWrapper size={size} color={color} className={className}>
