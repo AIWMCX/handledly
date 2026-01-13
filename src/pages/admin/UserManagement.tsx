@@ -1,0 +1,326 @@
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { useToast } from '@/hooks/use-toast';
+import { Shield, ShieldOff, UserPlus, Search, Loader2, Users, ShieldCheck, Clock } from 'lucide-react';
+import { format } from 'date-fns';
+
+interface UserRole {
+  id: string;
+  user_id: string;
+  role: 'admin' | 'user';
+  created_at: string;
+}
+
+const UserManagement = () => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [newAdminEmail, setNewAdminEmail] = useState('');
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch all admin users
+  const { data: adminUsers, isLoading: isLoadingUsers } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('*')
+        .eq('role', 'admin')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as UserRole[];
+    },
+  });
+
+  // Add admin role mutation
+  const addAdminMutation = useMutation({
+    mutationFn: async (email: string) => {
+      // Look up the user ID by email using our security definer function
+      const { data: userId, error: lookupError } = await supabase
+        .rpc('get_user_id_by_email', { email_input: email });
+      
+      if (lookupError || !userId) {
+        throw new Error('User not found. They must sign up first before being granted admin access.');
+      }
+
+      const { error } = await supabase
+        .from('user_roles')
+        .insert([{ user_id: userId, role: 'admin' as const }]);
+
+      if (error) {
+        if (error.code === '23505') {
+          throw new Error('This user already has admin access.');
+        }
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      setNewAdminEmail('');
+      setIsAddDialogOpen(false);
+      toast({
+        title: 'Admin Added',
+        description: 'User has been granted admin access.',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  // Remove admin role mutation
+  const removeAdminMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const { error } = await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', userId)
+        .eq('role', 'admin');
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      toast({
+        title: 'Admin Removed',
+        description: 'Admin access has been revoked.',
+      });
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to remove admin access.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const handleAddAdmin = async () => {
+    if (!newAdminEmail.trim()) {
+      toast({
+        title: 'Error',
+        description: 'Please enter an email address.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    addAdminMutation.mutate(newAdminEmail.trim().toLowerCase());
+  };
+
+  const filteredUsers = adminUsers?.filter(user => 
+    user.user_id.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+
+  const stats = {
+    totalAdmins: adminUsers?.length || 0,
+    recentlyAdded: adminUsers?.filter(u => {
+      const addedDate = new Date(u.created_at);
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return addedDate > weekAgo;
+    }).length || 0,
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">User Management</h1>
+        <p className="text-muted-foreground">Manage admin access and user roles</p>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Admins</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.totalAdmins}</div>
+            <p className="text-xs text-muted-foreground">Active admin users</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Recently Added</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.recentlyAdded}</div>
+            <p className="text-xs text-muted-foreground">Added in last 7 days</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Security Status</CardTitle>
+            <ShieldCheck className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">Secure</div>
+            <p className="text-xs text-muted-foreground">Role-based access active</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Content */}
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <CardTitle>Admin Users</CardTitle>
+              <CardDescription>Users with administrative privileges</CardDescription>
+            </div>
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Add Admin
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add New Admin</DialogTitle>
+                  <DialogDescription>
+                    Grant admin access to an existing user. They must have signed up first.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                  <Input
+                    placeholder="Enter user email address"
+                    type="email"
+                    value={newAdminEmail}
+                    onChange={(e) => setNewAdminEmail(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddAdmin()}
+                  />
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleAddAdmin}
+                    disabled={addAdminMutation.isPending}
+                  >
+                    {addAdminMutation.isPending && (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    )}
+                    Grant Access
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {/* Search */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by user ID..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+          </div>
+
+          {/* Table */}
+          {isLoadingUsers ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : filteredUsers.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <Shield className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="font-semibold text-lg">No admins found</h3>
+              <p className="text-muted-foreground text-sm">
+                {searchTerm ? 'Try a different search term' : 'Add your first admin user to get started'}
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User ID</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Added On</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredUsers.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-mono text-sm">
+                        {user.user_id.slice(0, 8)}...{user.user_id.slice(-4)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="default" className="bg-primary/10 text-primary hover:bg-primary/20">
+                          <Shield className="h-3 w-3 mr-1" />
+                          {user.role}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {format(new Date(user.created_at), 'MMM d, yyyy')}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <ShieldOff className="h-4 w-4 mr-1" />
+                              Remove
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Remove Admin Access?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will revoke admin privileges for this user. They will no longer
+                                be able to access the admin panel.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => removeAdminMutation.mutate(user.user_id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Remove Access
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default UserManagement;
