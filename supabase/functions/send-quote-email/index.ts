@@ -11,7 +11,9 @@ const corsHeaders = {
 
 interface QuoteEmailRequest {
   leadId: string;
-  customerName: string;
+  firstName: string;
+  lastName: string;
+  customerName: string; // Fallback
   email: string;
   phone: string;
   serviceType: string;
@@ -25,6 +27,7 @@ interface QuoteEmailRequest {
   moveFrom?: string;
   moveTo?: string;
   specialtyItems?: string[];
+  notes?: string;
 }
 
 const SERVICE_LABELS: Record<string, string> = {
@@ -36,6 +39,12 @@ const SERVICE_LABELS: Record<string, string> = {
   'pool-table': 'Pool Table Moving',
   'junk-removal': 'Junk Removal',
   'same-day': 'Same-Day Moving',
+  'local-moving': 'Local Moving',
+  'residential': 'Residential Moving',
+  'long-distance': 'Long Distance Moving',
+  'piano-moving': 'Piano Moving',
+  'safe-moving': 'Safe Moving',
+  'moving-help': 'Moving Help / Labor Only',
 };
 
 const SPECIALTY_LABELS: Record<string, string> = {
@@ -51,7 +60,26 @@ const SPECIALTY_LABELS: Record<string, string> = {
   'motorcycle': 'Motorcycle',
 };
 
+// Retry logic for reliability
+async function sendEmailWithRetry(emailData: any, maxRetries = 3): Promise<any> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await resend.emails.send(emailData);
+      return result;
+    } catch (error) {
+      console.error(`[send-quote-email] Attempt ${attempt} failed:`, error);
+      if (attempt === maxRetries) throw error;
+      await new Promise(r => setTimeout(r, 1000 * attempt)); // Exponential backoff
+    }
+  }
+}
+
 function generateEmailHtml(data: QuoteEmailRequest): string {
+  // Parse first and last name
+  const firstName = data.firstName || data.customerName?.split(' ')[0] || 'Friend';
+  const lastName = data.lastName || data.customerName?.split(' ').slice(1).join(' ') || '';
+  const fullName = lastName ? `${firstName} ${lastName}` : firstName;
+  
   const serviceLabel = SERVICE_LABELS[data.serviceType] || data.serviceType;
   const moveDateFormatted = data.moveDate 
     ? new Date(data.moveDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
@@ -92,13 +120,60 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
           <tr>
             <td style="background: linear-gradient(135deg, #1C1917 0%, #292524 100%); border-radius: 16px; border: 1px solid #44403C; padding: 40px;">
               
-              <!-- Greeting -->
-              <p style="margin: 0 0 20px; font-size: 18px; color: #FAFAF9;">
-                Hi ${data.customerName},
+              <!-- Personal Greeting with Appreciation -->
+              <p style="margin: 0 0 10px; font-size: 20px; color: #FAFAF9; font-weight: 600;">
+                Dear ${fullName},
               </p>
-              <p style="margin: 0 0 30px; font-size: 16px; color: #A8A29E; line-height: 1.6;">
-                Thank you for choosing Handled! Here's your personalized quote with our transparent, flat-rate pricing.
+              <p style="margin: 0 0 30px; font-size: 16px; color: #A8A29E; line-height: 1.7;">
+                <strong style="color: #D4AF37;">Thank you for choosing Handled!</strong> We truly appreciate your trust in us for your upcoming move. Our team is honored to be part of your moving journey and is committed to making this a stress-free experience.
               </p>
+              
+              <!-- Move Details Box -->
+              ${data.moveFrom || data.moveTo ? `
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0C0A09; border-radius: 12px; border: 1px solid #44403C; margin-bottom: 25px;">
+                <tr>
+                  <td style="padding: 24px;">
+                    <h3 style="margin: 0 0 20px; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #D4AF37; font-weight: 700;">
+                      📋 YOUR MOVE DETAILS
+                    </h3>
+                    
+                    <!-- Move Date -->
+                    <div style="margin-bottom: 18px;">
+                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">
+                        📅 MOVE DATE
+                      </p>
+                      <p style="margin: 0; font-size: 16px; color: #FAFAF9; font-weight: 500;">
+                        ${moveDateFormatted}
+                      </p>
+                    </div>
+                    
+                    ${data.moveFrom ? `
+                    <!-- From Address -->
+                    <div style="margin-bottom: 18px;">
+                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">
+                        📍 MOVING FROM
+                      </p>
+                      <p style="margin: 0; font-size: 16px; color: #FAFAF9; font-weight: 500;">
+                        ${data.moveFrom}
+                      </p>
+                    </div>
+                    ` : ''}
+                    
+                    ${data.moveTo ? `
+                    <!-- To Address -->
+                    <div style="margin-bottom: 0;">
+                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">
+                        📍 MOVING TO
+                      </p>
+                      <p style="margin: 0; font-size: 16px; color: #FAFAF9; font-weight: 500;">
+                        ${data.moveTo}
+                      </p>
+                    </div>
+                    ` : ''}
+                  </td>
+                </tr>
+              </table>
+              ` : ''}
               
               <!-- Quote Box -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0C0A09; border-radius: 12px; border: 1px solid #44403C; margin-bottom: 30px;">
@@ -120,7 +195,7 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                       <tr>
                         <td width="50%" style="padding-right: 10px;">
                           <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #78716C;">
-                            CREW SIZE
+                            👥 CREW SIZE
                           </p>
                           <p style="margin: 0; font-size: 16px; color: #FAFAF9;">
                             ${data.crewSize} Movers + Truck
@@ -128,7 +203,7 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                         </td>
                         <td width="50%" style="padding-left: 10px;">
                           <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #78716C;">
-                            HOURLY RATE
+                            💰 HOURLY RATE
                           </p>
                           <p style="margin: 0; font-size: 16px; color: #D4AF37; font-weight: 600;">
                             $${data.hourlyRate}/hour
@@ -142,7 +217,7 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                       <tr>
                         <td width="50%" style="padding-right: 10px;">
                           <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #78716C;">
-                            EST. HOURS
+                            ⏱️ EST. HOURS
                           </p>
                           <p style="margin: 0; font-size: 16px; color: #FAFAF9;">
                             ~${data.estimatedHours} hours
@@ -150,10 +225,10 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                         </td>
                         <td width="50%" style="padding-left: 10px;">
                           <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #78716C;">
-                            MOVE DATE
+                            🚚 SERVICE TYPE
                           </p>
                           <p style="margin: 0; font-size: 16px; color: #FAFAF9;">
-                            ${moveDateFormatted}
+                            Full Service
                           </p>
                         </td>
                       </tr>
@@ -235,11 +310,13 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
               </div>
               ` : ''}
               
-              ${data.moveFrom || data.moveTo ? `
-              <!-- Move Details -->
+              ${data.notes ? `
+              <!-- Additional Notes -->
               <div style="margin-bottom: 30px; padding: 15px; background-color: #0C0A09; border-radius: 8px; border: 1px solid #44403C;">
-                ${data.moveFrom ? `<p style="margin: 0 0 10px; color: #A8A29E;"><strong style="color: #FAFAF9;">From:</strong> ${data.moveFrom}</p>` : ''}
-                ${data.moveTo ? `<p style="margin: 0; color: #A8A29E;"><strong style="color: #FAFAF9;">To:</strong> ${data.moveTo}</p>` : ''}
+                <h3 style="margin: 0 0 10px; font-size: 14px; color: #78716C; text-transform: uppercase; letter-spacing: 1px;">
+                  Your Notes:
+                </h3>
+                <p style="margin: 0; color: #A8A29E; font-style: italic;">${data.notes}</p>
               </div>
               ` : ''}
               
@@ -257,8 +334,22 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
               <!-- Confirmation Call Notice -->
               <div style="margin-top: 30px; padding: 20px; background-color: #1C1917; border-radius: 8px; border-left: 4px solid #D4AF37;">
                 <p style="margin: 0; font-size: 14px; color: #FAFAF9; line-height: 1.6;">
-                  <strong>📱 Expect a call from us shortly!</strong><br>
-                  <span style="color: #A8A29E;">We'll call to confirm your quote details and help you schedule your move.</span>
+                  <strong>📱 Expect a call in ~30 seconds!</strong><br>
+                  <span style="color: #A8A29E;">Our friendly team will call to confirm your quote details and help you schedule your move.</span>
+                </p>
+              </div>
+              
+              <!-- Closing Appreciation -->
+              <div style="text-align: center; padding: 30px 0 0;">
+                <p style="margin: 0 0 10px; color: #FAFAF9; font-size: 16px; line-height: 1.6;">
+                  We're honored to be part of your moving journey.
+                </p>
+                <p style="margin: 0; color: #D4AF37; font-size: 18px; font-weight: 600;">
+                  Thank you again for choosing Handled!
+                </p>
+                <p style="margin: 20px 0 0; color: #A8A29E; font-size: 14px;">
+                  Warm regards,<br>
+                  <strong style="color: #FAFAF9;">The Handled Team</strong>
                 </p>
               </div>
               
@@ -297,30 +388,44 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const data: QuoteEmailRequest = await req.json();
-    console.log("Sending quote email to:", data.email);
+    
+    // Parse names for logging
+    const firstName = data.firstName || data.customerName?.split(' ')[0] || 'Customer';
+    const lastName = data.lastName || '';
+    
+    console.log(`[send-quote-email] Processing request for lead: ${data.leadId}`);
+    console.log(`[send-quote-email] Recipient: ${firstName} ${lastName} <${data.email}>`);
+    console.log(`[send-quote-email] Quote total: $${data.totalQuote}`);
+    console.log(`[send-quote-email] Move: ${data.moveFrom || 'N/A'} → ${data.moveTo || 'N/A'}`);
 
-    // Send the email
-    const emailResponse = await resend.emails.send({
+    // Send the email with retry logic
+    const emailResponse = await sendEmailWithRetry({
       from: "Handled <onboarding@resend.dev>",
       to: [data.email],
       subject: `Your Moving Quote: $${data.totalQuote} - Handled`,
       html: generateEmailHtml(data),
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    console.log("[send-quote-email] Email sent successfully:", emailResponse);
 
     // Update lead in database to mark email as sent
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    await supabase
+    const { error: updateError } = await supabase
       .from('leads')
       .update({
         email_sent: true,
         email_sent_at: new Date().toISOString(),
       })
       .eq('id', data.leadId);
+
+    if (updateError) {
+      console.error("[send-quote-email] Error updating lead:", updateError);
+    } else {
+      console.log(`[send-quote-email] Lead ${data.leadId} marked as email sent`);
+    }
 
     return new Response(JSON.stringify({ 
       success: true, 
@@ -330,7 +435,7 @@ const handler = async (req: Request): Promise<Response> => {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error: any) {
-    console.error("Error in send-quote-email function:", error);
+    console.error("[send-quote-email] Error:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {
