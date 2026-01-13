@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Phone, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ScrollProgress } from "@/components/conversion/ScrollProgress";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -35,6 +36,8 @@ export function Header() {
           : "bg-background/80 backdrop-blur-sm border-b border-border"
       )}
     >
+      {/* Scroll Progress Indicator */}
+      <ScrollProgress />
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-20">
           {/* Logo */}

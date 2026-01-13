@@ -6,12 +6,14 @@ import { ChatWidget } from "@/components/ChatWidget";
 import { StickyCTA } from "@/components/StickyCTA";
 import { TrustBadges } from "@/components/TrustBadges";
 import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
+import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { HOURLY_RATES, CREW_CONFIGURATIONS, ELECTRONIC_PAYMENT_FEE } from "@/lib/quoteCalculator";
 import { 
   Truck, Dumbbell, Users, ArrowRight, CheckCircle, Phone,
   Piano, Shield, Zap, Info, Building, Home, Package, Clock, MapPin, Star
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { SocialProofBanner, MobileStickyCTA, UrgencyBadge } from "@/components/conversion";
 
 // LOCAL MOVING sub-services
 const localMovingServices = [
@@ -446,6 +448,9 @@ export default function Services() {
       <StickyCTA />
       <ChatWidget />
       <VoiceAgent />
+      <ExitIntentModal />
+      <SocialProofBanner />
+      <MobileStickyCTA />
     </div>
   );
 }
