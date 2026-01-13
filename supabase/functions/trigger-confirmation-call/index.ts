@@ -8,12 +8,16 @@ const corsHeaders = {
 
 interface CallRequest {
   leadId: string;
+  firstName?: string;
+  lastName?: string;
   customerName: string;
   phone: string;
   email: string;
   serviceType: string;
   totalQuote: number;
   moveDate?: string;
+  moveFrom?: string;
+  moveTo?: string;
   crewSize: number;
   estimatedHours: number;
 }
@@ -27,6 +31,12 @@ const SERVICE_LABELS: Record<string, string> = {
   'pool-table': 'Pool Table Moving',
   'junk-removal': 'Junk Removal',
   'same-day': 'Same-Day Moving',
+  'local-moving': 'Local Moving',
+  'residential': 'Residential Moving',
+  'long-distance': 'Long Distance Moving',
+  'piano-moving': 'Piano Moving',
+  'safe-moving': 'Safe Moving',
+  'moving-help': 'Moving Help / Labor Only',
 };
 
 // Format phone number to E.164 format for Twilio
@@ -37,70 +47,52 @@ function formatToE164(phone: string): string {
   return `+${digits}`;
 }
 
-serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+// The actual call triggering logic
+async function executeCall(data: CallRequest): Promise<void> {
+  const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
+  const ELEVENLABS_AGENT_ID = Deno.env.get('ELEVENLABS_AGENT_ID');
+  const ELEVENLABS_PHONE_NUMBER_ID = Deno.env.get('ELEVENLABS_PHONE_NUMBER_ID');
+  
+  if (!ELEVENLABS_API_KEY || !ELEVENLABS_AGENT_ID || !ELEVENLABS_PHONE_NUMBER_ID) {
+    console.error('[trigger-confirmation-call] Missing ElevenLabs configuration');
+    return;
   }
 
+  // Parse first name from data
+  const firstName = data.firstName || data.customerName?.split(' ')[0] || 'Friend';
+  const lastName = data.lastName || data.customerName?.split(' ').slice(1).join(' ') || '';
+  
+  const serviceLabel = SERVICE_LABELS[data.serviceType] || data.serviceType;
+  const moveDateFormatted = data.moveDate 
+    ? new Date(data.moveDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+    : 'not yet scheduled';
+
+  const formattedPhone = formatToE164(data.phone);
+  console.log(`[trigger-confirmation-call] Executing call to ${formattedPhone} for lead ${data.leadId}`);
+
+  // Initialize Supabase client
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  // Build dynamic variables for the AI agent
+  const dynamicVariables = {
+    customer_name: firstName,
+    customer_first_name: firstName,
+    customer_last_name: lastName,
+    customer_full_name: data.customerName,
+    quote_total: data.totalQuote.toString(),
+    service_type: serviceLabel,
+    crew_size: data.crewSize.toString(),
+    estimated_hours: data.estimatedHours.toString(),
+    move_date: moveDateFormatted,
+    move_from: data.moveFrom || 'to be confirmed',
+    move_to: data.moveTo || 'to be confirmed',
+  };
+
+  console.log('[trigger-confirmation-call] Making ElevenLabs outbound call with variables:', dynamicVariables);
+
   try {
-    const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
-    const ELEVENLABS_AGENT_ID = Deno.env.get('ELEVENLABS_AGENT_ID');
-    const ELEVENLABS_PHONE_NUMBER_ID = Deno.env.get('ELEVENLABS_PHONE_NUMBER_ID');
-    
-    if (!ELEVENLABS_API_KEY) {
-      console.error('ELEVENLABS_API_KEY is not configured');
-      return new Response(
-        JSON.stringify({ error: 'ElevenLabs API key not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (!ELEVENLABS_AGENT_ID) {
-      console.error('ELEVENLABS_AGENT_ID is not configured');
-      return new Response(
-        JSON.stringify({ error: 'ElevenLabs agent ID not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (!ELEVENLABS_PHONE_NUMBER_ID) {
-      console.error('ELEVENLABS_PHONE_NUMBER_ID is not configured');
-      return new Response(
-        JSON.stringify({ error: 'ElevenLabs phone number ID not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const data: CallRequest = await req.json();
-    console.log(`Initiating confirmation call to ${data.phone} for lead ${data.leadId}`);
-
-    const serviceLabel = SERVICE_LABELS[data.serviceType] || data.serviceType;
-    const moveDateFormatted = data.moveDate 
-      ? new Date(data.moveDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
-      : 'not yet scheduled';
-
-    // Format phone number to E.164
-    const formattedPhone = formatToE164(data.phone);
-    console.log(`Formatted phone number: ${formattedPhone}`);
-
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Build dynamic variables for the AI agent
-    const dynamicVariables = {
-      customer_name: data.customerName,
-      quote_total: data.totalQuote.toString(),
-      service_type: serviceLabel,
-      crew_size: data.crewSize.toString(),
-      estimated_hours: data.estimatedHours.toString(),
-      move_date: moveDateFormatted,
-    };
-
-    console.log('Making ElevenLabs outbound call with variables:', dynamicVariables);
-
     // Make the actual outbound call via ElevenLabs Twilio integration
     const response = await fetch(
       'https://api.elevenlabs.io/v1/convai/twilio/outbound-call',
@@ -122,11 +114,11 @@ serve(async (req) => {
     );
 
     const responseText = await response.text();
-    console.log(`ElevenLabs API response status: ${response.status}`);
-    console.log(`ElevenLabs API response: ${responseText}`);
+    console.log(`[trigger-confirmation-call] ElevenLabs API response status: ${response.status}`);
+    console.log(`[trigger-confirmation-call] ElevenLabs API response: ${responseText}`);
 
     if (!response.ok) {
-      console.error('ElevenLabs outbound call failed:', responseText);
+      console.error('[trigger-confirmation-call] ElevenLabs outbound call failed:', responseText);
       
       // Update lead with failure status
       await supabase
@@ -137,17 +129,11 @@ serve(async (req) => {
             error: responseText,
             attempted_at: new Date().toISOString(),
             phone: formattedPhone,
+            delay_seconds: 30,
           }),
         })
         .eq('id', data.leadId);
-
-      return new Response(
-        JSON.stringify({ 
-          error: 'Failed to initiate outbound call', 
-          details: responseText 
-        }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return;
     }
 
     // Parse the successful response
@@ -158,10 +144,10 @@ serve(async (req) => {
       callResult = { raw_response: responseText };
     }
 
-    console.log('Outbound call initiated successfully:', callResult);
+    console.log('[trigger-confirmation-call] Outbound call initiated successfully:', callResult);
 
     // Update the lead with call details
-    const { error: updateError } = await supabase
+    await supabase
       .from('leads')
       .update({
         confirmation_call_status: 'calling',
@@ -171,29 +157,122 @@ serve(async (req) => {
           call_sid: callResult.call_sid || callResult.callSid || null,
           initiated_at: new Date().toISOString(),
           phone: formattedPhone,
+          delay_seconds: 30,
           dynamic_variables: dynamicVariables,
           api_response: callResult,
         }),
       })
       .eq('id', data.leadId);
 
-    if (updateError) {
-      console.error('Error updating lead after call initiation:', updateError);
+  } catch (error) {
+    console.error('[trigger-confirmation-call] Error executing call:', error);
+    
+    // Update lead with error status
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    await supabase
+      .from('leads')
+      .update({
+        confirmation_call_status: 'failed',
+        call_notes: JSON.stringify({
+          error: error instanceof Error ? error.message : 'Unknown error',
+          attempted_at: new Date().toISOString(),
+        }),
+      })
+      .eq('id', data.leadId);
+  }
+}
+
+serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
+    const ELEVENLABS_AGENT_ID = Deno.env.get('ELEVENLABS_AGENT_ID');
+    const ELEVENLABS_PHONE_NUMBER_ID = Deno.env.get('ELEVENLABS_PHONE_NUMBER_ID');
+    
+    if (!ELEVENLABS_API_KEY) {
+      console.error('[trigger-confirmation-call] ELEVENLABS_API_KEY is not configured');
+      return new Response(
+        JSON.stringify({ error: 'ElevenLabs API key not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
+    if (!ELEVENLABS_AGENT_ID) {
+      console.error('[trigger-confirmation-call] ELEVENLABS_AGENT_ID is not configured');
+      return new Response(
+        JSON.stringify({ error: 'ElevenLabs agent ID not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!ELEVENLABS_PHONE_NUMBER_ID) {
+      console.error('[trigger-confirmation-call] ELEVENLABS_PHONE_NUMBER_ID is not configured');
+      return new Response(
+        JSON.stringify({ error: 'ElevenLabs phone number ID not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const data: CallRequest = await req.json();
+    console.log(`[trigger-confirmation-call] Received request for lead ${data.leadId}`);
+    console.log(`[trigger-confirmation-call] Will call ${data.phone} in 30 seconds`);
+
+    // Initialize Supabase client for immediate status update
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Update lead status to "pending" immediately
+    await supabase
+      .from('leads')
+      .update({
+        confirmation_call_status: 'pending',
+        call_notes: JSON.stringify({
+          scheduled_for: new Date(Date.now() + 30000).toISOString(),
+          delay_seconds: 30,
+        }),
+      })
+      .eq('id', data.leadId);
+
+    // Use EdgeRuntime.waitUntil to schedule the call after 30 seconds
+    // This allows the response to return immediately while the call is scheduled
+    // @ts-ignore - EdgeRuntime is available in Deno Deploy/Supabase Edge Functions
+    if (typeof EdgeRuntime !== 'undefined' && EdgeRuntime.waitUntil) {
+      // @ts-ignore
+      EdgeRuntime.waitUntil((async () => {
+        console.log(`[trigger-confirmation-call] Waiting 30 seconds before calling ${data.phone}...`);
+        await new Promise(resolve => setTimeout(resolve, 30000)); // 30 second delay
+        console.log(`[trigger-confirmation-call] 30 seconds elapsed, initiating call to ${data.phone}`);
+        await executeCall(data);
+      })());
+    } else {
+      // Fallback for environments without EdgeRuntime.waitUntil
+      console.log('[trigger-confirmation-call] EdgeRuntime.waitUntil not available, executing call with delay inline');
+      setTimeout(async () => {
+        await executeCall(data);
+      }, 30000);
+    }
+
+    // Return immediately to the client
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Confirmation call initiated',
+        message: 'Confirmation call scheduled in 30 seconds',
         leadId: data.leadId,
-        conversationId: callResult.conversation_id || null,
-        callSid: callResult.call_sid || callResult.callSid || null,
+        scheduledFor: new Date(Date.now() + 30000).toISOString(),
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error: unknown) {
-    console.error('Error in trigger-confirmation-call:', error);
+    console.error('[trigger-confirmation-call] Error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
       JSON.stringify({ error: 'Internal server error', details: errorMessage }),

@@ -41,18 +41,30 @@ const mapCrewConfig = (crewSize: number): string => {
   return 'moving-4-movers';
 };
 
+// Split full name into first and last name
+const splitName = (fullName: string): { firstName: string; lastName: string } => {
+  const nameParts = fullName.trim().split(' ');
+  const firstName = nameParts[0] || 'Friend';
+  const lastName = nameParts.slice(1).join(' ') || '';
+  return { firstName, lastName };
+};
+
 export default function Quote() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [callScheduled, setCallScheduled] = useState(false);
   const [submittedData, setSubmittedData] = useState<{
     customerName: string;
+    firstName: string;
     totalQuote: number;
     email: string;
     preferEmailOnly: boolean;
   } | null>(null);
 
   const handleWizardSubmit = async (data: QuoteFormData) => {
+    // Split name for personalized communication
+    const { firstName, lastName } = splitName(data.fullName);
+    
     // Map wizard data to calculator input
     const calcServiceType = mapToCalcServiceType(data.serviceType);
     const crewConfig = mapCrewConfig(data.crewSize);
@@ -109,17 +121,20 @@ export default function Quote() {
       // Store submitted data for confirmation screen
       setSubmittedData({
         customerName: data.fullName || "Friend",
+        firstName: firstName,
         totalQuote: quote.total,
         email: data.email,
         preferEmailOnly: data.preferEmailOnly,
       });
       setIsSubmitted(true);
-      toast.success("Quote submitted! We'll contact you shortly.");
+      toast.success("Quote submitted! Check your email.");
 
-      // Send email quote (async)
+      // Send email quote (async) with split names and full addresses
       supabase.functions.invoke('send-quote-email', {
         body: {
           leadId: lead.id,
+          firstName: firstName,
+          lastName: lastName,
           customerName: data.fullName,
           email: data.email,
           phone: data.phone,
@@ -137,29 +152,33 @@ export default function Quote() {
         }
       }).then(() => {
         setEmailSent(true);
-        toast.success("Quote emailed successfully!");
+        toast.success("Quote emailed to you!");
       }).catch((err) => {
         console.error("Email error:", err);
       });
 
-      // Schedule confirmation call if not email-only
+      // Schedule confirmation call if not email-only (will execute in 30 seconds)
       if (!data.preferEmailOnly) {
+        setCallScheduled(true); // Set immediately since call is scheduled
         supabase.functions.invoke('trigger-confirmation-call', {
           body: {
             leadId: lead.id,
+            firstName: firstName,
+            lastName: lastName,
             customerName: data.fullName,
             phone: data.phone,
             email: data.email,
             serviceType: data.serviceType,
             totalQuote: quote.total,
             moveDate: data.moveDate || undefined,
+            moveFrom: data.moveFromAddress || undefined,
+            moveTo: data.moveToAddress || undefined,
             crewSize: quote.crewSize,
             estimatedHours: quote.estimatedHours,
           }
-        }).then(() => {
-          setCallScheduled(true);
         }).catch((err) => {
           console.error("Call scheduling error:", err);
+          setCallScheduled(false);
         });
       }
 
@@ -247,6 +266,7 @@ export default function Quote() {
             submittedData && (
               <QuoteConfirmation
                 customerName={submittedData.customerName}
+                firstName={submittedData.firstName}
                 totalQuote={submittedData.totalQuote}
                 email={submittedData.email}
                 emailSent={emailSent}

@@ -1,8 +1,10 @@
+import { useState, useEffect } from "react";
 import { Check, Phone, Mail, Clock, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface QuoteConfirmationProps {
   customerName: string;
+  firstName?: string;
   totalQuote: number;
   email: string;
   emailSent: boolean;
@@ -12,11 +14,31 @@ interface QuoteConfirmationProps {
 
 export function QuoteConfirmation({
   customerName,
+  firstName,
   email,
   emailSent,
   callScheduled,
   preferEmailOnly,
 }: QuoteConfirmationProps) {
+  // 30-second countdown for the call
+  const [callCountdown, setCallCountdown] = useState(30);
+  const displayName = firstName || customerName.split(' ')[0] || 'Friend';
+
+  useEffect(() => {
+    if (!preferEmailOnly && callScheduled && callCountdown > 0) {
+      const timer = setInterval(() => {
+        setCallCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [preferEmailOnly, callScheduled, callCountdown]);
+
   return (
     <div className="max-w-lg mx-auto text-center py-8">
       <div className="w-20 h-20 rounded-full gradient-gold flex items-center justify-center mx-auto mb-6">
@@ -24,12 +46,12 @@ export function QuoteConfirmation({
       </div>
       
       <h2 className="font-heading text-3xl font-semibold text-primary mb-3">
-        Thank You, {customerName}!
+        Thank You, {displayName}!
       </h2>
       
       <p className="text-muted-foreground mb-8 text-lg">
-        Your quote request has been received. We'll review your details and 
-        send you a personalized estimate shortly.
+        Your quote request has been received. We're honored you chose Handled 
+        for your moving needs!
       </p>
 
       {/* Status indicators */}
@@ -50,23 +72,38 @@ export function QuoteConfirmation({
           {emailSent && <Check className="w-5 h-5 text-green-600" />}
         </div>
 
-        {/* Call Status */}
+        {/* Call Status with Countdown */}
         {!preferEmailOnly && (
           <div className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border shadow-card">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-              callScheduled ? 'bg-primary/20' : 'bg-secondary'
+              callCountdown === 0 ? 'bg-accent/20 animate-pulse' : callScheduled ? 'bg-primary/20' : 'bg-secondary'
             }`}>
-              <Phone className={`w-5 h-5 ${callScheduled ? 'text-primary' : 'text-muted-foreground'}`} />
+              <Phone className={`w-5 h-5 ${
+                callCountdown === 0 ? 'text-accent' : callScheduled ? 'text-primary' : 'text-muted-foreground'
+              }`} />
             </div>
             <div className="text-left flex-1">
               <p className="text-sm font-medium text-foreground">
-                {callScheduled ? 'We\'ll call you shortly!' : 'Preparing your callback...'}
+                {callCountdown === 0 
+                  ? '📱 Calling you now!' 
+                  : callScheduled 
+                    ? `📱 We'll call you in ${callCountdown} seconds...`
+                    : 'Preparing your callback...'}
               </p>
               <p className="text-xs text-muted-foreground">
-                Expect a call within 10 minutes
+                {callCountdown === 0 
+                  ? 'Please answer your phone!'
+                  : 'Our friendly team will confirm your quote'}
               </p>
             </div>
-            {callScheduled && <Clock className="w-5 h-5 text-primary animate-pulse" />}
+            {callScheduled && callCountdown > 0 && (
+              <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
+                <span className="text-sm font-bold text-accent">{callCountdown}</span>
+              </div>
+            )}
+            {callCountdown === 0 && (
+              <Clock className="w-5 h-5 text-accent animate-pulse" />
+            )}
           </div>
         )}
       </div>
@@ -77,18 +114,22 @@ export function QuoteConfirmation({
         <ul className="space-y-3 text-sm text-muted-foreground">
           <li className="flex items-start gap-3">
             <Check className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-            <span>Our team will review your moving requirements</span>
-          </li>
-          <li className="flex items-start gap-3">
-            <Check className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-            <span>You'll receive a detailed quote via email</span>
+            <span>Check your inbox for a detailed quote breakdown</span>
           </li>
           {!preferEmailOnly && (
             <li className="flex items-start gap-3">
               <Check className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-              <span>We'll call to confirm details and answer questions</span>
+              <span>
+                {callCountdown > 0 
+                  ? `Answer our call in ${callCountdown} seconds to confirm details`
+                  : 'Answer our call now to confirm your move!'}
+              </span>
             </li>
           )}
+          <li className="flex items-start gap-3">
+            <Check className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+            <span>We'll finalize your booking and send a confirmation</span>
+          </li>
           <li className="flex items-start gap-3">
             <Check className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
             <span>No hidden fees — transparent, flat-rate pricing</span>
