@@ -4,12 +4,14 @@ import { VoiceAgent } from "@/components/VoiceAgent";
 import { Testimonials } from "@/components/Testimonials";
 import { TrustBadges } from "@/components/TrustBadges";
 import { StickyCTA } from "@/components/StickyCTA";
+import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { ServiceHeroBanner } from "./ServiceHeroBanner";
 import { ServiceIntro } from "./ServiceIntro";
 import { FeatureCards } from "./FeatureCards";
 import { WhyExpertCare } from "./WhyExpertCare";
 import { RelatedServices } from "./RelatedServices";
 import { ServiceCTA } from "./ServiceCTA";
+import { SocialProofBanner, MobileStickyCTA } from "@/components/conversion";
 import type { ServiceData } from "@/data/servicesData";
 
 interface ServicePageTemplateProps {
@@ -53,6 +55,9 @@ export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
       <StickyCTA />
       <ChatWidget />
       <VoiceAgent />
+      <ExitIntentModal />
+      <SocialProofBanner />
+      <MobileStickyCTA />
     </div>
   );
 }

@@ -18,6 +18,7 @@ import { QuoteConfirmation } from "@/components/QuoteConfirmation";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { TrustBadges } from "@/components/TrustBadges";
 import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
+import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -27,6 +28,7 @@ import {
   type ServiceType,
 } from "@/lib/quoteCalculator";
 import { CheckCircle, Shield, Clock, Star, MapPin, Zap } from "lucide-react";
+import { SocialProofBanner, MobileStickyCTA } from "@/components/conversion";
 
 const BEDROOM_OPTIONS = [
   { value: "0", label: "Studio" },
@@ -489,6 +491,9 @@ export default function Quote() {
       <Footer />
       <VoiceAgent />
       <ChatWidget />
+      <ExitIntentModal />
+      <SocialProofBanner />
+      <MobileStickyCTA />
     </div>
   );
 }

@@ -6,11 +6,13 @@ import { ChatWidget } from "@/components/ChatWidget";
 import { StickyCTA } from "@/components/StickyCTA";
 import { TrustBadges } from "@/components/TrustBadges";
 import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
+import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { MeshGradientHero } from "@/components/ui/BackgroundEffects";
 import { 
   ArrowRight, Shield, Heart, Award, Users, 
   CheckCircle, Star, Truck, MapPin 
 } from "lucide-react";
+import { SocialProofBanner, MobileStickyCTA, AnimatedStats } from "@/components/conversion";
 
 const values = [
   {
@@ -131,24 +133,15 @@ export default function About() {
               {/* Stats card instead of placeholder */}
               <div className="rounded-2xl glass-card shadow-depth-3 p-8">
                 <h3 className="font-heading text-xl font-semibold text-primary mb-6">Denver Moving Excellence</h3>
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="text-center p-4 rounded-xl bg-primary/5">
-                    <p className="text-3xl font-bold text-accent">15+</p>
-                    <p className="text-sm text-muted-foreground">Years in Denver</p>
-                  </div>
-                  <div className="text-center p-4 rounded-xl bg-primary/5">
-                    <p className="text-3xl font-bold text-accent">10K+</p>
-                    <p className="text-sm text-muted-foreground">Moves Completed</p>
-                  </div>
-                  <div className="text-center p-4 rounded-xl bg-primary/5">
-                    <p className="text-3xl font-bold text-accent">30+</p>
-                    <p className="text-sm text-muted-foreground">Cities Served</p>
-                  </div>
-                  <div className="text-center p-4 rounded-xl bg-primary/5">
-                    <p className="text-3xl font-bold text-accent">97%</p>
-                    <p className="text-sm text-muted-foreground">Satisfaction Rate</p>
-                  </div>
-                </div>
+                <AnimatedStats 
+                  stats={[
+                    { value: 15, label: "Years in Denver", suffix: "+" },
+                    { value: 10, label: "Moves Completed", suffix: "K+" },
+                    { value: 30, label: "Cities Served", suffix: "+" },
+                    { value: 97, label: "Satisfaction Rate", suffix: "%" },
+                  ]}
+                  className="grid grid-cols-2 gap-6"
+                />
               </div>
               
               {/* Floating Glass Card */}
@@ -306,6 +299,9 @@ export default function About() {
       <StickyCTA />
       <ChatWidget />
       <VoiceAgent />
+      <ExitIntentModal />
+      <SocialProofBanner />
+      <MobileStickyCTA />
     </div>
   );
 }

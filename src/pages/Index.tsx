@@ -26,6 +26,12 @@ import {
   FullyInsuredIcon,
   LocalExpertsIcon
 } from "@/components/icons/TrustIcons";
+import { 
+  SocialProofBanner, 
+  AnimatedStats, 
+  MobileStickyCTA,
+  UrgencyBadge 
+} from "@/components/conversion";
 
 const services = [
   { 
@@ -149,25 +155,16 @@ export default function Index() {
                     <p className="text-sm text-muted-foreground">Based on 500+ verified reviews</p>
                   </div>
                   
-                  {/* Quick stats grid */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 rounded-2xl bg-primary/5 text-center">
-                      <p className="text-2xl font-bold text-primary">500+</p>
-                      <p className="text-xs text-muted-foreground">Damage-Free Days</p>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-accent/10 text-center">
-                      <p className="text-2xl font-bold text-primary">$0</p>
-                      <p className="text-xs text-muted-foreground">Hidden Fees</p>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-accent/10 text-center">
-                      <p className="text-2xl font-bold text-primary">30+</p>
-                      <p className="text-xs text-muted-foreground">Cities Served</p>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-primary/5 text-center">
-                      <p className="text-2xl font-bold text-primary">24hr</p>
-                      <p className="text-xs text-muted-foreground">Response Time</p>
-                    </div>
-                  </div>
+                  {/* Animated Quick stats grid */}
+                  <AnimatedStats 
+                    stats={[
+                      { value: 500, label: "Damage-Free Days", suffix: "+" },
+                      { value: 0, label: "Hidden Fees", prefix: "$" },
+                      { value: 30, label: "Cities Served", suffix: "+" },
+                      { value: 24, label: "Response Time", suffix: "hr" },
+                    ]}
+                    className="grid grid-cols-2 gap-4"
+                  />
                 </div>
                 
                 {/* Floating accent elements */}
@@ -194,20 +191,34 @@ export default function Index() {
             subtitle="Professional moving solutions with transparent, flat-rate pricing." 
           />
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map((service) => (
+            {services.map((service, index) => (
               <Link 
                 key={service.title} 
                 to={service.link}
-                className="group p-6 rounded-2xl bg-background border border-border hover:border-primary/50 transition-all shadow-depth-2 hover:shadow-depth-3 hover-lift"
+                className="group relative p-6 rounded-2xl bg-background border border-border hover:border-primary/50 transition-all shadow-depth-2 hover:shadow-depth-3 hover-lift"
               >
+                {/* Urgency badge for first service */}
+                {index === 0 && (
+                  <div className="absolute -top-3 right-4">
+                    <UrgencyBadge type="slots_limited" text="Only 3 slots left today" size="sm" />
+                  </div>
+                )}
+                {index === 3 && (
+                  <div className="absolute -top-3 right-4">
+                    <UrgencyBadge type="popular" size="sm" />
+                  </div>
+                )}
                 <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:shadow-glow-gold transition-shadow">
                   <service.icon className="w-6 h-6 text-accent" />
                 </div>
                 <h3 className="font-heading text-xl font-semibold text-primary mb-2">{service.title}</h3>
                 <p className="text-muted-foreground text-sm mb-4">{service.description}</p>
-                <span className="text-accent font-medium text-sm group-hover:underline">
-                  Learn More →
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-accent font-medium text-sm group-hover:underline">
+                    Learn More →
+                  </span>
+                  <span className="text-xs text-muted-foreground">From ${HOURLY_RATES['moving-2-movers']}/hr</span>
+                </div>
               </Link>
             ))}
           </div>
@@ -320,6 +331,8 @@ export default function Index() {
       <VoiceAgent />
       <StickyCTA />
       <ExitIntentModal />
+      <SocialProofBanner />
+      <MobileStickyCTA />
     </div>
   );
 }
