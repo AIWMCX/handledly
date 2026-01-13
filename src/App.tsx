@@ -15,7 +15,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { Overview, Leads, Conversations, CallLogs, Appointments, Settings } from "./pages/admin";
+import { Overview, Leads, Conversations, CallLogs, Appointments, UserManagement, Settings } from "./pages/admin";
 import {
   LocalMoving,
   ResidentialMovers,
@@ -65,6 +65,7 @@ const App = () => (
               <Route path="conversations" element={<Conversations />} />
               <Route path="calls" element={<CallLogs />} />
               <Route path="appointments" element={<Appointments />} />
+              <Route path="users" element={<UserManagement />} />
               <Route path="settings" element={<Settings />} />
             </Route>
 

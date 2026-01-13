@@ -7,7 +7,8 @@ import {
   Calendar, 
   Settings,
   X,
-  Truck
+  Truck,
+  ShieldCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ const navItems = [
   { to: '/admin/conversations', icon: MessageSquare, label: 'Conversations' },
   { to: '/admin/calls', icon: Phone, label: 'Call Logs' },
   { to: '/admin/appointments', icon: Calendar, label: 'Appointments' },
+  { to: '/admin/users', icon: ShieldCheck, label: 'User Management' },
   { to: '/admin/settings', icon: Settings, label: 'Settings' },
 ];
 
