@@ -328,6 +328,27 @@ export type Database = {
           },
         ]
       }
+      rate_limit_tracker: {
+        Row: {
+          created_at: string
+          id: string
+          identifier: string
+          table_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          identifier: string
+          table_name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          identifier?: string
+          table_name?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -371,6 +392,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      get_client_identifier: { Args: never; Returns: string }
       get_user_id_by_email: { Args: { email_input: string }; Returns: string }
       has_role: {
         Args: {
