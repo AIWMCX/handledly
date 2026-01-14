@@ -68,8 +68,8 @@ const heavyItemsServices = [
   {
     icon: Shield,
     title: "Heavy Items (300+ lbs)",
-    description: "Safes, gun safes, hot tubs, commercial equipment. Items that require specialized rigging.",
-    features: ["Safes & gun safes", "Hot tubs", "Commercial equipment"],
+    description: "Safes, gun safes, commercial equipment. Items that require specialized rigging.",
+    features: ["Safes & gun safes", "Commercial equipment", "Specialized rigging"],
   },
   {
     icon: Zap,
@@ -365,7 +365,7 @@ export default function Services() {
               </p>
               
               <div className="flex flex-wrap justify-center gap-2 text-sm mb-4">
-                {['Pianos', 'Pool Tables', 'Safes', 'Appliances', 'Gym Equipment', 'Hot Tubs'].map((item) => (
+                {['Pianos', 'Pool Tables', 'Safes', 'Appliances', 'Gym Equipment', 'Commercial Equipment'].map((item) => (
                   <span key={item} className="px-3 py-1 rounded-full bg-secondary border border-border">
                     {item}
                   </span>

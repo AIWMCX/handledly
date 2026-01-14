@@ -264,9 +264,9 @@ export default function Contact() {
                     <MessagesSquare className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-heading text-xl font-semibold text-primary mb-1">
+                    <p className="font-heading text-xl font-semibold text-primary mb-1">
                       Chat with Our AI Assistant
-                    </h3>
+                    </p>
                     <p className="text-muted-foreground text-sm">
                       Get instant answers, quotes, and schedule your move via text.
                     </p>
@@ -283,9 +283,9 @@ export default function Contact() {
                     <MessageSquare className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-heading text-xl font-semibold text-primary mb-1">
+                    <p className="font-heading text-xl font-semibold text-primary mb-1">
                       Talk to Our AI Assistant
-                    </h3>
+                    </p>
                     <p className="text-muted-foreground text-sm">
                       Prefer voice? Get instant answers by talking to our AI.
                     </p>
@@ -301,9 +301,9 @@ export default function Contact() {
                   <div className="absolute top-0 right-0 w-32 h-32 bg-accent rounded-full blur-2xl" />
                 </div>
                 <div className="relative z-10">
-                  <h3 className="font-heading text-lg font-semibold mb-2">
+                  <p className="font-heading text-lg font-semibold mb-2">
                     Prefer to Talk to a Human?
-                  </h3>
+                  </p>
                   <p className="text-white/80 text-sm mb-4">
                     Our friendly Denver team is standing by to help with your move.
                   </p>

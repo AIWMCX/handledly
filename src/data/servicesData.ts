@@ -133,7 +133,7 @@ export const servicesData: Record<string, ServiceData> = {
       { title: 'Piano Moving', description: 'Upright and grand pianos moved with precision', icon: Piano },
       { title: 'Pool Table Moving', description: 'Disassembly, transport, and expert reassembly', icon: Package },
       { title: 'Heavy Items (Under 300 lbs)', description: 'Appliances, large furniture, gym equipment', icon: Dumbbell },
-      { title: 'Heavy Items (300+ lbs)', description: 'Safes, gun safes, hot tubs, commercial equipment', icon: Shield },
+      { title: 'Heavy Items (300+ lbs)', description: 'Safes, gun safes, commercial equipment', icon: Shield },
       { title: 'Same-Day Heavy Items', description: 'Emergency heavy item moves available', icon: Zap },
     ],
     hasSameDay: true,

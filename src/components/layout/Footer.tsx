@@ -52,7 +52,7 @@ export function Footer() {
         <div className="mb-12 p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
           <div className="flex items-center gap-3 mb-4">
             <MapPin className="w-5 h-5 text-accent" />
-            <h3 className="font-heading text-lg font-semibold text-white">Proudly Serving Denver Metro</h3>
+            <p className="font-heading text-lg font-semibold text-white">Proudly Serving Denver Metro</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {denverAreas.map((area) => (
@@ -118,7 +118,7 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-heading text-lg font-semibold mb-6 text-white">Quick Links</h4>
+            <p className="font-heading text-lg font-semibold mb-6 text-white">Quick Links</p>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.href}>
@@ -134,7 +134,7 @@ export function Footer() {
 
             {/* Payment Methods */}
             <div className="mt-8 pt-6 border-t border-white/20">
-              <h5 className="text-xs font-medium text-white mb-3">We Accept</h5>
+              <p className="text-xs font-medium text-white mb-3">We Accept</p>
               <div className="flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-white/70" />
                 <span className="text-xs text-white/70">Visa, MC, Cash, Check</span>
@@ -144,7 +144,7 @@ export function Footer() {
 
           {/* Services */}
           <div>
-            <h4 className="font-heading text-lg font-semibold mb-6 text-white">Our Services</h4>
+            <p className="font-heading text-lg font-semibold mb-6 text-white">Our Services</p>
             <ul className="space-y-2">
               {services.map((service) => (
                 <li key={service}>
@@ -161,7 +161,7 @@ export function Footer() {
 
           {/* Contact Info & Hours */}
           <div>
-            <h4 className="font-heading text-lg font-semibold mb-6 text-white">Contact Us</h4>
+            <p className="font-heading text-lg font-semibold mb-6 text-white">Contact Us</p>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <Phone className="w-5 h-5 text-accent mt-0.5" />
