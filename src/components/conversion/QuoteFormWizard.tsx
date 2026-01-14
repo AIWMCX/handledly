@@ -15,6 +15,13 @@ import { ConversionEvents, PageTiming } from '@/lib/analytics';
 import { QuoteFormData, ServiceType, PropertyType } from '@/types/conversion';
 import { cn } from '@/lib/utils';
 
+// Parse date string as local date to avoid timezone offset issues
+const parseLocalDate = (dateString: string): Date | undefined => {
+  if (!dateString) return undefined;
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day); // month is 0-indexed
+};
+
 interface QuoteFormWizardProps {
   onSubmit: (data: QuoteFormData) => Promise<void>;
   initialServiceType?: ServiceType;
@@ -381,7 +388,7 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                         >
                           <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                           {formData.moveDate 
-                            ? format(new Date(formData.moveDate), "MMMM d, yyyy")
+                            ? format(parseLocalDate(formData.moveDate)!, "MMMM d, yyyy")
                             : "Select your move date"
                           }
                         </Button>
@@ -389,11 +396,11 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={formData.moveDate ? new Date(formData.moveDate) : undefined}
+                          selected={parseLocalDate(formData.moveDate)}
                           onSelect={(date) => updateFormData({ 
                             moveDate: date ? format(date, 'yyyy-MM-dd') : '' 
                           })}
-                          disabled={(date) => date < new Date()}
+                          disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                           initialFocus
                           className="pointer-events-auto"
                         />
