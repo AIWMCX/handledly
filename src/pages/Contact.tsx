@@ -10,6 +10,7 @@ import { StickyCTA } from "@/components/StickyCTA";
 import { TrustBadges } from "@/components/TrustBadges";
 import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
 import { ExitIntentModal } from "@/components/ExitIntentModal";
+import { SEO } from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Phone, Mail, MapPin, Clock, Send, MessageSquare, MessagesSquare, Shield, CheckCircle, Zap } from "lucide-react";

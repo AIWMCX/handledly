@@ -16,6 +16,7 @@ import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { Badge } from "@/components/ui/badge";
 import { MeshGradientHero } from "@/components/ui/BackgroundEffects";
 import { HOURLY_RATES } from "@/lib/quoteCalculator";
+import { SEO } from "@/components/SEO";
 import { 
   Phone, ArrowRight, Star, MapPin,
   Dumbbell, Users, CheckCircle, Building, Home, Zap
@@ -76,6 +77,13 @@ const whyChooseUs = [
 export default function Index() {
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Handled Moving - Denver's #1 Rated Professional Movers"
+        description="Professional moving services in Denver. Flat hourly rates, no hidden fees. Local moves, heavy items, pianos, safes, same-day service. Get your free quote today!"
+        canonicalUrl="https://handledmoving.com/"
+        keywords={['Denver movers', 'moving company Denver', 'local movers', 'professional movers', 'Denver moving services']}
+      />
+      
       <AnnouncementBar />
       <Header />
       

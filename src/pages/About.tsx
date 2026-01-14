@@ -8,6 +8,7 @@ import { TrustBadges } from "@/components/TrustBadges";
 import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
 import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { MeshGradientHero } from "@/components/ui/BackgroundEffects";
+import { SEO } from "@/components/SEO";
 import { 
   ArrowRight, Shield, Heart, Award, Users, 
   CheckCircle, Star, Truck, MapPin 
@@ -64,6 +65,13 @@ const denverAreas = [
 export default function About() {
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="About Handled Moving - Denver's Trusted Moving Company Since 2010"
+        description="Learn about Denver's most trusted movers. 15+ years of experience, 10,000+ successful moves, and a commitment to excellence. Meet the team behind Handled Moving."
+        canonicalUrl="https://handledmoving.com/about"
+        keywords={['about Handled Moving', 'Denver moving company', 'trusted movers Denver', 'moving company history']}
+      />
+      
       <Header />
       
       {/* Hero with Mesh Gradient */}

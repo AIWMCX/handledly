@@ -6,6 +6,7 @@ import { QuoteConfirmation } from "@/components/QuoteConfirmation";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
 import { ExitIntentModal } from "@/components/ExitIntentModal";
+import { SEO } from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -191,6 +192,13 @@ export default function Quote() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Free Moving Quote Denver - Instant Estimate | Handled Moving"
+        description="Get a free moving quote in 60 seconds. Transparent pricing, no hidden fees. Local moves, heavy items, same-day service available. Denver's top-rated movers."
+        canonicalUrl="https://handledmoving.com/quote"
+        keywords={['free moving quote', 'moving estimate Denver', 'moving cost calculator', 'instant moving quote']}
+      />
+      
       <AnnouncementBar />
       <Header />
       
