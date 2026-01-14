@@ -1,14 +1,43 @@
+# Handled Moving - Denver Professional Movers
+# https://handledmoving.com
+
+# Sitemap location
+Sitemap: https://handledmoving.com/sitemap.xml
+
+# Google
 User-agent: Googlebot
 Allow: /
+Disallow: /admin/
+Disallow: /auth
 
+# Bing
 User-agent: Bingbot
 Allow: /
+Disallow: /admin/
+Disallow: /auth
 
+# Social Media Crawlers (for link previews)
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
+User-agent: LinkedInBot
+Allow: /
+
+# All other bots
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /auth
+Crawl-delay: 1
+
+# Allow static assets explicitly
+Allow: /assets/
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.svg
+Allow: /*.webp
