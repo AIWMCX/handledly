@@ -97,6 +97,12 @@ export default function Services() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <SEO 
+        title="Moving Services Denver - Local Movers & Heavy Item Specialists | Handled Moving"
+        description="Professional Denver moving services with flat hourly rates. Local moving, piano moving, pool table moving, safe moving, and same-day service. Licensed and insured. Get your free quote!"
+        canonicalUrl="https://handledmoving.com/services"
+        keywords={["Denver moving services", "local movers Denver", "heavy item movers", "piano moving Denver", "pool table movers", "same day moving Denver"]}
+      />
       
       {/* Hero */}
       <section className="pt-32 pb-16 lg:pt-40 lg:pb-20 bg-background relative overflow-hidden">
