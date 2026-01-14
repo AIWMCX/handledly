@@ -398,21 +398,45 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`[send-quote-email] Quote total: $${data.totalQuote}`);
     console.log(`[send-quote-email] Move: ${data.moveFrom || 'N/A'} → ${data.moveTo || 'N/A'}`);
 
-    // Send the email with retry logic
+    // Initialize Supabase client for database updates
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Send the email with retry logic - USING VERIFIED DOMAIN
     const emailResponse = await sendEmailWithRetry({
-      from: "Handledly Moving Services <onboarding@resend.dev>",
+      from: "Handledly Moving Services <noreply@handledly.com>",
       to: [data.email],
       subject: `Your Moving Quote: $${data.totalQuote} - Handledly Moving Services`,
       html: generateEmailHtml(data),
     });
 
-    console.log("[send-quote-email] Email sent successfully:", emailResponse);
+    // CRITICAL: Check for Resend API errors before marking as success
+    if (emailResponse.error) {
+      console.error("[send-quote-email] Resend API error:", JSON.stringify(emailResponse.error));
+      
+      // Update lead with failure status
+      await supabase
+        .from('leads')
+        .update({
+          email_sent: false,
+          notes: `Email failed: ${emailResponse.error.message || 'Unknown Resend error'}`,
+        })
+        .eq('id', data.leadId);
+
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: emailResponse.error.message || 'Email delivery failed'
+      }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Email sent successfully - log the actual message ID
+    console.log("[send-quote-email] Email delivered successfully. Message ID:", emailResponse.data?.id);
 
     // Update lead in database to mark email as sent
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
     const { error: updateError } = await supabase
       .from('leads')
       .update({
