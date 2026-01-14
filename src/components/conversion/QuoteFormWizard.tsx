@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ArrowRight, ArrowLeft, Truck, MapPin, User, Sparkles, Clock, Shield } from 'lucide-react';
+import { format } from 'date-fns';
+import { Check, ArrowRight, ArrowLeft, Truck, MapPin, User, Sparkles, Clock, Shield, CalendarIcon, Home, BedDouble, Phone, Mail, Navigation, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useFormPersistence } from '@/hooks/useFormPersistence';
 import { ConversionEvents, PageTiming } from '@/lib/analytics';
 import { QuoteFormData, ServiceType, PropertyType } from '@/types/conversion';
@@ -334,9 +337,12 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                 <p className="text-muted-foreground">This helps us provide an accurate estimate</p>
               </div>
 
-              <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="moveFromAddress">Moving From *</Label>
+              <div className="grid gap-5">
+                <div className="grid gap-2.5">
+                  <Label htmlFor="moveFromAddress" className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground/90">
+                    <MapPin className="w-4 h-4 text-accent" />
+                    Moving From <span className="text-accent">*</span>
+                  </Label>
                   <Input
                     id="moveFromAddress"
                     placeholder="Enter your current address"
@@ -345,8 +351,11 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                   />
                 </div>
 
-                <div className="grid gap-2">
-                  <Label htmlFor="moveToAddress">Moving To</Label>
+                <div className="grid gap-2.5">
+                  <Label htmlFor="moveToAddress" className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground/90">
+                    <Navigation className="w-4 h-4 text-accent" />
+                    Moving To
+                  </Label>
                   <Input
                     id="moveToAddress"
                     placeholder="Enter your destination address"
@@ -356,23 +365,52 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="moveDate">Move Date *</Label>
-                    <Input
-                      id="moveDate"
-                      type="date"
-                      value={formData.moveDate}
-                      onChange={(e) => updateFormData({ moveDate: e.target.value })}
-                    />
+                  <div className="grid gap-2.5">
+                    <Label className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground/90">
+                      <CalendarIcon className="w-4 h-4 text-accent" />
+                      Move Date <span className="text-accent">*</span>
+                    </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal h-11 border-2 border-input/80 bg-white/50 hover:bg-muted/50 hover:border-primary/30 transition-all duration-200",
+                            !formData.moveDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                          {formData.moveDate 
+                            ? format(new Date(formData.moveDate), "MMMM d, yyyy")
+                            : "Select your move date"
+                          }
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={formData.moveDate ? new Date(formData.moveDate) : undefined}
+                          onSelect={(date) => updateFormData({ 
+                            moveDate: date ? format(date, 'yyyy-MM-dd') : '' 
+                          })}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                          className="pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
-                  <div className="grid gap-2">
-                    <Label htmlFor="propertyType">Property Type</Label>
+                  <div className="grid gap-2.5">
+                    <Label htmlFor="propertyType" className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground/90">
+                      <Home className="w-4 h-4 text-accent" />
+                      Property Type
+                    </Label>
                     <Select
                       value={formData.propertyType}
                       onValueChange={(value: PropertyType) => updateFormData({ propertyType: value })}
                     >
-                      <SelectTrigger id="propertyType">
+                      <SelectTrigger id="propertyType" className="h-11 border-2 border-input/80">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -387,13 +425,16 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="bedrooms">Bedrooms</Label>
+                  <div className="grid gap-2.5">
+                    <Label htmlFor="bedrooms" className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground/90">
+                      <BedDouble className="w-4 h-4 text-accent" />
+                      Bedrooms
+                    </Label>
                     <Select
                       value={formData.bedrooms.toString()}
                       onValueChange={(value) => updateFormData({ bedrooms: parseInt(value) })}
                     >
-                      <SelectTrigger id="bedrooms">
+                      <SelectTrigger id="bedrooms" className="h-11 border-2 border-input/80">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -406,13 +447,14 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                     </Select>
                   </div>
 
-                  <div className="flex items-center gap-3 mt-6">
+                  <div className="flex items-center gap-3 mt-8">
                     <Checkbox
                       id="hasStairs"
                       checked={formData.hasStairs}
                       onCheckedChange={(checked) => updateFormData({ hasStairs: !!checked })}
+                      className="h-5 w-5"
                     />
-                    <Label htmlFor="hasStairs" className="cursor-pointer">
+                    <Label htmlFor="hasStairs" className="cursor-pointer font-medium">
                       Has stairs
                     </Label>
                   </div>
@@ -436,9 +478,12 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                 <p className="text-muted-foreground">We'll send your detailed quote within 10 minutes</p>
               </div>
 
-              <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="fullName">Full Name *</Label>
+              <div className="grid gap-5">
+                <div className="grid gap-2.5">
+                  <Label htmlFor="fullName" className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground/90">
+                    <User className="w-4 h-4 text-accent" />
+                    Full Name <span className="text-accent">*</span>
+                  </Label>
                   <Input
                     id="fullName"
                     placeholder="Enter your full name"
@@ -448,8 +493,11 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="phone">Phone Number *</Label>
+                  <div className="grid gap-2.5">
+                    <Label htmlFor="phone" className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground/90">
+                      <Phone className="w-4 h-4 text-accent" />
+                      Phone Number <span className="text-accent">*</span>
+                    </Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -459,8 +507,11 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                     />
                   </div>
 
-                  <div className="grid gap-2">
-                    <Label htmlFor="email">Email *</Label>
+                  <div className="grid gap-2.5">
+                    <Label htmlFor="email" className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground/90">
+                      <Mail className="w-4 h-4 text-accent" />
+                      Email <span className="text-accent">*</span>
+                    </Label>
                     <Input
                       id="email"
                       type="email"
@@ -471,14 +522,18 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                   </div>
                 </div>
 
-                <div className="grid gap-2">
-                  <Label htmlFor="notes">Additional Notes (Optional)</Label>
+                <div className="grid gap-2.5">
+                  <Label htmlFor="notes" className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground/90">
+                    <FileText className="w-4 h-4 text-accent" />
+                    Additional Notes <span className="text-muted-foreground font-normal">(Optional)</span>
+                  </Label>
                   <Textarea
                     id="notes"
                     placeholder="Any special instructions or items to mention?"
                     value={formData.notes}
                     onChange={(e) => updateFormData({ notes: e.target.value })}
                     rows={3}
+                    className="border-2 border-input/80"
                   />
                 </div>
 
