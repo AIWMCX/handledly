@@ -12,7 +12,7 @@ export function ServiceIntro({ headline, highlightText, subheading, paragraphs }
     <section className="py-16 lg:py-24">
       <Container>
         <div className="max-w-4xl">
-          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground mb-6 leading-tight">
+          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-semibold text-foreground mb-6 leading-tight">
             {headline}{' '}
             <span className="relative inline-block">
               <span className="text-gradient-gold">{highlightText}</span>
@@ -32,7 +32,7 @@ export function ServiceIntro({ headline, highlightText, subheading, paragraphs }
             </span>
           </h1>
           
-          <h2 className="font-serif text-2xl lg:text-3xl text-foreground mb-8">
+          <h2 className="font-heading text-2xl lg:text-3xl text-foreground mb-8">
             {subheading}
           </h2>
           

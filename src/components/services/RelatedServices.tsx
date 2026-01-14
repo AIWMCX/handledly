@@ -23,7 +23,7 @@ export function RelatedServices({ services }: RelatedServicesProps) {
               to={`/services/${service.slug}`}
               className="group p-6 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all"
             >
-              <h3 className="font-serif text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+              <h3 className="font-heading text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
                 {service.title}
               </h3>
               <p className="text-muted-foreground mb-4">

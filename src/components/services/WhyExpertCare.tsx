@@ -20,7 +20,7 @@ export function WhyExpertCare({ title, description, challenges }: WhyExpertCareP
     <section className="py-16 lg:py-24 bg-primary/5">
       <Container>
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="font-serif text-3xl lg:text-4xl font-semibold text-foreground mb-4">
+          <h2 className="font-heading text-3xl lg:text-4xl font-semibold text-foreground mb-4">
             {title}
           </h2>
           <p className="text-lg text-muted-foreground leading-relaxed">
@@ -39,7 +39,7 @@ export function WhyExpertCare({ title, description, challenges }: WhyExpertCareP
                 <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <Icon className="w-7 h-7 text-primary" />
                 </div>
-                <h3 className="font-serif text-lg font-semibold text-foreground mb-2">
+                <h3 className="font-heading text-lg font-semibold text-foreground mb-2">
                   {challenge.title}
                 </h3>
                 <p className="text-sm text-muted-foreground">
