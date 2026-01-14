@@ -12,6 +12,7 @@ import { WhyExpertCare } from "./WhyExpertCare";
 import { RelatedServices } from "./RelatedServices";
 import { ServiceCTA } from "./ServiceCTA";
 import { SocialProofBanner, MobileStickyCTA } from "@/components/conversion";
+import { SEO } from "@/components/SEO";
 import type { ServiceData } from "@/data/servicesData";
 
 interface ServicePageTemplateProps {
@@ -21,6 +22,13 @@ interface ServicePageTemplateProps {
 export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title={data.metaTitle}
+        description={data.metaDescription}
+        canonicalUrl={`https://handledmoving.com/services/${data.slug}`}
+        keywords={data.keywords}
+      />
+      
       <Header />
       
       <ServiceHeroBanner 

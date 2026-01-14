@@ -8,6 +8,7 @@ import { TrustBadges } from "@/components/TrustBadges";
 import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
 import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { HOURLY_RATES, CREW_CONFIGURATIONS, ELECTRONIC_PAYMENT_FEE } from "@/lib/quoteCalculator";
+import { SEO } from "@/components/SEO";
 import { 
   Truck, Dumbbell, Users, ArrowRight, CheckCircle, Phone,
   Piano, Shield, Zap, Info, Building, Home, Package, Clock, MapPin, Star
