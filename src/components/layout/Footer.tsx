@@ -166,10 +166,14 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <Phone className="w-5 h-5 text-accent mt-0.5" />
                 <div>
-                <a href="tel:+18782187397" className="text-white hover:text-accent transition-colors text-sm font-medium">
-                  (878) 218-7397
-                </a>
-                  <p className="text-xs text-white/70">Quote in 10 min or less</p>
+                  <a href="tel:+18782187397" className="text-white hover:text-accent transition-colors text-sm font-medium block">
+                    (878) 218-7397
+                  </a>
+                  <p className="text-xs text-white/70">Main Line</p>
+                  <a href="tel:+17199203282" className="text-white/80 hover:text-accent transition-colors text-sm mt-1 block">
+                    (719) 920-3282
+                  </a>
+                  <p className="text-xs text-white/70">Local Denver</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">

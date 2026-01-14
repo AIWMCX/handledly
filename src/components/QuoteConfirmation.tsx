@@ -142,7 +142,13 @@ export function QuoteConfirmation({
         <Button asChild className="gradient-gold text-primary-foreground font-semibold shadow-gold">
           <a href="tel:+18782187397">
             <Phone className="mr-2 w-4 h-4" />
-            Call Us Now
+            (878) 218-7397
+          </a>
+        </Button>
+        <Button asChild variant="outline" className="border-accent text-accent hover:bg-accent/5">
+          <a href="tel:+17199203282">
+            <Phone className="mr-2 w-4 h-4" />
+            (719) 920-3282
           </a>
         </Button>
         <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary/5">

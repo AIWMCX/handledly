@@ -56,7 +56,7 @@ export function AnnouncementBar() {
             <span>{currentMessage.text}</span>
           </div>
 
-          {/* Separator and phone - desktop only */}
+          {/* Separator and phones - desktop only */}
           <div className="hidden lg:flex items-center gap-4">
             <span className="text-primary/40">|</span>
             <a 
@@ -65,6 +65,13 @@ export function AnnouncementBar() {
             >
               <Phone className="w-3.5 h-3.5" />
               (878) 218-7397
+            </a>
+            <span className="text-primary/40">|</span>
+            <a 
+              href="tel:+17199203282"
+              className="text-sm font-medium hover:underline"
+            >
+              (719) 920-3282
             </a>
           </div>
 

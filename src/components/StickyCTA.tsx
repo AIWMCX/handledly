@@ -45,18 +45,26 @@ export function StickyCTA() {
 
           {/* Center/Right: CTAs */}
           <div className="flex items-center gap-3 flex-1 sm:flex-none justify-center sm:justify-end">
-            <a
-              href="tel:+18782187397"
-              className="flex items-center gap-2 text-white/90 hover:text-white transition-colors text-sm font-medium group"
-            >
-              {/* Pulsing phone icon */}
-              <div className="relative">
-                <Phone className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                <div className="absolute inset-0 bg-white/30 rounded-full animate-ping" />
-              </div>
-              <span className="hidden md:inline">(878) 218-7397</span>
-              <span className="md:hidden">Call</span>
-            </a>
+            <div className="flex items-center gap-3">
+              <a
+                href="tel:+18782187397"
+                className="flex items-center gap-2 text-white/90 hover:text-white transition-colors text-sm font-medium group"
+              >
+                {/* Pulsing phone icon */}
+                <div className="relative">
+                  <Phone className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  <div className="absolute inset-0 bg-white/30 rounded-full animate-ping" />
+                </div>
+                <span className="hidden md:inline">(878) 218-7397</span>
+                <span className="md:hidden">Call</span>
+              </a>
+              <a
+                href="tel:+17199203282"
+                className="hidden lg:flex items-center text-white/70 hover:text-white transition-colors text-sm"
+              >
+                (719) 920-3282
+              </a>
+            </div>
             
             <Button 
               asChild 

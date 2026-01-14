@@ -73,13 +73,22 @@ export function Header() {
 
           {/* CTA Button */}
           <div className="flex items-center gap-4">
-            <a
-              href="tel:+18782187397"
-              className="hidden md:flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Phone className="w-4 h-4" />
-              (878) 218-7397
-            </a>
+            <div className="hidden md:flex items-center gap-2">
+              <a
+                href="tel:+18782187397"
+                className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Phone className="w-4 h-4" />
+                (878) 218-7397
+              </a>
+              <span className="text-muted-foreground/50">|</span>
+              <a
+                href="tel:+17199203282"
+                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              >
+                (719) 920-3282
+              </a>
+            </div>
             <Button asChild className="hidden sm:flex gradient-gold text-white hover:opacity-90 shadow-gold hover:shadow-glow-gold transition-shadow">
               <Link to="/quote">Get Free Quote</Link>
             </Button>
@@ -114,13 +123,24 @@ export function Header() {
                   {link.label}
                 </Link>
               ))}
-              <a
-                href="tel:+18782187397"
-                className="flex items-center gap-2 text-base font-medium text-primary py-2"
-              >
-                <Phone className="w-5 h-5" />
-                (878) 218-7397
-              </a>
+              <div className="space-y-2 py-2">
+                <a
+                  href="tel:+18782187397"
+                  className="flex items-center gap-2 text-base font-medium text-primary"
+                >
+                  <Phone className="w-5 h-5" />
+                  (878) 218-7397
+                  <span className="text-xs text-muted-foreground">Main</span>
+                </a>
+                <a
+                  href="tel:+17199203282"
+                  className="flex items-center gap-2 text-base font-medium text-primary"
+                >
+                  <Phone className="w-5 h-5" />
+                  (719) 920-3282
+                  <span className="text-xs text-muted-foreground">Denver</span>
+                </a>
+              </div>
               <Button asChild className="gradient-gold text-white w-full mt-2 shadow-gold">
                 <Link to="/quote" onClick={() => setIsMenuOpen(false)}>
                   Get Free Quote
