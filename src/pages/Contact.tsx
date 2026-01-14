@@ -91,6 +91,12 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <SEO 
+        title="Contact Denver's Best Movers - Get Your Free Quote | Handled Moving"
+        description="Contact Handled Moving for professional Denver moving services. Call (878) 218-7397 for instant quotes. Under 10-minute response time. Licensed and insured movers."
+        canonicalUrl="https://handledmoving.com/contact"
+        keywords={["contact Denver movers", "moving quote Denver", "Denver moving company phone", "Handled Moving contact"]}
+      />
       
       {/* Hero */}
       <section className="pt-32 pb-16 lg:pt-40 lg:pb-20 bg-background relative overflow-hidden">
