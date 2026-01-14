@@ -50,7 +50,7 @@ export function QuoteConfirmation({
       </h2>
       
       <p className="text-muted-foreground mb-8 text-lg">
-        Your quote request has been received. We're honored you chose Handled 
+        Your quote request has been received. We're honored you chose Handledly 
         for your moving needs!
       </p>
 

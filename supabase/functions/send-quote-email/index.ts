@@ -95,7 +95,7 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Moving Quote from Handled</title>
+  <title>Your Moving Quote from Handledly Moving Services</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0C0A09; color: #FAFAF9;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0C0A09;">
@@ -107,9 +107,9 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
           <tr>
             <td style="text-align: center; padding-bottom: 30px;">
               <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #FAFAF9;">
-                🏠 HANDLED
+                🏠 HANDLEDLY
               </h1>
-              <p style="margin: 10px 0 0; font-size: 14px; color: #A8A29E;">Moving Made Simple</p>
+              <p style="margin: 10px 0 0; font-size: 14px; color: #A8A29E;">Moving Services</p>
               <p style="margin: 10px 0 0; font-size: 16px; color: #D4AF37;">
                 Your Quote is Ready
               </p>
@@ -125,7 +125,7 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                 Dear ${fullName},
               </p>
               <p style="margin: 0 0 30px; font-size: 16px; color: #A8A29E; line-height: 1.7;">
-                <strong style="color: #D4AF37;">Thank you for choosing Handled!</strong> We truly appreciate your trust in us for your upcoming move. Our team is honored to be part of your moving journey and is committed to making this a stress-free experience.
+                <strong style="color: #D4AF37;">Thank you for choosing Handledly Moving Services!</strong> We truly appreciate your trust in us for your upcoming move. Our team is honored to be part of your moving journey and is committed to making this a stress-free experience.
               </p>
               
               <!-- Move Details Box -->
@@ -345,11 +345,11 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                   We're honored to be part of your moving journey.
                 </p>
                 <p style="margin: 0; color: #D4AF37; font-size: 18px; font-weight: 600;">
-                  Thank you again for choosing Handled!
+                  Thank you again for choosing Handledly!
                 </p>
                 <p style="margin: 20px 0 0; color: #A8A29E; font-size: 14px;">
                   Warm regards,<br>
-                  <strong style="color: #FAFAF9;">The Handled Team</strong>
+                  <strong style="color: #FAFAF9;">The Handledly Team</strong>
                 </p>
               </div>
               
@@ -360,10 +360,10 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
           <tr>
             <td style="padding: 30px 20px; text-align: center;">
               <p style="margin: 0 0 10px; font-size: 14px; color: #78716C;">
-                Handled • Licensed & Insured • Serving Denver Metro
+                Handledly Moving Services • Licensed & Insured • Serving Denver Metro
               </p>
               <p style="margin: 0 0 10px; font-size: 14px; color: #78716C;">
-                📞 (878) 218-7397 • 📧 hello@handled.com
+                📞 (878) 218-7397 | (719) 920-3282 • 📧 hello@handledly.com
               </p>
               <p style="margin: 0; font-size: 12px; color: #57534E;">
                 Business Hours: Mon-Fri 7am-8pm, Sat 7am-6pm, Sun 8am-5pm
@@ -400,9 +400,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send the email with retry logic
     const emailResponse = await sendEmailWithRetry({
-      from: "Handled <onboarding@resend.dev>",
+      from: "Handledly Moving Services <onboarding@resend.dev>",
       to: [data.email],
-      subject: `Your Moving Quote: $${data.totalQuote} - Handled`,
+      subject: `Your Moving Quote: $${data.totalQuote} - Handledly Moving Services`,
       html: generateEmailHtml(data),
     });
 

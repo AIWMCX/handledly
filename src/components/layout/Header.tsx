@@ -46,8 +46,8 @@ export function Header() {
               <span className="text-white font-heading font-bold text-xl">H</span>
             </div>
             <div className="hidden sm:block">
-              <p className="font-heading text-lg font-semibold text-primary">Handled</p>
-              <p className="text-xs text-muted-foreground tracking-widest uppercase">Moving Made Simple</p>
+              <p className="font-heading text-lg font-semibold text-primary">Handledly</p>
+              <p className="text-xs text-muted-foreground tracking-widest uppercase">Moving Services</p>
             </div>
           </Link>
 

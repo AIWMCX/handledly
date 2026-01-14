@@ -78,9 +78,9 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       <SEO 
-        title="Handled Moving - Denver's #1 Rated Professional Movers"
+        title="Handledly Moving Services - Denver's #1 Rated Professional Movers"
         description="Professional moving services in Denver. Flat hourly rates, no hidden fees. Local moves, heavy items, pianos, safes, same-day service. Get your free quote today!"
-        canonicalUrl="https://handledmoving.com/"
+        canonicalUrl="https://handledly.com/"
         keywords={['Denver movers', 'moving company Denver', 'local movers', 'professional movers', 'Denver moving services']}
       />
       
@@ -256,7 +256,7 @@ export default function Index() {
         <Container className="relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <SectionHeader title="Why People Choose Handled" subtitle="No gimmicks, just honest service at fair prices." align="left" />
+              <SectionHeader title="Why People Choose Handledly" subtitle="No gimmicks, just honest service at fair prices." align="left" />
               <ul className="space-y-4">
                 {whyChooseUs.map((item) => (
                   <li key={item} className="flex items-start gap-3">

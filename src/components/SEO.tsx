@@ -17,7 +17,7 @@ export function SEO({
   keywords, 
   type = 'website' 
 }: SEOProps) {
-  const siteUrl = 'https://handledmoving.com';
+  const siteUrl = 'https://handledly.com';
   const defaultOgImage = '/og-image.png';
   const fullOgImage = ogImage || defaultOgImage;
   
@@ -35,7 +35,7 @@ export function SEO({
       <meta property="og:type" content={type} />
       <meta property="og:image" content={fullOgImage} />
       {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
-      <meta property="og:site_name" content="Handled Moving" />
+      <meta property="og:site_name" content="Handledly Moving Services" />
       
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />

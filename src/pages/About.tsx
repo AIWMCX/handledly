@@ -66,10 +66,10 @@ export default function About() {
   return (
     <div className="min-h-screen bg-background">
       <SEO 
-        title="About Handled Moving - Denver's Trusted Moving Company Since 2010"
-        description="Learn about Denver's most trusted movers. 15+ years of experience, 10,000+ successful moves, and a commitment to excellence. Meet the team behind Handled Moving."
-        canonicalUrl="https://handledmoving.com/about"
-        keywords={['about Handled Moving', 'Denver moving company', 'trusted movers Denver', 'moving company history']}
+        title="About Handledly Moving Services - Denver's Trusted Moving Company Since 2010"
+        description="Learn about Denver's most trusted movers. 15+ years of experience, 10,000+ successful moves, and a commitment to excellence. Meet the team behind Handledly Moving Services."
+        canonicalUrl="https://handledly.com/about"
+        keywords={['about Handledly Moving Services', 'Denver moving company', 'trusted movers Denver', 'moving company history']}
       />
       
       <Header />
