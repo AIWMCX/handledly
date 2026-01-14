@@ -34,7 +34,7 @@ export function SectionHeader({ title, subtitle, align = "center", className }: 
         className
       )}
     >
-      <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-4">
+      <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl font-semibold text-foreground mb-4">
         {title}
       </h2>
       {subtitle && (
