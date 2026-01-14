@@ -152,7 +152,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
       // Create conversation in database
       const newConversationId = await createConversation();
       
-      const greetingMessage = "Hi! I'm the Handled moving assistant. How can I help you today? I can provide instant quotes, answer questions about our services, or help schedule your move.";
+      const greetingMessage = "Hi! I'm the Handledly moving assistant. How can I help you today? I can provide instant quotes, answer questions about our services, or help schedule your move.";
       
       setMessages(prev => [...prev, {
         id: Date.now().toString(),

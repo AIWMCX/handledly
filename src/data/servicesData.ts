@@ -96,7 +96,7 @@ export const servicesData: Record<string, ServiceData> = {
     ],
     hasSameDay: true,
     // SEO
-    metaTitle: 'Local Moving Services Denver - Professional Movers | Handled Moving',
+    metaTitle: 'Local Moving Services Denver - Professional Movers | Handledly Moving Services',
     metaDescription: "Denver's top-rated local movers. Flat hourly rates, no hidden fees. Apartments, houses, same-day available. Licensed & insured. Get your free quote today!",
     keywords: ['local moving Denver', 'Denver movers', 'apartment moving', 'house moving', 'local movers near me', 'same day moving Denver'],
   },
@@ -147,7 +147,7 @@ export const servicesData: Record<string, ServiceData> = {
     ],
     hasSameDay: true,
     // SEO
-    metaTitle: 'Heavy Item Movers Denver - Pianos, Safes, Pool Tables | Handled Moving',
+    metaTitle: 'Heavy Item Movers Denver - Pianos, Safes, Pool Tables | Handledly Moving Services',
     metaDescription: 'Specialized heavy item moving in Denver. Safe transport for pianos, pool tables, safes, and 300+ lb items. Licensed and insured professionals. Free quotes!',
     keywords: ['heavy item moving Denver', 'heavy furniture movers', 'oversized item moving', 'specialty movers Denver'],
   },
@@ -191,7 +191,7 @@ export const servicesData: Record<string, ServiceData> = {
       'Safe placement and unwrapping at destination',
     ],
     // SEO
-    metaTitle: 'Piano Moving Denver - Safe & Professional Transport | Handled Moving',
+    metaTitle: 'Piano Moving Denver - Safe & Professional Transport | Handledly Moving Services',
     metaDescription: 'Expert piano movers in Denver. Upright and grand pianos moved with precision care. Specialized equipment and trained professionals. Get your free quote!',
     keywords: ['piano moving Denver', 'piano movers', 'grand piano moving', 'upright piano moving', 'piano transport Denver'],
   },
@@ -235,7 +235,7 @@ export const servicesData: Record<string, ServiceData> = {
       'Expert reassembly and leveling',
     ],
     // SEO
-    metaTitle: 'Pool Table Movers Denver - Expert Disassembly & Setup | Handled Moving',
+    metaTitle: 'Pool Table Movers Denver - Expert Disassembly & Setup | Handledly Moving Services',
     metaDescription: 'Professional pool table moving in Denver. Complete disassembly, safe transport, and expert reassembly with precision leveling. Fully insured service. Free quotes!',
     keywords: ['pool table moving Denver', 'pool table movers', 'billiard table moving', 'pool table disassembly', 'pool table reassembly Denver'],
   },
@@ -279,7 +279,7 @@ export const servicesData: Record<string, ServiceData> = {
       'Secure placement at destination',
     ],
     // SEO
-    metaTitle: 'Safe Moving Denver - Heavy Safe Transport Specialists | Handled Moving',
+    metaTitle: 'Safe Moving Denver - Heavy Safe Transport Specialists | Handledly Moving Services',
     metaDescription: 'Professional safe moving in Denver. Gun safes, commercial safes up to 2,000+ lbs. Specialized equipment, floor protection, and discrete service. Free quotes!',
     keywords: ['safe moving Denver', 'gun safe movers', 'heavy safe moving', 'vault moving', 'safe transport Denver'],
   },
@@ -323,7 +323,7 @@ export const servicesData: Record<string, ServiceData> = {
       'Items recycled, donated, or disposed properly',
     ],
     // SEO
-    metaTitle: 'Junk Removal Denver - Fast & Affordable Hauling | Handled Moving',
+    metaTitle: 'Junk Removal Denver - Fast & Affordable Hauling | Handledly Moving Services',
     metaDescription: 'Denver junk removal services. Same-day pickup, eco-friendly disposal. Furniture, appliances, construction debris removed. Volume-based pricing. Free estimates!',
     keywords: ['junk removal Denver', 'junk hauling', 'furniture removal', 'appliance removal Denver', 'debris removal', 'cleanout services Denver'],
   },
@@ -367,7 +367,7 @@ export const servicesData: Record<string, ServiceData> = {
       'Safe delivery to your new home',
     ],
     // SEO
-    metaTitle: 'Long Distance Moving Denver - Interstate Movers | Handled Moving',
+    metaTitle: 'Long Distance Moving Denver - Interstate Movers | Handledly Moving Services',
     metaDescription: 'Professional long distance moving from Denver. Licensed interstate movers with full-service packing, GPS tracking, and guaranteed delivery. Get your free quote!',
     keywords: ['long distance moving Denver', 'interstate movers', 'cross country moving', 'out of state movers Denver', 'long distance movers'],
   },
@@ -411,7 +411,7 @@ export const servicesData: Record<string, ServiceData> = {
       'Unload and set up in your new home',
     ],
     // SEO
-    metaTitle: 'Residential Moving Denver - Home Moving Experts | Handled Moving',
+    metaTitle: 'Residential Moving Denver - Home Moving Experts | Handledly Moving Services',
     metaDescription: 'Denver residential movers for homes of all sizes. Complete moving services with packing, furniture protection, and assembly included. Free estimates!',
     keywords: ['residential moving Denver', 'home movers', 'house moving', 'family moving services', 'residential movers near me'],
   },
@@ -455,7 +455,7 @@ export const servicesData: Record<string, ServiceData> = {
       'Delivered and unloaded the same day',
     ],
     // SEO
-    metaTitle: 'Same-Day Moving Denver - Emergency Move Service | Handled Moving',
+    metaTitle: 'Same-Day Moving Denver - Emergency Move Service | Handledly Moving Services',
     metaDescription: 'Need to move today? Denver same-day moving specialists. Fast response, professional service, competitive rates. Call now for immediate availability!',
     keywords: ['same day moving Denver', 'emergency movers', 'last minute moving', 'urgent moving service', 'same day movers near me'],
   },
@@ -499,7 +499,7 @@ export const servicesData: Record<string, ServiceData> = {
       'You drive—we did the hard part',
     ],
     // SEO
-    metaTitle: 'Moving Labor Denver - Loading & Unloading Help | Handled Moving',
+    metaTitle: 'Moving Labor Denver - Loading & Unloading Help | Handledly Moving Services',
     metaDescription: 'Professional moving labor in Denver. Loading, unloading, packing help for your truck, PODS, or container. Hourly rates, experienced crews. Free estimates!',
     keywords: ['moving labor Denver', 'loading help', 'unloading help', 'moving helpers', 'labor only movers Denver', 'truck loading service'],
   },

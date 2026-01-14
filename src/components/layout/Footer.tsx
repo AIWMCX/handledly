@@ -78,8 +78,8 @@ export function Footer() {
                 <span className="text-white font-heading font-bold text-xl">H</span>
               </div>
               <div>
-                <p className="font-heading text-lg font-semibold text-white">Handled</p>
-                <p className="text-xs text-white/70 tracking-widest uppercase">Moving Made Simple</p>
+                <p className="font-heading text-lg font-semibold text-white">Handledly</p>
+                <p className="text-xs text-white/70 tracking-widest uppercase">Moving Services</p>
               </div>
             </div>
             <p className="text-white/80 text-sm leading-relaxed">
@@ -223,7 +223,7 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t border-white/20 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
             <p className="text-white/70 text-xs">
-              © {currentYear} Handled Inc. All rights reserved.
+              © {currentYear} Handledly Moving Services Inc. All rights reserved.
             </p>
           </div>
           <div className="flex gap-6">
