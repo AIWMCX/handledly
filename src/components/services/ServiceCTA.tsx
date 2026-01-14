@@ -56,7 +56,12 @@ export function ServiceCTA({ steps }: ServiceCTAProps) {
               </Button>
               <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-white">
                 <a href="tel:+18782187397">
-                  Call (878) 218-7397
+                  (878) 218-7397
+                </a>
+              </Button>
+              <Button asChild variant="ghost" size="lg" className="text-muted-foreground hover:text-primary">
+                <a href="tel:+17199203282">
+                  (719) 920-3282
                 </a>
               </Button>
             </div>

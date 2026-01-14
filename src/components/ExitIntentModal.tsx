@@ -234,10 +234,13 @@ export function ExitIntentModal() {
                     >
                       <a href="tel:+18782187397">
                         <Phone className="w-4 h-4 mr-2" />
-                        Call Now
+                        Call
                       </a>
                     </Button>
                   </div>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Or call Denver direct: <a href="tel:+17199203282" className="font-medium hover:text-accent">(719) 920-3282</a>
+                  </p>
 
                   <div className="mt-6 space-y-2">
                     {["No spam, ever", "Unsubscribe anytime", "Limited time offer"].map((item) => (

@@ -19,10 +19,17 @@ import { SocialProofBanner, MobileStickyCTA } from "@/components/conversion";
 const contactInfo = [
   {
     icon: Phone,
-    title: "Phone",
+    title: "Main Line",
     primary: "(878) 218-7397",
-    secondary: "Average response: Under 10 min",
+    secondary: "Toll-free support",
     href: "tel:+18782187397",
+  },
+  {
+    icon: Phone,
+    title: "Local Denver",
+    primary: "(719) 920-3282",
+    secondary: "Denver Metro direct",
+    href: "tel:+17199203282",
   },
   {
     icon: Mail,
@@ -314,12 +321,20 @@ export default function Contact() {
                   <p className="text-white/80 text-sm mb-4">
                     Our friendly Denver team is standing by to help with your move.
                   </p>
-                  <Button asChild size="lg" className="w-full bg-accent hover:bg-accent/90 text-white">
-                    <a href="tel:+18782187397">
-                      <Phone className="mr-2 w-5 h-5" />
-                      Call (878) 218-7397
-                    </a>
-                  </Button>
+                  <div className="space-y-2">
+                    <Button asChild size="lg" className="w-full bg-accent hover:bg-accent/90 text-white">
+                      <a href="tel:+18782187397">
+                        <Phone className="mr-2 w-5 h-5" />
+                        (878) 218-7397
+                      </a>
+                    </Button>
+                    <Button asChild size="lg" variant="outline" className="w-full border-white/30 text-white hover:bg-white/10">
+                      <a href="tel:+17199203282">
+                        <Phone className="mr-2 w-5 h-5" />
+                        (719) 920-3282
+                      </a>
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

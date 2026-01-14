@@ -133,6 +133,9 @@ export default function Index() {
                 <Button asChild variant="outline" size="lg" className="h-14 px-8 border-primary text-primary hover:bg-primary hover:text-white glass-card">
                   <a href="tel:+18782187397"><Phone className="mr-2 w-5 h-5" />(878) 218-7397</a>
                 </Button>
+                <Button asChild variant="ghost" size="lg" className="h-14 px-6 text-muted-foreground hover:text-primary">
+                  <a href="tel:+17199203282">(719) 920-3282</a>
+                </Button>
               </div>
 
               <div className="flex items-center gap-6 text-sm text-muted-foreground">
@@ -327,7 +330,10 @@ export default function Index() {
                 <Link to="/quote">Get Free Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-white">
-                <a href="tel:+18782187397"><Phone className="mr-2 w-5 h-5" />Call Now</a>
+                <a href="tel:+18782187397"><Phone className="mr-2 w-5 h-5" />(878) 218-7397</a>
+              </Button>
+              <Button asChild variant="ghost" size="lg" className="text-muted-foreground hover:text-primary">
+                <a href="tel:+17199203282">(719) 920-3282</a>
               </Button>
             </div>
           </div>

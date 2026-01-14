@@ -279,11 +279,16 @@ export default function Services() {
                 <p className="text-sm text-muted-foreground">Same-day service available — call now for immediate assistance</p>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
                 <a href="tel:+18782187397">
                   <Phone className="w-4 h-4 mr-2" />
-                  Call Now
+                  (878) 218-7397
+                </a>
+              </Button>
+              <Button asChild variant="ghost" className="text-muted-foreground hover:text-primary">
+                <a href="tel:+17199203282">
+                  (719) 920-3282
                 </a>
               </Button>
               <Button asChild className="gradient-gold text-white hover:opacity-90 shadow-gold">
@@ -396,11 +401,16 @@ export default function Services() {
                 <p className="text-sm text-muted-foreground">Same-day service for urgent heavy item needs — call now</p>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <Button asChild variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
                 <a href="tel:+18782187397">
                   <Phone className="w-4 h-4 mr-2" />
-                  Call Now
+                  (878) 218-7397
+                </a>
+              </Button>
+              <Button asChild variant="ghost" className="text-muted-foreground hover:text-primary">
+                <a href="tel:+17199203282">
+                  (719) 920-3282
                 </a>
               </Button>
               <Button asChild className="gradient-gold text-white hover:opacity-90 shadow-gold">
