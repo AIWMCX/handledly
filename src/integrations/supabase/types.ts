@@ -351,9 +351,26 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      business_info_public: {
+        Row: {
+          address: string | null
+          company_name: string | null
+          phone_number: string | null
+          service_areas: string[] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      check_rate_limit: {
+        Args: {
+          ip_identifier: string
+          max_requests?: number
+          table_name: string
+          time_window_minutes?: number
+        }
+        Returns: boolean
+      }
       get_user_id_by_email: { Args: { email_input: string }; Returns: string }
       has_role: {
         Args: {
