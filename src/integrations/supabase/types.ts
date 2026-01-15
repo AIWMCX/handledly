@@ -191,10 +191,15 @@ export type Database = {
       leads: {
         Row: {
           bedrooms: number | null
+          call_duration_seconds: number | null
+          call_ended_at: string | null
           call_notes: string | null
+          call_sid: string | null
+          call_summary: string | null
           call_transcript: string | null
           confirmation_call_status: string | null
           confirmation_call_time: string | null
+          conversation_id: string | null
           created_at: string
           email: string
           email_sent: boolean | null
@@ -216,10 +221,15 @@ export type Database = {
         }
         Insert: {
           bedrooms?: number | null
+          call_duration_seconds?: number | null
+          call_ended_at?: string | null
           call_notes?: string | null
+          call_sid?: string | null
+          call_summary?: string | null
           call_transcript?: string | null
           confirmation_call_status?: string | null
           confirmation_call_time?: string | null
+          conversation_id?: string | null
           created_at?: string
           email: string
           email_sent?: boolean | null
@@ -241,10 +251,15 @@ export type Database = {
         }
         Update: {
           bedrooms?: number | null
+          call_duration_seconds?: number | null
+          call_ended_at?: string | null
           call_notes?: string | null
+          call_sid?: string | null
+          call_summary?: string | null
           call_transcript?: string | null
           confirmation_call_status?: string | null
           confirmation_call_time?: string | null
+          conversation_id?: string | null
           created_at?: string
           email?: string
           email_sent?: boolean | null
