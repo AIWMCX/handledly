@@ -460,8 +460,9 @@ const handler = async (req: Request): Promise<Response> => {
     });
   } catch (error: any) {
     console.error("[send-quote-email] Error:", error);
+    // SEC-002: Sanitized error response - no internal details exposed
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'Email service temporarily unavailable' }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
