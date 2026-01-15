@@ -218,6 +218,7 @@ export type Database = {
           specialty_items: string[] | null
           status: string
           updated_at: string
+          verification_token: string | null
         }
         Insert: {
           bedrooms?: number | null
@@ -248,6 +249,7 @@ export type Database = {
           specialty_items?: string[] | null
           status?: string
           updated_at?: string
+          verification_token?: string | null
         }
         Update: {
           bedrooms?: number | null
@@ -278,6 +280,7 @@ export type Database = {
           specialty_items?: string[] | null
           status?: string
           updated_at?: string
+          verification_token?: string | null
         }
         Relationships: []
       }

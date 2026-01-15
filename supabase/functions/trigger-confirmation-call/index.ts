@@ -8,6 +8,7 @@ const corsHeaders = {
 
 interface CallRequest {
   leadId: string;
+  verificationToken?: string;
   firstName?: string;
   lastName?: string;
   customerName: string;
@@ -177,21 +178,25 @@ async function executeCall(data: CallRequest): Promise<void> {
   } catch (error) {
     console.error('[trigger-confirmation-call] Error executing call:', error);
     
-    // Update lead with error status
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-    
-    await supabase
-      .from('leads')
-      .update({
-        confirmation_call_status: 'failed',
-        call_notes: JSON.stringify({
-          error: error instanceof Error ? error.message : 'Unknown error',
-          attempted_at: new Date().toISOString(),
-        }),
-      })
-      .eq('id', data.leadId);
+    // Update lead with error status - reuse existing supabase client from outer scope
+    try {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const errorSupabase = createClient(supabaseUrl, supabaseKey);
+      
+      await errorSupabase
+        .from('leads')
+        .update({
+          confirmation_call_status: 'failed',
+          call_notes: JSON.stringify({
+            error: error instanceof Error ? error.message : 'Unknown error',
+            attempted_at: new Date().toISOString(),
+          }),
+        })
+        .eq('id', data.leadId);
+    } catch (updateError) {
+      console.error('[trigger-confirmation-call] Failed to update lead with error status:', updateError);
+    }
   }
 }
 
@@ -232,12 +237,60 @@ serve(async (req) => {
 
     const data: CallRequest = await req.json();
     console.log(`[trigger-confirmation-call] Received request for lead ${data.leadId}`);
-    console.log(`[trigger-confirmation-call] Will call ${data.phone} in 30 seconds`);
 
-    // Initialize Supabase client for immediate status update
+    // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // SEC-001: Verify token and lead freshness before initiating call
+    if (data.verificationToken) {
+      const { data: lead, error: verifyError } = await supabase
+        .from('leads')
+        .select('id, verification_token, confirmation_call_status, created_at')
+        .eq('id', data.leadId)
+        .single();
+
+      if (verifyError || !lead) {
+        console.error('[trigger-confirmation-call] Lead verification failed:', verifyError?.message);
+        return new Response(
+          JSON.stringify({ error: 'Invalid request' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Verify token matches
+      if (lead.verification_token !== data.verificationToken) {
+        console.error('[trigger-confirmation-call] Token mismatch for lead:', data.leadId);
+        return new Response(
+          JSON.stringify({ error: 'Invalid request' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Check if call was already initiated (prevent replay)
+      if (lead.confirmation_call_status && lead.confirmation_call_status !== 'failed') {
+        console.log('[trigger-confirmation-call] Call already scheduled for lead:', data.leadId);
+        return new Response(
+          JSON.stringify({ success: true, message: 'Call already scheduled' }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Check lead freshness (created within last 5 minutes)
+      const createdAt = new Date(lead.created_at);
+      const now = new Date();
+      const ageMinutes = (now.getTime() - createdAt.getTime()) / (1000 * 60);
+      if (ageMinutes > 5) {
+        console.error('[trigger-confirmation-call] Lead too old:', ageMinutes, 'minutes');
+        return new Response(
+          JSON.stringify({ error: 'Request expired' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    console.log(`[trigger-confirmation-call] Will call ${data.phone} in 30 seconds`);
 
     // Update lead status to "pending" immediately
     await supabase

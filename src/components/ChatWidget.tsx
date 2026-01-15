@@ -262,36 +262,8 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
           return "I apologize, I had trouble saving your information. Let me transfer you to our team.";
         }
       },
-      scheduleAppointment: async (params: ScheduleAppointmentParams) => {
-        console.log("Scheduling appointment via chat:", params);
-        try {
-          const { data, error } = await supabase
-            .from('appointments')
-            .insert({
-              scheduled_date: params.date,
-              scheduled_time: params.time,
-              move_type: params.serviceType,
-              status: 'scheduled',
-            })
-            .select()
-            .single();
-
-          if (error) throw error;
-          
-          // Save tool execution
-          await saveMessage('agent', `Appointment scheduled for ${params.date} at ${params.time}`, {
-            tool: 'scheduleAppointment',
-            params,
-            result: 'success',
-            appointment_id: data?.id,
-          });
-          
-          return `Appointment scheduled for ${params.date} at ${params.time}. We'll send you a confirmation!`;
-        } catch (error) {
-          console.error("Error scheduling appointment:", error);
-          return "I had trouble scheduling that time. Let me connect you with our team to finalize.";
-        }
-      },
+      // Note: scheduleAppointment removed - appointments require admin approval
+      // Users can request scheduling through the chat, and staff will follow up
       checkAvailability: async (params: CheckAvailabilityParams) => {
         console.log("Checking availability via chat for:", params.date);
         const dayOfWeek = new Date(params.date).getDay();

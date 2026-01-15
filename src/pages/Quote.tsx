@@ -101,16 +101,17 @@ const generateQuoteNumber = (): string => {
       estimatedHours: data.estimatedHours,
     });
 
-    // Generate IDs client-side to avoid needing SELECT after INSERT
+    // Generate IDs and verification token client-side for security
     const leadId = generateId();
     const quoteRequestId = generateId();
     const quoteNumber = generateQuoteNumber();
+    const verificationToken = crypto.randomUUID();
 
     try {
       // Use retry logic for resilient submission
       await withRetry(
         async () => {
-          // Create lead - NO .select().single() needed!
+          // Create lead with verification token for secure edge function calls
           const { error: leadError } = await supabase
             .from('leads')
             .insert({
@@ -128,6 +129,7 @@ const generateQuoteNumber = (): string => {
               status: 'new',
               prefer_email_only: data.preferEmailOnly,
               has_specialty_items: data.hasStairs,
+              verification_token: verificationToken,
             });
 
           if (leadError) throw leadError;
@@ -172,10 +174,11 @@ const generateQuoteNumber = (): string => {
       setIsSubmitted(true);
       toast.success("Quote submitted! Check your email.");
 
-      // Send email quote (async, fire-and-forget)
+      // Send email quote with verification token for security
       supabase.functions.invoke('send-quote-email', {
         body: {
           leadId: leadId,
+          verificationToken: verificationToken,
           firstName: firstName,
           lastName: lastName,
           customerName: data.fullName,
@@ -202,12 +205,13 @@ const generateQuoteNumber = (): string => {
         // Don't fail the whole submission for email issues
       });
 
-      // Schedule confirmation call if not email-only
+      // Schedule confirmation call with verification token if not email-only
       if (!data.preferEmailOnly) {
         setCallScheduled(true);
         supabase.functions.invoke('trigger-confirmation-call', {
           body: {
             leadId: leadId,
+            verificationToken: verificationToken,
             firstName: firstName,
             lastName: lastName,
             customerName: data.fullName,
