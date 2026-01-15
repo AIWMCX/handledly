@@ -190,9 +190,9 @@ serve(async (req) => {
 
   } catch (error: unknown) {
     console.error('Error in handle-call-status:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    // SEC-002: Sanitized error response - no internal details exposed
     return new Response(
-      JSON.stringify({ error: 'Internal server error', details: errorMessage }),
+      JSON.stringify({ error: 'Service temporarily unavailable' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
