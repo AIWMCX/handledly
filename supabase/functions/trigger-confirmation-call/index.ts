@@ -146,15 +146,23 @@ async function executeCall(data: CallRequest): Promise<void> {
 
     console.log('[trigger-confirmation-call] Outbound call initiated successfully:', callResult);
 
-    // Update the lead with call details
+    // Extract conversation_id and call_sid from response
+    const conversationId = callResult.conversation_id || null;
+    const callSid = callResult.call_sid || callResult.callSid || null;
+
+    console.log(`[trigger-confirmation-call] Storing conversation_id: ${conversationId}, call_sid: ${callSid}`);
+
+    // Update the lead with call details - store in dedicated columns for reliable webhook matching
     await supabase
       .from('leads')
       .update({
         confirmation_call_status: 'calling',
         confirmation_call_time: new Date().toISOString(),
+        // Store in dedicated indexed columns for fast webhook lookup
+        conversation_id: conversationId,
+        call_sid: callSid,
+        // Keep call_notes for debugging/audit trail
         call_notes: JSON.stringify({
-          conversation_id: callResult.conversation_id || callResult.call_sid || null,
-          call_sid: callResult.call_sid || callResult.callSid || null,
           initiated_at: new Date().toISOString(),
           phone: formattedPhone,
           delay_seconds: 30,

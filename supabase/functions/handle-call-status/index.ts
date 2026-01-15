@@ -3,23 +3,163 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, elevenlabs-signature',
 };
 
-interface CallStatusWebhook {
-  // ElevenLabs webhook fields
+// ElevenLabs webhook payload structures
+interface ElevenLabsWebhook {
+  type: 'post_call_transcription' | 'call_initiation_failure' | 'post_call_audio';
+  event_timestamp: number;
+  data: PostCallTranscriptionData | CallInitiationFailureData;
+}
+
+interface PostCallTranscriptionData {
+  agent_id: string;
+  conversation_id: string;
+  status: 'done' | 'busy' | 'no-answer' | 'unknown';
+  transcript: TranscriptEntry[];
+  metadata: {
+    call_duration_secs: number;
+    start_time_unix_secs: number;
+    end_time_unix_secs?: number;
+  };
+  analysis?: {
+    transcript_summary?: string;
+    call_successful?: 'success' | 'failure' | 'unknown';
+    data_collected?: Record<string, unknown>;
+  };
+  call_sid?: string;
+}
+
+interface CallInitiationFailureData {
+  agent_id: string;
   conversation_id?: string;
   call_sid?: string;
-  status?: string;
-  duration?: number;
-  transcript?: string;
-  
-  // Twilio webhook fields (if coming directly from Twilio)
-  CallSid?: string;
-  CallStatus?: string;
-  CallDuration?: string;
-  To?: string;
-  From?: string;
+  failure_reason: 'busy' | 'no-answer' | 'unknown' | 'invalid-number' | 'network-error';
+  to_number?: string;
+}
+
+interface TranscriptEntry {
+  role: 'agent' | 'user';
+  message: string;
+  timestamp?: number;
+}
+
+// HMAC Signature Validation
+async function validateHmacSignature(
+  body: string,
+  signatureHeader: string | null,
+  secret: string
+): Promise<{ valid: boolean; reason?: string }> {
+  if (!signatureHeader) {
+    return { valid: false, reason: 'No signature header provided' };
+  }
+
+  // Parse the signature header: "t=timestamp,v0=hash"
+  const parts: Record<string, string> = {};
+  for (const part of signatureHeader.split(',')) {
+    const [key, value] = part.split('=');
+    if (key && value) {
+      parts[key] = value;
+    }
+  }
+
+  const timestamp = parts['t'];
+  const providedHash = parts['v0'];
+
+  if (!timestamp || !providedHash) {
+    return { valid: false, reason: 'Invalid signature format' };
+  }
+
+  // Validate timestamp (within 30 minutes to prevent replay attacks)
+  const timestampNum = parseInt(timestamp, 10);
+  const now = Math.floor(Date.now() / 1000);
+  const tolerance = 30 * 60; // 30 minutes
+
+  if (Math.abs(now - timestampNum) > tolerance) {
+    return { valid: false, reason: 'Timestamp too old or in the future' };
+  }
+
+  // Compute expected signature: HMAC-SHA256(secret, "timestamp.body")
+  const signedPayload = `${timestamp}.${body}`;
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signature = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    encoder.encode(signedPayload)
+  );
+
+  // Convert to hex
+  const expectedHash = Array.from(new Uint8Array(signature))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  // Constant-time comparison
+  if (expectedHash.length !== providedHash.length) {
+    return { valid: false, reason: 'Hash length mismatch' };
+  }
+
+  let mismatch = 0;
+  for (let i = 0; i < expectedHash.length; i++) {
+    mismatch |= expectedHash.charCodeAt(i) ^ providedHash.charCodeAt(i);
+  }
+
+  if (mismatch !== 0) {
+    return { valid: false, reason: 'Hash mismatch' };
+  }
+
+  return { valid: true };
+}
+
+// Format transcript array to readable text
+function formatTranscript(transcript: TranscriptEntry[]): string {
+  if (!transcript || !Array.isArray(transcript)) {
+    return '';
+  }
+
+  return transcript
+    .map(entry => {
+      const speaker = entry.role === 'agent' ? 'Jack' : 'Customer';
+      return `${speaker}: ${entry.message}`;
+    })
+    .join('\n\n');
+}
+
+// Map ElevenLabs status to internal status
+function mapStatus(status: string, failureReason?: string): string {
+  switch (status?.toLowerCase()) {
+    case 'done':
+      return 'completed';
+    case 'busy':
+      return 'busy';
+    case 'no-answer':
+    case 'no_answer':
+      return 'no_answer';
+    case 'unknown':
+    case 'invalid-number':
+    case 'network-error':
+      return 'failed';
+    default:
+      // If we have a failure reason, use that
+      if (failureReason) {
+        switch (failureReason) {
+          case 'busy':
+            return 'busy';
+          case 'no-answer':
+            return 'no_answer';
+          default:
+            return 'failed';
+        }
+      }
+      return status || 'unknown';
+  }
 }
 
 serve(async (req) => {
@@ -29,167 +169,246 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Received call status webhook');
-    console.log('Headers:', JSON.stringify(Object.fromEntries(req.headers.entries())));
+    console.log('[handle-call-status] Received webhook');
+    
+    // Get raw body for HMAC validation
+    const body = await req.text();
+    console.log('[handle-call-status] Body length:', body.length);
 
-    const contentType = req.headers.get('content-type') || '';
-    let data: CallStatusWebhook;
+    // Get signature header
+    const signatureHeader = req.headers.get('elevenlabs-signature');
+    const webhookSecret = Deno.env.get('ELEVENLABS_WEBHOOK_SECRET');
 
-    // Parse based on content type (Twilio sends form-urlencoded, ElevenLabs sends JSON)
-    if (contentType.includes('application/x-www-form-urlencoded')) {
-      const formData = await req.formData();
-      data = Object.fromEntries(formData.entries()) as unknown as CallStatusWebhook;
-      console.log('Received Twilio form data:', JSON.stringify(data));
+    // Validate HMAC signature if secret is configured
+    if (webhookSecret) {
+      const validation = await validateHmacSignature(body, signatureHeader, webhookSecret);
+      if (!validation.valid) {
+        console.error('[handle-call-status] HMAC validation failed:', validation.reason);
+        return new Response(
+          JSON.stringify({ error: 'Invalid signature' }),
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      console.log('[handle-call-status] HMAC signature validated successfully');
     } else {
-      data = await req.json();
-      console.log('Received JSON webhook data:', JSON.stringify(data));
+      console.warn('[handle-call-status] ELEVENLABS_WEBHOOK_SECRET not configured - skipping HMAC validation');
     }
 
-    // Normalize the data (handle both ElevenLabs and Twilio field names)
-    const callSid = data.call_sid || data.CallSid;
-    const status = data.status || data.CallStatus;
-    const duration = data.duration || (data.CallDuration ? parseInt(data.CallDuration) : null);
-    const transcript = data.transcript || null;
-    const conversationId = data.conversation_id || null;
-
-    console.log(`Processing call status update - SID: ${callSid}, Status: ${status}`);
-
-    if (!callSid && !conversationId) {
-      console.warn('No call_sid or conversation_id provided');
+    // Parse the webhook payload
+    let webhook: ElevenLabsWebhook;
+    try {
+      webhook = JSON.parse(body);
+    } catch {
+      console.error('[handle-call-status] Failed to parse webhook JSON');
       return new Response(
-        JSON.stringify({ warning: 'No call identifier provided' }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Invalid JSON' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    console.log('[handle-call-status] Webhook type:', webhook.type);
+    console.log('[handle-call-status] Event timestamp:', webhook.event_timestamp);
+    console.log('[handle-call-status] Data:', JSON.stringify(webhook.data));
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Map call status to our internal status
-    let internalStatus: string;
-    switch (status?.toLowerCase()) {
-      case 'completed':
-      case 'complete':
-        internalStatus = 'completed';
-        break;
-      case 'no-answer':
-      case 'no_answer':
-        internalStatus = 'no_answer';
-        break;
-      case 'busy':
-        internalStatus = 'busy';
-        break;
-      case 'failed':
-      case 'error':
-        internalStatus = 'failed';
-        break;
-      case 'canceled':
-      case 'cancelled':
-        internalStatus = 'canceled';
-        break;
-      case 'in-progress':
-      case 'ringing':
-        internalStatus = 'calling';
-        break;
-      default:
-        internalStatus = status || 'unknown';
-    }
+    // Handle based on webhook type
+    if (webhook.type === 'post_call_transcription') {
+      const data = webhook.data as PostCallTranscriptionData;
+      
+      const conversationId = data.conversation_id;
+      const callSid = data.call_sid;
+      const status = mapStatus(data.status);
+      const duration = data.metadata?.call_duration_secs || null;
+      const formattedTranscript = formatTranscript(data.transcript);
+      const summary = data.analysis?.transcript_summary || null;
 
-    // Find the lead by searching call_notes for the call_sid or conversation_id
-    // Since we store the call details in call_notes as JSON, we need to search for it
-    const { data: leads, error: searchError } = await supabase
-      .from('leads')
-      .select('id, call_notes, call_transcript')
-      .or(`call_notes.ilike.%${callSid}%,call_notes.ilike.%${conversationId}%`)
-      .order('created_at', { ascending: false })
-      .limit(10);
+      console.log(`[handle-call-status] Processing post_call_transcription - conversation_id: ${conversationId}, status: ${status}`);
 
-    if (searchError) {
-      console.error('Error searching for lead:', searchError);
-      throw searchError;
-    }
+      // Find lead by conversation_id (primary) or call_sid (fallback)
+      let lead = null;
+      let searchError = null;
 
-    if (!leads || leads.length === 0) {
-      console.warn(`No lead found matching call_sid: ${callSid} or conversation_id: ${conversationId}`);
+      if (conversationId) {
+        const result = await supabase
+          .from('leads')
+          .select('id, confirmation_call_status')
+          .eq('conversation_id', conversationId)
+          .maybeSingle();
+        
+        lead = result.data;
+        searchError = result.error;
+      }
+
+      // Fallback to call_sid if no match
+      if (!lead && callSid) {
+        const result = await supabase
+          .from('leads')
+          .select('id, confirmation_call_status')
+          .eq('call_sid', callSid)
+          .maybeSingle();
+        
+        lead = result.data;
+        searchError = result.error;
+      }
+
+      if (searchError) {
+        console.error('[handle-call-status] Error searching for lead:', searchError);
+        throw searchError;
+      }
+
+      if (!lead) {
+        console.warn(`[handle-call-status] No lead found for conversation_id: ${conversationId} or call_sid: ${callSid}`);
+        return new Response(
+          JSON.stringify({ warning: 'No matching lead found', conversationId, callSid }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      console.log(`[handle-call-status] Found lead ${lead.id}, updating with transcript and status: ${status}`);
+
+      // Update lead with call results
+      const { error: updateError } = await supabase
+        .from('leads')
+        .update({
+          confirmation_call_status: status,
+          call_transcript: formattedTranscript || null,
+          call_summary: summary,
+          call_duration_seconds: duration,
+          call_ended_at: new Date().toISOString(),
+          call_notes: JSON.stringify({
+            webhook_type: 'post_call_transcription',
+            raw_status: data.status,
+            call_successful: data.analysis?.call_successful,
+            data_collected: data.analysis?.data_collected,
+            processed_at: new Date().toISOString(),
+          }),
+        })
+        .eq('id', lead.id);
+
+      if (updateError) {
+        console.error('[handle-call-status] Error updating lead:', updateError);
+        throw updateError;
+      }
+
+      console.log(`[handle-call-status] Successfully updated lead ${lead.id} with call results`);
+
       return new Response(
-        JSON.stringify({ warning: 'No matching lead found', callSid, conversationId }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ 
+          success: true, 
+          message: 'Call transcript processed',
+          leadId: lead.id,
+          status,
+          durationSeconds: duration,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+
+    } else if (webhook.type === 'call_initiation_failure') {
+      const data = webhook.data as CallInitiationFailureData;
+      
+      const conversationId = data.conversation_id;
+      const callSid = data.call_sid;
+      const status = mapStatus('unknown', data.failure_reason);
+
+      console.log(`[handle-call-status] Processing call_initiation_failure - reason: ${data.failure_reason}`);
+
+      // Find lead by conversation_id or call_sid
+      let lead = null;
+      let searchError = null;
+
+      if (conversationId) {
+        const result = await supabase
+          .from('leads')
+          .select('id, confirmation_call_status')
+          .eq('conversation_id', conversationId)
+          .maybeSingle();
+        
+        lead = result.data;
+        searchError = result.error;
+      }
+
+      if (!lead && callSid) {
+        const result = await supabase
+          .from('leads')
+          .select('id, confirmation_call_status')
+          .eq('call_sid', callSid)
+          .maybeSingle();
+        
+        lead = result.data;
+        searchError = result.error;
+      }
+
+      if (searchError) {
+        console.error('[handle-call-status] Error searching for lead:', searchError);
+        throw searchError;
+      }
+
+      if (!lead) {
+        console.warn(`[handle-call-status] No lead found for failed call - conversation_id: ${conversationId}, call_sid: ${callSid}`);
+        return new Response(
+          JSON.stringify({ warning: 'No matching lead found for failed call', conversationId, callSid }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      console.log(`[handle-call-status] Found lead ${lead.id}, updating with failure status: ${status}`);
+
+      // Update lead with failure status
+      const { error: updateError } = await supabase
+        .from('leads')
+        .update({
+          confirmation_call_status: status,
+          call_ended_at: new Date().toISOString(),
+          call_notes: JSON.stringify({
+            webhook_type: 'call_initiation_failure',
+            failure_reason: data.failure_reason,
+            to_number: data.to_number,
+            processed_at: new Date().toISOString(),
+          }),
+        })
+        .eq('id', lead.id);
+
+      if (updateError) {
+        console.error('[handle-call-status] Error updating lead:', updateError);
+        throw updateError;
+      }
+
+      console.log(`[handle-call-status] Successfully updated lead ${lead.id} with failure status`);
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'Call failure processed',
+          leadId: lead.id,
+          status,
+          failureReason: data.failure_reason,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+
+    } else if (webhook.type === 'post_call_audio') {
+      // Audio webhook - just log for now, could be used for recording storage later
+      console.log('[handle-call-status] Received post_call_audio webhook - acknowledging');
+      
+      return new Response(
+        JSON.stringify({ success: true, message: 'Audio webhook acknowledged' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Update the first matching lead
-    const lead = leads[0];
-    console.log(`Found lead ${lead.id}, updating with status: ${internalStatus}`);
-
-    // Parse existing call notes and append status update
-    let existingNotes: Record<string, unknown> = {};
-    try {
-      existingNotes = lead.call_notes ? JSON.parse(lead.call_notes) : {};
-    } catch {
-      existingNotes = { previous_notes: lead.call_notes };
-    }
-
-    const previousUpdates = Array.isArray(existingNotes.status_updates) 
-      ? existingNotes.status_updates 
-      : [];
-
-    const updatedNotes = {
-      ...existingNotes,
-      status_updates: [
-        ...previousUpdates,
-        {
-          status: internalStatus,
-          timestamp: new Date().toISOString(),
-          duration,
-          raw_status: status,
-        }
-      ],
-      final_status: internalStatus,
-      call_duration: duration,
-    };
-
-    // Build update object
-    const updateData: Record<string, unknown> = {
-      confirmation_call_status: internalStatus,
-      call_notes: JSON.stringify(updatedNotes),
-    };
-
-    // Add transcript if provided
-    if (transcript) {
-      updateData.call_transcript = transcript;
-    }
-
-    // Update with completion time if call is finished
-    if (['completed', 'no_answer', 'busy', 'failed', 'canceled'].includes(internalStatus)) {
-      updateData.confirmation_call_time = new Date().toISOString();
-    }
-
-    const { error: updateError } = await supabase
-      .from('leads')
-      .update(updateData)
-      .eq('id', lead.id);
-
-    if (updateError) {
-      console.error('Error updating lead:', updateError);
-      throw updateError;
-    }
-
-    console.log(`Successfully updated lead ${lead.id} with call status: ${internalStatus}`);
-
+    // Unknown webhook type
+    console.warn(`[handle-call-status] Unknown webhook type: ${webhook.type}`);
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: 'Call status updated',
-        leadId: lead.id,
-        status: internalStatus,
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ warning: 'Unknown webhook type', type: webhook.type }),
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error: unknown) {
-    console.error('Error in handle-call-status:', error);
+    console.error('[handle-call-status] Error:', error);
     // SEC-002: Sanitized error response - no internal details exposed
     return new Response(
       JSON.stringify({ error: 'Service temporarily unavailable' }),
