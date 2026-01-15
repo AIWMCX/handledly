@@ -17,6 +17,7 @@ import { CheckCircle, Shield, Clock, Star, MapPin } from "lucide-react";
 import { SocialProofBanner, MobileStickyCTA, QuoteFormWizard } from "@/components/conversion";
 import { QuoteFormData, ServiceType } from "@/types/conversion";
 import { ConversionEvents } from "@/lib/analytics";
+import { generateId, withRetry, classifyError, validateQuoteData } from "@/lib/apiUtils";
 
 // Map QuoteFormWizard ServiceType to quoteCalculator ServiceType
 const mapToCalcServiceType = (wizardType: ServiceType): CalcServiceType => {
@@ -63,6 +64,20 @@ export default function Quote() {
   } | null>(null);
 
   const handleWizardSubmit = async (data: QuoteFormData) => {
+    // Pre-submission validation
+    const validation = validateQuoteData({
+      fullName: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      moveDate: data.moveDate,
+      serviceType: data.serviceType,
+    });
+
+    if (!validation.valid) {
+      toast.error(validation.errors[0]);
+      throw new Error(validation.errors[0]);
+    }
+
     // Split name for personalized communication
     const { firstName, lastName } = splitName(data.fullName);
     
@@ -78,43 +93,59 @@ export default function Quote() {
       estimatedHours: data.estimatedHours,
     });
 
+    // Generate IDs client-side to avoid needing SELECT after INSERT
+    const leadId = generateId();
+    const quoteRequestId = generateId();
+
     try {
-      // Create lead
-      const { data: lead, error: leadError } = await supabase
-        .from('leads')
-        .insert({
-          full_name: data.fullName,
-          email: data.email,
-          phone: data.phone,
-          property_type: data.serviceType,
-          bedrooms: data.bedrooms,
-          move_from_address: data.moveFromAddress,
-          move_to_address: data.moveToAddress,
-          move_date: data.moveDate || null,
-          notes: data.notes || null,
-          estimated_quote: quote.total,
-          status: 'new',
-          prefer_email_only: data.preferEmailOnly,
-          has_specialty_items: data.hasStairs,
-        })
-        .select()
-        .single();
+      // Use retry logic for resilient submission
+      await withRetry(
+        async () => {
+          // Create lead - NO .select().single() needed!
+          const { error: leadError } = await supabase
+            .from('leads')
+            .insert({
+              id: leadId,
+              full_name: data.fullName,
+              email: data.email,
+              phone: data.phone,
+              property_type: data.serviceType,
+              bedrooms: data.bedrooms,
+              move_from_address: data.moveFromAddress,
+              move_to_address: data.moveToAddress,
+              move_date: data.moveDate || null,
+              notes: data.notes || null,
+              estimated_quote: quote.total,
+              status: 'new',
+              prefer_email_only: data.preferEmailOnly,
+              has_specialty_items: data.hasStairs,
+            });
 
-      if (leadError) throw leadError;
+          if (leadError) throw leadError;
 
-      // Create quote request
-      const { error: quoteError } = await supabase
-        .from('quote_requests')
-        .insert({
-          lead_id: lead.id,
-          property_type: data.serviceType,
-          bedrooms: data.bedrooms,
-          has_stairs: data.hasStairs,
-          floor_number: data.floorNumber,
-          total_quote: quote.total,
-        });
+          // Create quote request - also NO .select() needed
+          const { error: quoteError } = await supabase
+            .from('quote_requests')
+            .insert({
+              id: quoteRequestId,
+              lead_id: leadId,
+              property_type: data.serviceType,
+              bedrooms: data.bedrooms,
+              has_stairs: data.hasStairs,
+              floor_number: data.floorNumber,
+              total_quote: quote.total,
+            });
 
-      if (quoteError) throw quoteError;
+          if (quoteError) throw quoteError;
+        },
+        {
+          maxRetries: 3,
+          baseDelay: 1000,
+          onRetry: (attempt, error) => {
+            console.log(`Retry attempt ${attempt} after error:`, error.message);
+          },
+        }
+      );
 
       // Track conversion event
       ConversionEvents.quoteRequested(data.serviceType, quote.total);
@@ -130,10 +161,10 @@ export default function Quote() {
       setIsSubmitted(true);
       toast.success("Quote submitted! Check your email.");
 
-      // Send email quote (async) with split names and full addresses
+      // Send email quote (async, fire-and-forget)
       supabase.functions.invoke('send-quote-email', {
         body: {
-          leadId: lead.id,
+          leadId: leadId,
           firstName: firstName,
           lastName: lastName,
           customerName: data.fullName,
@@ -156,14 +187,15 @@ export default function Quote() {
         toast.success("Quote emailed to you!");
       }).catch((err) => {
         console.error("Email error:", err);
+        // Don't fail the whole submission for email issues
       });
 
-      // Schedule confirmation call if not email-only (will execute in 30 seconds)
+      // Schedule confirmation call if not email-only
       if (!data.preferEmailOnly) {
-        setCallScheduled(true); // Set immediately since call is scheduled
+        setCallScheduled(true);
         supabase.functions.invoke('trigger-confirmation-call', {
           body: {
-            leadId: lead.id,
+            leadId: leadId,
             firstName: firstName,
             lastName: lastName,
             customerName: data.fullName,
@@ -180,12 +212,17 @@ export default function Quote() {
         }).catch((err) => {
           console.error("Call scheduling error:", err);
           setCallScheduled(false);
+          // Don't fail the whole submission for call issues
         });
       }
 
     } catch (error) {
       console.error('Error submitting quote:', error);
-      toast.error("Failed to submit quote. Please try again.");
+      
+      // Classify the error and show user-friendly message
+      const classifiedError = classifyError(error);
+      toast.error(classifiedError.userMessage);
+      
       throw error; // Re-throw so the wizard knows submission failed
     }
   };
