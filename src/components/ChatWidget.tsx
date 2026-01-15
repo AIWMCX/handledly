@@ -227,9 +227,13 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
       createLead: async (params: CreateLeadParams) => {
         console.log("Creating lead via chat:", params);
         try {
-          const { data, error } = await supabase
+          // Generate leadId client-side to avoid RLS SELECT restriction
+          const leadId = crypto.randomUUID();
+          
+          const { error } = await supabase
             .from('leads')
             .insert({
+              id: leadId,
               full_name: params.fullName,
               email: params.email,
               phone: params.phone,
@@ -237,23 +241,20 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
               bedrooms: params.bedrooms,
               estimated_quote: params.estimatedQuote,
               status: 'new',
-            })
-            .select()
-            .single();
+              lead_source: 'chat_widget',
+            });
 
           if (error) throw error;
           
-          // Link lead to conversation
-          if (data?.id) {
-            await linkLeadToConversation(data.id);
-          }
+          // Link lead to conversation using the client-generated ID
+          await linkLeadToConversation(leadId);
           
           // Save tool execution
           await saveMessage('agent', `Lead created for ${params.fullName}`, {
             tool: 'createLead',
             params,
             result: 'success',
-            lead_id: data?.id,
+            lead_id: leadId,
           });
           
           return `Lead created successfully for ${params.fullName}. We'll follow up shortly!`;
@@ -563,7 +564,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
         <button
           onClick={handleOpen}
           className={cn(
-            "fixed bottom-[6.5rem] right-6 z-50 w-14 h-14 rounded-full",
+            "fixed bottom-[10rem] md:bottom-[6.5rem] right-6 z-40 w-14 h-14 rounded-full",
             "bg-secondary hover:bg-secondary/80 border border-border",
             "shadow-lg transition-all duration-300 hover:scale-105",
             "flex items-center justify-center",
@@ -578,7 +579,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
       {/* Chat Window */}
       {isOpen && (
         <div className={cn(
-          "fixed bottom-[6.5rem] right-6 z-50 w-[380px] h-[520px]",
+          "fixed bottom-[10rem] md:bottom-[6.5rem] right-6 z-50 w-[calc(100%-3rem)] max-w-[380px] h-[420px] md:h-[520px]",
           "bg-card border border-border rounded-2xl shadow-elegant",
           "flex flex-col overflow-hidden",
           className

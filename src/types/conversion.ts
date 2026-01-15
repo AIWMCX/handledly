@@ -24,6 +24,14 @@ export interface QuoteFormData {
   // Crew configuration (for applicable services)
   crewSize: number;
   estimatedHours: number;
+  
+  // UTM tracking (optional, added during submission)
+  lead_source?: string;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_content?: string | null;
+  utm_term?: string | null;
 }
 
 export type ServiceType = 

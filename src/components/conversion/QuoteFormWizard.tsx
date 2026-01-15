@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useFormPersistence } from '@/hooks/useFormPersistence';
+import { useUTMParams } from '@/hooks/useUTMParams';
 import { ConversionEvents, PageTiming } from '@/lib/analytics';
 import { QuoteFormData, ServiceType, PropertyType } from '@/types/conversion';
 import { cn } from '@/lib/utils';
@@ -84,6 +85,9 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [stepStartTime, setStepStartTime] = useState(Date.now());
+
+  // UTM tracking for marketing attribution
+  const utmParams = useUTMParams();
 
   // Form persistence
   const { savedData, saveData, clearData, hasRestoredData, markRestored } = useFormPersistence<QuoteFormData>({
@@ -167,7 +171,19 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
       const timeSpent = Math.round((Date.now() - stepStartTime) / 1000);
       ConversionEvents.formStepCompleted(3, timeSpent, 'quote_wizard');
 
-      await onSubmit(formData);
+      // Include UTM params in submission for marketing attribution
+      const dataWithUTM = {
+        ...formData,
+        // These will be passed to the onSubmit handler and then to the database
+        lead_source: utmParams.lead_source,
+        utm_source: utmParams.utm_source,
+        utm_medium: utmParams.utm_medium,
+        utm_campaign: utmParams.utm_campaign,
+        utm_content: utmParams.utm_content,
+        utm_term: utmParams.utm_term,
+      };
+
+      await onSubmit(dataWithUTM as QuoteFormData);
       
       // Clear saved data on success
       clearData();

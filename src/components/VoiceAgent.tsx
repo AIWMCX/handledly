@@ -59,9 +59,13 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
       createLead: async (params: CreateLeadParams) => {
         console.log("Creating lead:", params);
         try {
-          const { data, error } = await supabase
+          // Generate leadId client-side to avoid RLS SELECT restriction
+          const leadId = crypto.randomUUID();
+          
+          const { error } = await supabase
             .from('leads')
             .insert({
+              id: leadId,
               full_name: params.fullName,
               email: params.email,
               phone: params.phone,
@@ -69,9 +73,8 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
               bedrooms: params.bedrooms,
               estimated_quote: params.estimatedQuote,
               status: 'new',
-            })
-            .select()
-            .single();
+              lead_source: 'voice_agent',
+            });
 
           if (error) throw error;
           return `Lead created successfully for ${params.fullName}. We'll follow up shortly!`;
@@ -80,27 +83,8 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
           return "I apologize, I had trouble saving your information. Let me transfer you to our team.";
         }
       },
-      scheduleAppointment: async (params: ScheduleAppointmentParams) => {
-        console.log("Scheduling appointment:", params);
-        try {
-          const { data, error } = await supabase
-            .from('appointments')
-            .insert({
-              scheduled_date: params.date,
-              scheduled_time: params.time,
-              move_type: params.serviceType,
-              status: 'scheduled',
-            })
-            .select()
-            .single();
-
-          if (error) throw error;
-          return `Appointment scheduled for ${params.date} at ${params.time}. We'll send you a confirmation!`;
-        } catch (error) {
-          console.error("Error scheduling appointment:", error);
-          return "I had trouble scheduling that time. Let me connect you with our team to finalize.";
-        }
-      },
+      // Note: scheduleAppointment removed - appointments require admin approval
+      // Users can request scheduling through voice, and staff will follow up
       checkAvailability: async (params: CheckAvailabilityParams) => {
         console.log("Checking availability for:", params.date);
         const dayOfWeek = new Date(params.date).getDay();
@@ -167,7 +151,7 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
 
   if (variant === "floating") {
     return (
-      <div className={cn("fixed bottom-6 right-6 z-50", className)}>
+      <div className={cn("fixed bottom-24 md:bottom-6 right-6 z-40", className)}>
         {/* Pulse ring when connected */}
         {isConnected && (
           <div className="absolute inset-0 rounded-full animate-pulse-gold" />

@@ -208,6 +208,7 @@ export type Database = {
           full_name: string
           has_specialty_items: boolean | null
           id: string
+          lead_source: string | null
           move_date: string | null
           move_from_address: string | null
           move_to_address: string | null
@@ -218,6 +219,11 @@ export type Database = {
           specialty_items: string[] | null
           status: string
           updated_at: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
           verification_token: string | null
         }
         Insert: {
@@ -239,6 +245,7 @@ export type Database = {
           full_name: string
           has_specialty_items?: boolean | null
           id?: string
+          lead_source?: string | null
           move_date?: string | null
           move_from_address?: string | null
           move_to_address?: string | null
@@ -249,6 +256,11 @@ export type Database = {
           specialty_items?: string[] | null
           status?: string
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           verification_token?: string | null
         }
         Update: {
@@ -270,6 +282,7 @@ export type Database = {
           full_name?: string
           has_specialty_items?: boolean | null
           id?: string
+          lead_source?: string | null
           move_date?: string | null
           move_from_address?: string | null
           move_to_address?: string | null
@@ -280,6 +293,11 @@ export type Database = {
           specialty_items?: string[] | null
           status?: string
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           verification_token?: string | null
         }
         Relationships: []
