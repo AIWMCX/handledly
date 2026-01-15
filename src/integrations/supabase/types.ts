@@ -392,6 +392,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_rate_limit_readonly: {
+        Args: {
+          p_identifier: string
+          p_max_requests?: number
+          p_table_name: string
+          p_time_window_minutes?: number
+        }
+        Returns: boolean
+      }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       get_client_identifier: { Args: never; Returns: string }
       get_user_id_by_email: { Args: { email_input: string }; Returns: string }
