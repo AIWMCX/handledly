@@ -1,8 +1,8 @@
-# Handled Moving - Denver Professional Movers
-# https://handledmoving.com
+# Handledly Moving Services - Denver Professional Movers
+# https://handledly.com
 
 # Sitemap location
-Sitemap: https://handledmoving.com/sitemap.xml
+Sitemap: https://handledly.com/sitemap.xml
 
 # Google
 User-agent: Googlebot

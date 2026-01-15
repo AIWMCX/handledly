@@ -11,6 +11,7 @@ const corsHeaders = {
 
 interface QuoteEmailRequest {
   leadId: string;
+  verificationToken?: string;
   firstName: string;
   lastName: string;
   customerName: string; // Fallback
@@ -410,14 +411,61 @@ const handler = async (req: Request): Promise<Response> => {
     const lastName = data.lastName || '';
     
     console.log(`[send-quote-email] Processing request for lead: ${data.leadId}`);
-    console.log(`[send-quote-email] Recipient: ${firstName} ${lastName} <${data.email}>`);
-    console.log(`[send-quote-email] Quote total: $${data.totalQuote}`);
-    console.log(`[send-quote-email] Move: ${data.moveFrom || 'N/A'} → ${data.moveTo || 'N/A'}`);
 
-    // Initialize Supabase client for database updates
+    // Initialize Supabase client for database operations
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // SEC-001: Verify token and lead freshness before sending email
+    if (data.verificationToken) {
+      const { data: lead, error: verifyError } = await supabase
+        .from('leads')
+        .select('id, verification_token, email_sent, created_at')
+        .eq('id', data.leadId)
+        .single();
+
+      if (verifyError || !lead) {
+        console.error('[send-quote-email] Lead verification failed:', verifyError?.message);
+        return new Response(
+          JSON.stringify({ error: 'Invalid request' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Verify token matches
+      if (lead.verification_token !== data.verificationToken) {
+        console.error('[send-quote-email] Token mismatch for lead:', data.leadId);
+        return new Response(
+          JSON.stringify({ error: 'Invalid request' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Check if email was already sent (prevent replay)
+      if (lead.email_sent) {
+        console.log('[send-quote-email] Email already sent for lead:', data.leadId);
+        return new Response(
+          JSON.stringify({ success: true, message: 'Email already sent' }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Check lead freshness (created within last 5 minutes)
+      const createdAt = new Date(lead.created_at);
+      const now = new Date();
+      const ageMinutes = (now.getTime() - createdAt.getTime()) / (1000 * 60);
+      if (ageMinutes > 5) {
+        console.error('[send-quote-email] Lead too old:', ageMinutes, 'minutes');
+        return new Response(
+          JSON.stringify({ error: 'Request expired' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    console.log(`[send-quote-email] Recipient: ${firstName} ${lastName} <${data.email}>`);
+    console.log(`[send-quote-email] Quote total: $${data.totalQuote}`);
 
     // Send the email with retry logic - USING VERIFIED DOMAIN
     const emailResponse = await sendEmailWithRetry({
