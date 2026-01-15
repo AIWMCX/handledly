@@ -130,6 +130,13 @@ const generateQuoteNumber = (): string => {
               prefer_email_only: data.preferEmailOnly,
               has_specialty_items: data.hasStairs,
               verification_token: verificationToken,
+              // UTM tracking for marketing attribution
+              lead_source: data.lead_source || 'website',
+              utm_source: data.utm_source || null,
+              utm_medium: data.utm_medium || null,
+              utm_campaign: data.utm_campaign || null,
+              utm_content: data.utm_content || null,
+              utm_term: data.utm_term || null,
             });
 
           if (leadError) throw leadError;

@@ -155,11 +155,8 @@ const localBusinessSchema = {
       }
     ]
   },
-  "sameAs": [
-    "https://www.facebook.com/handledlymoving",
-    "https://www.instagram.com/handledlymoving",
-    "https://www.yelp.com/biz/handledly-moving-services-denver"
-  ]
+  // Note: Social media profiles will be added once created
+  // "sameAs": ["https://www.facebook.com/...", "https://www.instagram.com/..."]
 };
 
 export function SEO({ 
