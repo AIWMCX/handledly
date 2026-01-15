@@ -15,6 +15,7 @@ interface CallRequest {
   email: string;
   serviceType: string;
   totalQuote: number;
+  quoteNumber?: string;
   moveDate?: string;
   moveFrom?: string;
   moveTo?: string;
@@ -82,6 +83,7 @@ async function executeCall(data: CallRequest): Promise<void> {
     customer_last_name: lastName,
     customer_full_name: data.customerName,
     quote_total: data.totalQuote.toString(),
+    quote_number: data.quoteNumber || 'pending',
     service_type: serviceLabel,
     crew_size: data.crewSize.toString(),
     estimated_hours: data.estimatedHours.toString(),

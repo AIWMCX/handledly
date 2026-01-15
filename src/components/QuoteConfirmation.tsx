@@ -10,6 +10,7 @@ interface QuoteConfirmationProps {
   emailSent: boolean;
   callScheduled: boolean;
   preferEmailOnly: boolean;
+  quoteNumber: string;
 }
 
 export function QuoteConfirmation({
@@ -19,6 +20,7 @@ export function QuoteConfirmation({
   emailSent,
   callScheduled,
   preferEmailOnly,
+  quoteNumber,
 }: QuoteConfirmationProps) {
   // 30-second countdown for the call
   const [callCountdown, setCallCountdown] = useState(30);
@@ -49,10 +51,21 @@ export function QuoteConfirmation({
         Thank You, {displayName}!
       </h2>
       
-      <p className="text-muted-foreground mb-8 text-lg">
+      <p className="text-muted-foreground mb-6 text-lg">
         Your quote request has been received. We're honored you chose Handledly 
         for your moving needs!
       </p>
+
+      {/* Quote Number Display */}
+      <div className="bg-accent/10 rounded-xl p-5 mb-8 border border-accent/20">
+        <p className="text-sm text-muted-foreground mb-1">Your Quote Number</p>
+        <p className="text-3xl font-bold text-accent tracking-wider font-mono">
+          {quoteNumber}
+        </p>
+        <p className="text-xs text-muted-foreground mt-2">
+          Reference this number when speaking with our team
+        </p>
+      </div>
 
       {/* Status indicators */}
       <div className="space-y-3 mb-8">
