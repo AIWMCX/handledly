@@ -162,6 +162,21 @@ const generateQuoteNumber = (): string => {
       // Track conversion event
       ConversionEvents.quoteRequested(data.serviceType, quote.total);
 
+      // Send GA4 purchase event for revenue tracking
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'purchase', {
+          transaction_id: quoteNumber,
+          value: quote.total,
+          currency: 'USD',
+          items: [{
+            item_id: data.serviceType,
+            item_name: data.serviceType.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            price: quote.total,
+            quantity: 1
+          }]
+        });
+      }
+
       // Store submitted data for confirmation screen
       setSubmittedData({
         customerName: data.fullName || "Friend",
