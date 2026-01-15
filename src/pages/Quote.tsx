@@ -61,7 +61,15 @@ export default function Quote() {
     totalQuote: number;
     email: string;
     preferEmailOnly: boolean;
+    quoteNumber: string;
   } | null>(null);
+
+// Generate quote number: HM-YYYY-XXXX (XXXX = random 4 chars for uniqueness)
+const generateQuoteNumber = (): string => {
+  const year = new Date().getFullYear();
+  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `HM-${year}-${random}`;
+};
 
   const handleWizardSubmit = async (data: QuoteFormData) => {
     // Pre-submission validation
@@ -96,6 +104,7 @@ export default function Quote() {
     // Generate IDs client-side to avoid needing SELECT after INSERT
     const leadId = generateId();
     const quoteRequestId = generateId();
+    const quoteNumber = generateQuoteNumber();
 
     try {
       // Use retry logic for resilient submission
@@ -134,6 +143,7 @@ export default function Quote() {
               has_stairs: data.hasStairs,
               floor_number: data.floorNumber,
               total_quote: quote.total,
+              quote_number: quoteNumber,
             });
 
           if (quoteError) throw quoteError;
@@ -157,6 +167,7 @@ export default function Quote() {
         totalQuote: quote.total,
         email: data.email,
         preferEmailOnly: data.preferEmailOnly,
+        quoteNumber: quoteNumber,
       });
       setIsSubmitted(true);
       toast.success("Quote submitted! Check your email.");
@@ -177,6 +188,7 @@ export default function Quote() {
           laborCost: quote.laborCost,
           specialtyFee: quote.specialtyFee,
           totalQuote: quote.total,
+          quoteNumber: quoteNumber,
           moveDate: data.moveDate || undefined,
           moveFrom: data.moveFromAddress || undefined,
           moveTo: data.moveToAddress || undefined,
@@ -203,6 +215,7 @@ export default function Quote() {
             email: data.email,
             serviceType: data.serviceType,
             totalQuote: quote.total,
+            quoteNumber: quoteNumber,
             moveDate: data.moveDate || undefined,
             moveFrom: data.moveFromAddress || undefined,
             moveTo: data.moveToAddress || undefined,
@@ -317,6 +330,7 @@ export default function Quote() {
                 emailSent={emailSent}
                 callScheduled={callScheduled}
                 preferEmailOnly={submittedData.preferEmailOnly}
+                quoteNumber={submittedData.quoteNumber}
               />
             )
           )}

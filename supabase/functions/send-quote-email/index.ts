@@ -23,6 +23,7 @@ interface QuoteEmailRequest {
   laborCost: number;
   specialtyFee: number;
   totalQuote: number;
+  quoteNumber?: string;
   moveDate?: string;
   moveFrom?: string;
   moveTo?: string;
@@ -119,6 +120,21 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
           <!-- Main Content -->
           <tr>
             <td style="background: linear-gradient(135deg, #1C1917 0%, #292524 100%); border-radius: 16px; border: 1px solid #44403C; padding: 40px;">
+              
+              ${data.quoteNumber ? `
+              <!-- Quote Number Badge -->
+              <div style="text-align: center; margin-bottom: 30px; padding: 20px; background-color: #0C0A09; border-radius: 12px; border: 2px solid #D4AF37;">
+                <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #78716C;">
+                  YOUR QUOTE NUMBER
+                </p>
+                <p style="margin: 0; font-size: 28px; font-weight: 700; color: #D4AF37; letter-spacing: 3px; font-family: monospace;">
+                  ${data.quoteNumber}
+                </p>
+                <p style="margin: 10px 0 0; font-size: 12px; color: #A8A29E;">
+                  Reference this number when speaking with our team
+                </p>
+              </div>
+              ` : ''}
               
               <!-- Personal Greeting with Appreciation -->
               <p style="margin: 0 0 10px; font-size: 20px; color: #FAFAF9; font-weight: 600;">

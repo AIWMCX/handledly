@@ -293,6 +293,7 @@ export type Database = {
           id: string
           lead_id: string | null
           property_type: string
+          quote_number: string | null
           specialty_fee: number | null
           specialty_items: string[] | null
           square_footage: number | null
@@ -310,6 +311,7 @@ export type Database = {
           id?: string
           lead_id?: string | null
           property_type: string
+          quote_number?: string | null
           specialty_fee?: number | null
           specialty_items?: string[] | null
           square_footage?: number | null
@@ -327,6 +329,7 @@ export type Database = {
           id?: string
           lead_id?: string | null
           property_type?: string
+          quote_number?: string | null
           specialty_fee?: number | null
           specialty_items?: string[] | null
           square_footage?: number | null
