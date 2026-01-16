@@ -65,7 +65,6 @@ export const INCLUDED_WITH_EVERY_MOVE = [
   'Moving truck with fuel included',
   'All packing materials (blankets, wrap, tape)',
   'Furniture disassembly & reassembly',
-  'Floor & door protection',
   'No stair or elevator fees',
   'No truck/fuel surcharges',
   'Free basic packing supplies',
