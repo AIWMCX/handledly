@@ -311,7 +311,7 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                   <tr><td style="padding: 5px 0; color: #A8A29E;">✓ Moving truck with fuel included</td></tr>
                   <tr><td style="padding: 5px 0; color: #A8A29E;">✓ All packing materials (blankets, wrap, tape)</td></tr>
                   <tr><td style="padding: 5px 0; color: #A8A29E;">✓ Furniture disassembly & reassembly</td></tr>
-                  <tr><td style="padding: 5px 0; color: #A8A29E;">✓ Floor & door protection</td></tr>
+                  
                   <tr><td style="padding: 5px 0; color: #A8A29E;">✓ NO stair or elevator fees</td></tr>
                   <tr><td style="padding: 5px 0; color: #A8A29E;">✓ NO truck/fuel surcharges</td></tr>
                 </table>
