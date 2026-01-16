@@ -126,7 +126,15 @@ export type ConversionEventType =
   | 'mobile_cta_clicked'
   | 'scroll_milestone'
   | 'quote_requested'
-  | 'quote_previewed';
+  | 'quote_previewed'
+  // Chat Events
+  | 'chat_started'
+  | 'chat_message_sent'
+  | 'chat_quote_requested'
+  | 'chat_quote_submitted'
+  | 'chat_ended'
+  | 'chat_quick_action_used'
+  | 'chat_human_requested';
 
 export interface ConversionEventPayload {
   event: ConversionEventType;
