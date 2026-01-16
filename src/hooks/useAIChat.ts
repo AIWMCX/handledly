@@ -152,19 +152,15 @@ export function useAIChat({ onError, onQuoteSubmitted }: UseAIChatOptions = {}) 
         if (quoteError) throw quoteError;
       }, { maxRetries: 3, baseDelay: 1000 });
 
-      // Link lead to conversation
-      if (conversationId) {
-        await supabase
-          .from('chat_conversations')
-          .update({ lead_id: leadId })
-          .eq('id', conversationId);
-      }
+      // NOTE: lead_id linkage is now handled server-side by edge functions
+      // Client cannot update chat_conversations.lead_id due to RLS restrictions
 
-      // Send email confirmation
+      // Send email confirmation (with conversationId for server-side linkage)
       supabase.functions.invoke('send-quote-email', {
         body: {
           leadId,
           verificationToken,
+          conversationId, // Server-side lead linkage
           firstName,
           lastName,
           customerName: quoteData.fullName,
@@ -455,19 +451,8 @@ export function useAIChat({ onError, onQuoteSubmitted }: UseAIChatOptions = {}) 
     }
   }, [isConnected, isLoading, saveMessage, onError, processQuoteSubmission]);
 
-  // Link a lead to the current conversation
-  const linkLeadToConversation = useCallback(async (leadId: string) => {
-    if (!conversationId) return;
-    
-    try {
-      await supabase
-        .from('chat_conversations')
-        .update({ lead_id: leadId })
-        .eq('id', conversationId);
-    } catch (error) {
-      console.error('Failed to link lead to conversation:', error);
-    }
-  }, [conversationId]);
+  // NOTE: linkLeadToConversation removed - RLS now prevents client-side updates
+  // Lead linking is handled server-side by edge functions using service role
 
   return {
     messages,
@@ -479,6 +464,5 @@ export function useAIChat({ onError, onQuoteSubmitted }: UseAIChatOptions = {}) 
     startChat,
     endChat,
     sendMessage,
-    linkLeadToConversation,
   };
 }
