@@ -411,15 +411,7 @@ export type Database = {
       }
     }
     Views: {
-      business_info_public: {
-        Row: {
-          address: string | null
-          company_name: string | null
-          phone_number: string | null
-          service_areas: string[] | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       check_rate_limit: {
@@ -442,6 +434,15 @@ export type Database = {
       }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       get_client_identifier: { Args: never; Returns: string }
+      get_public_business_info: {
+        Args: never
+        Returns: {
+          address: string
+          company_name: string
+          phone_number: string
+          service_areas: string[]
+        }[]
+      }
       get_user_id_by_email: { Args: { email_input: string }; Returns: string }
       has_role: {
         Args: {
