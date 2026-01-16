@@ -12,6 +12,7 @@ const corsHeaders = {
 interface QuoteEmailRequest {
   leadId: string;
   verificationToken?: string;
+  conversationId?: string; // For server-side lead linkage
   firstName: string;
   lastName: string;
   customerName: string; // Fallback
@@ -461,6 +462,21 @@ const handler = async (req: Request): Promise<Response> => {
           JSON.stringify({ error: 'Request expired' }),
           { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
+      }
+
+      // SEC-003: Server-side lead linkage to conversation (RLS prevents client-side updates)
+      if (data.conversationId) {
+        const { error: linkError } = await supabase
+          .from('chat_conversations')
+          .update({ lead_id: data.leadId })
+          .eq('id', data.conversationId);
+        
+        if (linkError) {
+          console.error('[send-quote-email] Failed to link conversation:', linkError.message);
+          // Non-fatal: continue with email sending
+        } else {
+          console.log('[send-quote-email] Linked lead to conversation:', data.conversationId);
+        }
       }
     }
 
