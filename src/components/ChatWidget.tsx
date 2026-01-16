@@ -6,6 +6,7 @@ import { MessageCircle, X, Send, Bot, User, Loader2, Sparkles, Calendar, Clock, 
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useAIChat } from "@/hooks/useAIChat";
+import { ConversionEvents } from "@/lib/analytics";
 
 interface ChatWidgetProps {
   className?: string;
@@ -55,14 +56,14 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
   // Auto-connect for inline variant
   useEffect(() => {
     if (variant === "inline" && !isConnected && !isLoading) {
-      startChat();
+      startChat('inline');
     }
   }, [variant, isConnected, isLoading, startChat]);
 
   const handleOpen = async () => {
     setIsOpen(true);
     if (!isConnected) {
-      await startChat();
+      await startChat('floating');
     }
   };
 
@@ -89,7 +90,8 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
     }
   };
 
-  const handleQuickAction = (prompt: string) => {
+  const handleQuickAction = (action: string, prompt: string) => {
+    ConversionEvents.chatQuickActionUsed(action, window.location.pathname);
     handleSendMessage(prompt);
   };
 
@@ -258,7 +260,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
               {quickActions.slice(0, 2).map((action) => (
                 <button
                   key={action.label}
-                  onClick={() => handleQuickAction(action.prompt)}
+                  onClick={() => handleQuickAction(action.label, action.prompt)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary hover:bg-secondary/80 border border-border text-xs font-medium text-foreground transition-colors"
                 >
                   <action.icon className="w-3 h-3 text-primary" />
@@ -440,7 +442,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
                 {quickActions.map((action) => (
                   <button
                     key={action.label}
-                    onClick={() => handleQuickAction(action.prompt)}
+                    onClick={() => handleQuickAction(action.label, action.prompt)}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary hover:bg-secondary/80 border border-border text-xs font-medium text-foreground transition-colors"
                   >
                     <action.icon className="w-3 h-3 text-primary" />

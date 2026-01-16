@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { calculateQuote, type ServiceType as CalcServiceType } from '@/lib/quoteCalculator';
 import { generateId, withRetry } from '@/lib/apiUtils';
+import { ConversionEvents } from '@/lib/analytics';
 
 interface Message {
   id: string;
@@ -83,6 +84,8 @@ export function useAIChat({ onError, onQuoteSubmitted }: UseAIChatOptions = {}) 
   
   const sessionIdRef = useRef<string>(crypto.randomUUID());
   const conversationHistoryRef = useRef<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
+  const chatStartTimeRef = useRef<number>(Date.now());
+  const messageCountRef = useRef<number>(0);
 
   // Process quote submission
   const processQuoteSubmission = useCallback(async (quoteData: QuoteData): Promise<QuoteSubmissionResult> => {
@@ -216,6 +219,9 @@ export function useAIChat({ onError, onQuoteSubmitted }: UseAIChatOptions = {}) 
       setIsQuoteSubmitted(true);
       onQuoteSubmitted?.(result);
 
+      // Track quote submission analytics
+      ConversionEvents.chatQuoteSubmitted(quoteNumber, quote.total, quoteData.serviceType);
+
       console.log('[useAIChat] Quote submitted successfully:', quoteNumber);
       return result;
 
@@ -278,15 +284,20 @@ export function useAIChat({ onError, onQuoteSubmitted }: UseAIChatOptions = {}) 
   }, [conversationId]);
 
   // Start the chat session
-  const startChat = useCallback(async () => {
+  const startChat = useCallback(async (variant: 'floating' | 'inline' = 'floating') => {
     setIsLoading(true);
     
     // Reset state
     sessionIdRef.current = crypto.randomUUID();
     conversationHistoryRef.current = [];
+    chatStartTimeRef.current = Date.now();
+    messageCountRef.current = 0;
     setMessages([]);
     setQuoteSubmission(null);
     setIsQuoteSubmitted(false);
+
+    // Track chat started
+    ConversionEvents.chatStarted(variant, window.location.pathname);
     
     try {
       const newConversationId = await createConversation();
@@ -326,6 +337,10 @@ export function useAIChat({ onError, onQuoteSubmitted }: UseAIChatOptions = {}) 
 
   // End the chat session
   const endChat = useCallback(async () => {
+    // Track chat ended with stats
+    const durationSeconds = Math.round((Date.now() - chatStartTimeRef.current) / 1000);
+    ConversionEvents.chatEnded(messageCountRef.current, durationSeconds, isQuoteSubmitted);
+
     if (conversationId) {
       try {
         await supabase
@@ -346,11 +361,23 @@ export function useAIChat({ onError, onQuoteSubmitted }: UseAIChatOptions = {}) 
     setQuoteSubmission(null);
     setIsQuoteSubmitted(false);
     conversationHistoryRef.current = [];
-  }, [conversationId]);
+  }, [conversationId, isQuoteSubmitted]);
 
   // Send a message
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim() || !isConnected || isLoading) return;
+
+    const isFirstMessage = messageCountRef.current === 0;
+    messageCountRef.current++;
+
+    // Track message sent
+    ConversionEvents.chatMessageSent(content.trim().length, isFirstMessage);
+
+    // Detect quote-related intent
+    const quoteKeywords = ['quote', 'price', 'cost', 'estimate', 'how much', 'pricing'];
+    if (quoteKeywords.some(keyword => content.toLowerCase().includes(keyword))) {
+      ConversionEvents.chatQuoteRequested(window.location.pathname);
+    }
 
     // Add user message to UI
     const userMessage: Message = {

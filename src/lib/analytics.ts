@@ -160,6 +160,46 @@ export const ConversionEvents = {
       estimated_value: estimatedValue,
     });
   },
+
+  // Chat Events
+  chatStarted: (variant: 'floating' | 'inline', page: string) => {
+    trackEvent('chat_started', { variant, page });
+  },
+
+  chatMessageSent: (messageLength: number, isFirstMessage: boolean) => {
+    trackEvent('chat_message_sent', {
+      message_length: messageLength,
+      is_first_message: isFirstMessage,
+    });
+  },
+
+  chatQuoteRequested: (page: string) => {
+    trackEvent('chat_quote_requested', { page });
+  },
+
+  chatQuoteSubmitted: (quoteNumber: string, estimatedValue: number, serviceType?: string) => {
+    trackEvent('chat_quote_submitted', {
+      quote_number: quoteNumber,
+      estimated_value: estimatedValue,
+      service_type: serviceType,
+    });
+  },
+
+  chatEnded: (totalMessages: number, durationSeconds: number, quoteSubmitted: boolean) => {
+    trackEvent('chat_ended', {
+      total_messages: totalMessages,
+      duration_seconds: durationSeconds,
+      quote_submitted: quoteSubmitted,
+    });
+  },
+
+  chatQuickActionUsed: (action: string, page: string) => {
+    trackEvent('chat_quick_action_used', { action, page });
+  },
+
+  chatHumanRequested: (messageCount: number) => {
+    trackEvent('chat_human_requested', { messages_before_request: messageCount });
+  },
 };
 
 // A/B Test Assignment
