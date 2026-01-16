@@ -1,5 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { calculateQuote, type ServiceType as CalcServiceType } from '@/lib/quoteCalculator';
+import { generateId, withRetry } from '@/lib/apiUtils';
 
 interface Message {
   id: string;
@@ -8,18 +10,220 @@ interface Message {
   timestamp: Date;
 }
 
-interface UseAIChatOptions {
-  onError?: (error: string) => void;
+interface QuoteData {
+  fullName: string;
+  email: string;
+  phone: string;
+  moveFromAddress?: string;
+  moveToAddress?: string;
+  moveDate?: string;
+  serviceType?: string;
+  bedrooms?: number;
+  specialItems?: string[];
+  notes?: string;
 }
 
-export function useAIChat({ onError }: UseAIChatOptions = {}) {
+export interface QuoteSubmissionResult {
+  success: boolean;
+  quoteNumber?: string;
+  totalQuote?: number;
+  firstName?: string;
+  email?: string;
+  leadId?: string;
+}
+
+interface UseAIChatOptions {
+  onError?: (error: string) => void;
+  onQuoteSubmitted?: (result: QuoteSubmissionResult) => void;
+}
+
+// Map service types
+const mapToCalcServiceType = (serviceType?: string): CalcServiceType => {
+  const mapping: Record<string, CalcServiceType> = {
+    'local-moving': 'local-moving',
+    'residential': 'local-moving',
+    'long-distance': 'local-moving',
+    'same-day': 'local-moving',
+    'piano-moving': 'heavy-items',
+    'pool-table': 'heavy-items',
+    'safe-moving': 'heavy-items',
+    'heavy-items': 'heavy-items',
+    'junk-removal': 'heavy-items',
+    'moving-help': 'local-moving',
+  };
+  return mapping[serviceType || 'local-moving'] || 'local-moving';
+};
+
+const mapCrewConfig = (bedrooms: number): string => {
+  if (bedrooms <= 2) return 'moving-2-movers';
+  if (bedrooms === 3) return 'moving-3-movers';
+  return 'moving-4-movers';
+};
+
+const splitName = (fullName: string): { firstName: string; lastName: string } => {
+  const nameParts = fullName.trim().split(' ');
+  const firstName = nameParts[0] || 'Friend';
+  const lastName = nameParts.slice(1).join(' ') || '';
+  return { firstName, lastName };
+};
+
+const generateQuoteNumber = (): string => {
+  const year = new Date().getFullYear();
+  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `HM-${year}-${random}`;
+};
+
+export function useAIChat({ onError, onQuoteSubmitted }: UseAIChatOptions = {}) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [quoteSubmission, setQuoteSubmission] = useState<QuoteSubmissionResult | null>(null);
+  const [isQuoteSubmitted, setIsQuoteSubmitted] = useState(false);
   
   const sessionIdRef = useRef<string>(crypto.randomUUID());
   const conversationHistoryRef = useRef<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
+
+  // Process quote submission
+  const processQuoteSubmission = useCallback(async (quoteData: QuoteData): Promise<QuoteSubmissionResult> => {
+    console.log('[useAIChat] Processing quote submission:', quoteData);
+    
+    try {
+      const { firstName, lastName } = splitName(quoteData.fullName);
+      const calcServiceType = mapToCalcServiceType(quoteData.serviceType);
+      const bedrooms = quoteData.bedrooms || 2;
+      const crewConfig = mapCrewConfig(bedrooms);
+      
+      // Calculate quote
+      const quote = calculateQuote({
+        serviceType: calcServiceType,
+        bedrooms,
+        crewConfig,
+        estimatedHours: Math.max(2, 2 + bedrooms),
+      });
+
+      // Generate IDs
+      const leadId = generateId();
+      const quoteRequestId = generateId();
+      const quoteNumber = generateQuoteNumber();
+      const verificationToken = crypto.randomUUID();
+
+      // Create lead and quote request
+      await withRetry(async () => {
+        const { error: leadError } = await supabase
+          .from('leads')
+          .insert({
+            id: leadId,
+            full_name: quoteData.fullName,
+            email: quoteData.email,
+            phone: quoteData.phone,
+            property_type: quoteData.serviceType || 'local-moving',
+            bedrooms,
+            move_from_address: quoteData.moveFromAddress || null,
+            move_to_address: quoteData.moveToAddress || null,
+            move_date: quoteData.moveDate || null,
+            notes: quoteData.notes || 'Quote submitted via AI chat',
+            estimated_quote: quote.total,
+            status: 'new',
+            verification_token: verificationToken,
+            conversation_id: conversationId,
+            lead_source: 'ai-chat',
+            specialty_items: quoteData.specialItems || null,
+            has_specialty_items: (quoteData.specialItems?.length || 0) > 0,
+          });
+
+        if (leadError) throw leadError;
+
+        const { error: quoteError } = await supabase
+          .from('quote_requests')
+          .insert({
+            id: quoteRequestId,
+            lead_id: leadId,
+            property_type: quoteData.serviceType || 'local-moving',
+            bedrooms,
+            total_quote: quote.total,
+            quote_number: quoteNumber,
+            specialty_items: quoteData.specialItems || null,
+          });
+
+        if (quoteError) throw quoteError;
+      }, { maxRetries: 3, baseDelay: 1000 });
+
+      // Link lead to conversation
+      if (conversationId) {
+        await supabase
+          .from('chat_conversations')
+          .update({ lead_id: leadId })
+          .eq('id', conversationId);
+      }
+
+      // Send email confirmation
+      supabase.functions.invoke('send-quote-email', {
+        body: {
+          leadId,
+          verificationToken,
+          firstName,
+          lastName,
+          customerName: quoteData.fullName,
+          email: quoteData.email,
+          phone: quoteData.phone,
+          serviceType: quoteData.serviceType || 'local-moving',
+          crewSize: quote.crewSize,
+          hourlyRate: quote.hourlyRate,
+          estimatedHours: quote.estimatedHours,
+          laborCost: quote.laborCost,
+          specialtyFee: quote.specialtyFee,
+          totalQuote: quote.total,
+          quoteNumber,
+          moveDate: quoteData.moveDate,
+          moveFrom: quoteData.moveFromAddress,
+          moveTo: quoteData.moveToAddress,
+          notes: quoteData.notes,
+        }
+      }).catch(err => console.error('Email error:', err));
+
+      // Schedule confirmation call
+      supabase.functions.invoke('trigger-confirmation-call', {
+        body: {
+          leadId,
+          verificationToken,
+          firstName,
+          lastName,
+          customerName: quoteData.fullName,
+          phone: quoteData.phone,
+          email: quoteData.email,
+          serviceType: quoteData.serviceType || 'local-moving',
+          totalQuote: quote.total,
+          quoteNumber,
+          moveDate: quoteData.moveDate,
+          moveFrom: quoteData.moveFromAddress,
+          moveTo: quoteData.moveToAddress,
+          crewSize: quote.crewSize,
+          estimatedHours: quote.estimatedHours,
+        }
+      }).catch(err => console.error('Call error:', err));
+
+      const result: QuoteSubmissionResult = {
+        success: true,
+        quoteNumber,
+        totalQuote: quote.total,
+        firstName,
+        email: quoteData.email,
+        leadId,
+      };
+
+      setQuoteSubmission(result);
+      setIsQuoteSubmitted(true);
+      onQuoteSubmitted?.(result);
+
+      console.log('[useAIChat] Quote submitted successfully:', quoteNumber);
+      return result;
+
+    } catch (error) {
+      console.error('[useAIChat] Quote submission failed:', error);
+      return { success: false };
+    }
+  }, [conversationId, onQuoteSubmitted]);
 
   // Create a new conversation in the database
   const createConversation = useCallback(async () => {
@@ -77,10 +281,12 @@ export function useAIChat({ onError }: UseAIChatOptions = {}) {
   const startChat = useCallback(async () => {
     setIsLoading(true);
     
-    // Generate new session ID
+    // Reset state
     sessionIdRef.current = crypto.randomUUID();
     conversationHistoryRef.current = [];
     setMessages([]);
+    setQuoteSubmission(null);
+    setIsQuoteSubmitted(false);
     
     try {
       const newConversationId = await createConversation();
@@ -137,6 +343,8 @@ export function useAIChat({ onError }: UseAIChatOptions = {}) {
     setIsConnected(false);
     setMessages([]);
     setConversationId(null);
+    setQuoteSubmission(null);
+    setIsQuoteSubmitted(false);
     conversationHistoryRef.current = [];
   }, [conversationId]);
 
@@ -180,6 +388,11 @@ export function useAIChat({ onError }: UseAIChatOptions = {}) {
         throw new Error('No response received');
       }
 
+      // Check if there's a quote action to process
+      if (data.action?.type === 'submit_quote' && data.action.data) {
+        await processQuoteSubmission(data.action.data);
+      }
+
       // Add assistant response to UI
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
@@ -204,7 +417,7 @@ export function useAIChat({ onError }: UseAIChatOptions = {}) {
       const errorMessage: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
-        content: "I apologize, I'm having trouble responding right now. Please try again, or call us at (720) 555-0123 for immediate assistance.",
+        content: "I apologize, I'm having trouble responding right now. Please try again, or call us at (878) 218-7397 for immediate assistance.",
         timestamp: new Date(),
       };
       
@@ -213,7 +426,7 @@ export function useAIChat({ onError }: UseAIChatOptions = {}) {
     } finally {
       setIsLoading(false);
     }
-  }, [isConnected, isLoading, saveMessage, onError]);
+  }, [isConnected, isLoading, saveMessage, onError, processQuoteSubmission]);
 
   // Link a lead to the current conversation
   const linkLeadToConversation = useCallback(async (leadId: string) => {
@@ -234,6 +447,8 @@ export function useAIChat({ onError }: UseAIChatOptions = {}) {
     isLoading,
     isConnected,
     conversationId,
+    quoteSubmission,
+    isQuoteSubmitted,
     startChat,
     endChat,
     sendMessage,
