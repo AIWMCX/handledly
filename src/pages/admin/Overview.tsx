@@ -1,11 +1,39 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import StatsCard from '@/components/admin/StatsCard';
-import { Users, Phone, Calendar, DollarSign, MessageSquare, TrendingUp } from 'lucide-react';
+import { Users, Phone, Calendar, DollarSign, MessageSquare, TrendingUp, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+
+// Chart configuration for chat activity
+const chatChartConfig = {
+  chats: {
+    label: "Chats",
+    color: "hsl(var(--accent))",
+  },
+} satisfies ChartConfig;
+
+// Helper function to get last 7 days of chat data
+const getLast7DaysChats = (conversations: Array<{ created_at: string }> | null | undefined) => {
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    
+    const count = conversations?.filter(c => {
+      const chatDate = new Date(c.created_at);
+      return chatDate.toDateString() === date.toDateString();
+    }).length || 0;
+    
+    days.push({ date: dateStr, chats: count });
+  }
+  return days;
+};
 
 const Overview = () => {
   // Fetch leads data
@@ -47,7 +75,19 @@ const Overview = () => {
     },
   });
 
-  const isLoading = leadsLoading || appointmentsLoading || conversationsLoading;
+  // Fetch chat messages data for analytics
+  const { data: chatMessages, isLoading: messagesLoading } = useQuery({
+    queryKey: ['admin-chat-messages-stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .select('id, conversation_id, role, created_at');
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const isLoading = leadsLoading || appointmentsLoading || conversationsLoading || messagesLoading;
 
   // Calculate stats
   const totalLeads = leads?.length || 0;
@@ -66,6 +106,26 @@ const Overview = () => {
   const totalRevenue = leads?.reduce((sum, lead) => sum + (lead.estimated_quote || 0), 0) || 0;
 
   const recentLeads = leads?.slice(0, 5) || [];
+
+  // Chat Analytics Calculations
+  const totalChats = conversations?.length || 0;
+  const chatsToday = conversations?.filter(c => {
+    const today = new Date();
+    const chatDate = new Date(c.created_at);
+    return chatDate.toDateString() === today.toDateString();
+  }).length || 0;
+
+  const chatsWithQuotes = conversations?.filter(c => c.lead_id !== null).length || 0;
+  const quoteConversionRate = totalChats > 0 
+    ? Math.round((chatsWithQuotes / totalChats) * 100) 
+    : 0;
+
+  const userMessages = chatMessages?.filter(m => m.role === 'user').length || 0;
+  const avgMessagesPerSession = totalChats > 0 
+    ? (userMessages / totalChats).toFixed(1) 
+    : '0';
+
+  const chatsByDay = getLast7DaysChats(conversations);
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -131,6 +191,75 @@ const Overview = () => {
           value={totalLeads > 0 ? `${Math.round((appointments?.length || 0) / totalLeads * 100)}%` : '0%'}
           icon={TrendingUp}
         />
+      </div>
+
+      {/* Chat Analytics Section */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+          <BarChart3 className="w-5 h-5 text-accent" />
+          Chat Analytics
+        </h2>
+        
+        {/* Chat Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatsCard
+            title="Total Chats"
+            value={totalChats}
+            icon={MessageSquare}
+            trend={chatsToday > 0 ? { value: chatsToday, isPositive: true } : undefined}
+          />
+          <StatsCard
+            title="Quote Conversion"
+            value={`${quoteConversionRate}%`}
+            icon={TrendingUp}
+          />
+          <StatsCard
+            title="Avg Messages/Chat"
+            value={avgMessagesPerSession}
+            icon={MessageSquare}
+          />
+          <StatsCard
+            title="Chats → Quotes"
+            value={chatsWithQuotes}
+            icon={DollarSign}
+          />
+        </div>
+        
+        {/* Chats Over Time Chart */}
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-base">Chat Activity (Last 7 Days)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chatChartConfig} className="h-[200px] w-full">
+              <AreaChart data={chatsByDay} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
+                <XAxis 
+                  dataKey="date" 
+                  tick={{ fontSize: 12 }} 
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-muted-foreground"
+                />
+                <YAxis 
+                  tick={{ fontSize: 12 }} 
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-muted-foreground"
+                  allowDecimals={false}
+                />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Area 
+                  type="monotone" 
+                  dataKey="chats" 
+                  stroke="hsl(var(--accent))" 
+                  fill="hsl(var(--accent) / 0.2)"
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Recent Activity */}
