@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageCircle, X, Send, Bot, User, Loader2, Sparkles, Calendar, Clock, DollarSign, Phone } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Loader2, Sparkles, Calendar, Clock, DollarSign, Phone, CheckCircle, Mail, PhoneCall } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useAIChat } from "@/hooks/useAIChat";
@@ -19,6 +20,7 @@ const quickActions = [
 ];
 
 export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps) {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(variant === "inline");
   const [inputValue, setInputValue] = useState("");
   const [showQuickActions, setShowQuickActions] = useState(true);
@@ -28,6 +30,8 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
     messages,
     isLoading,
     isConnected,
+    quoteSubmission,
+    isQuoteSubmitted,
     startChat,
     endChat,
     sendMessage,
@@ -36,12 +40,17 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
       console.error('Chat error:', error);
       toast.error("Something went wrong. Please try again.");
     },
+    onQuoteSubmitted: (result) => {
+      if (result.success) {
+        toast.success(`Quote ${result.quoteNumber} submitted successfully!`);
+      }
+    },
   });
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, isQuoteSubmitted]);
 
   // Auto-connect for inline variant
   useEffect(() => {
@@ -84,9 +93,57 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
     handleSendMessage(prompt);
   };
 
+  const handleViewConfirmation = () => {
+    if (quoteSubmission) {
+      navigate(`/quote?confirmed=true&quoteNumber=${quoteSubmission.quoteNumber}&email=${quoteSubmission.email}&name=${quoteSubmission.firstName}&total=${quoteSubmission.totalQuote}`);
+    }
+  };
+
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
+
+  // Quote Confirmation Card Component
+  const QuoteConfirmationCard = () => (
+    <div className="mx-2 my-4 p-4 bg-accent/10 border border-accent/30 rounded-xl animate-in fade-in slide-in-from-bottom-2 duration-300">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
+          <CheckCircle className="w-5 h-5 text-accent" />
+        </div>
+        <div>
+          <p className="font-semibold text-foreground">Quote Submitted!</p>
+          <p className="text-xs text-muted-foreground">#{quoteSubmission?.quoteNumber}</p>
+        </div>
+      </div>
+      
+      <div className="space-y-2 mb-4">
+        <div className="flex items-center gap-2 text-sm">
+          <Mail className="w-4 h-4 text-accent" />
+          <span className="text-foreground">Email confirmation sent</span>
+        </div>
+        <div className="flex items-center gap-2 text-sm">
+          <PhoneCall className="w-4 h-4 text-accent" />
+          <span className="text-foreground">Call scheduled in ~30 seconds</span>
+        </div>
+        {quoteSubmission?.totalQuote && (
+          <div className="flex items-center gap-2 text-sm">
+            <DollarSign className="w-4 h-4 text-accent" />
+            <span className="text-foreground font-medium">
+              Estimated: ${quoteSubmission.totalQuote.toLocaleString()}
+            </span>
+          </div>
+        )}
+      </div>
+      
+      <Button
+        onClick={handleViewConfirmation}
+        className="w-full gradient-gold text-primary-foreground"
+        size="sm"
+      >
+        View Full Confirmation
+      </Button>
+    </div>
+  );
 
   // Inline variant for Contact page
   if (variant === "inline") {
@@ -172,6 +229,9 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
             </div>
           ))}
           
+          {/* Quote Confirmation Card */}
+          {isQuoteSubmitted && quoteSubmission && <QuoteConfirmationCard />}
+          
           {/* Typing indicator */}
           {isLoading && messages.length > 0 && (
             <div className="flex gap-2 justify-start">
@@ -192,7 +252,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
         </div>
 
         {/* Quick Actions */}
-        {showQuickActions && isConnected && messages.length <= 1 && (
+        {showQuickActions && isConnected && messages.length <= 1 && !isQuoteSubmitted && (
           <div className="px-4 pb-2">
             <div className="flex flex-wrap gap-2">
               {quickActions.slice(0, 2).map((action) => (
@@ -216,7 +276,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Type a message..."
+              placeholder={isQuoteSubmitted ? "Ask another question..." : "Type a message..."}
               className="flex-1 text-sm"
               disabled={!isConnected || isLoading}
             />
@@ -257,7 +317,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
       {/* Chat Window */}
       {isOpen && (
         <div className={cn(
-          "fixed bottom-[10rem] md:bottom-[6.5rem] right-6 z-50 w-[calc(100%-3rem)] max-w-[380px] h-[420px] md:h-[520px]",
+          "fixed bottom-[10rem] md:bottom-[6.5rem] right-6 z-50 w-[calc(100%-3rem)] max-w-[380px] h-[480px] md:h-[560px]",
           "bg-card border border-border rounded-2xl shadow-elegant",
           "flex flex-col overflow-hidden",
           className
@@ -350,6 +410,9 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
               </div>
             ))}
             
+            {/* Quote Confirmation Card */}
+            {isQuoteSubmitted && quoteSubmission && <QuoteConfirmationCard />}
+            
             {/* Typing indicator */}
             {isLoading && messages.length > 0 && (
               <div className="flex gap-2 justify-start">
@@ -370,7 +433,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
           </div>
 
           {/* Quick Actions */}
-          {showQuickActions && isConnected && messages.length <= 1 && (
+          {showQuickActions && isConnected && messages.length <= 1 && !isQuoteSubmitted && (
             <div className="px-4 pb-2">
               <p className="text-xs text-muted-foreground mb-2">Quick actions:</p>
               <div className="flex flex-wrap gap-2">
@@ -395,7 +458,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Type a message..."
+                placeholder={isQuoteSubmitted ? "Ask another question..." : "Type a message..."}
                 className="flex-1"
                 disabled={!isConnected || isLoading}
               />
@@ -409,9 +472,9 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              <a href="tel:7205550123" className="inline-flex items-center gap-1 text-primary hover:underline">
+              <a href="tel:8782187397" className="inline-flex items-center gap-1 text-primary hover:underline">
                 <Phone className="w-3 h-3" />
-                Call (720) 555-0123
+                Call (878) 218-7397
               </a>
               {" for instant voice quotes"}
             </p>
