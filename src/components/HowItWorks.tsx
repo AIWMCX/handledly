@@ -77,10 +77,6 @@ export function HowItWorks() {
                     <step.Icon size="list" color="white" />
                   </div>
                   
-                  {/* Step number badge */}
-                  <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center shadow-depth-2 z-20">
-                    {step.number}
-                  </div>
                 </div>
                 
                 <h3 className="font-heading text-lg font-semibold text-primary mb-2 group-hover:text-accent transition-colors">
