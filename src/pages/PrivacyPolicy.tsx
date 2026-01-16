@@ -28,10 +28,10 @@ const PrivacyPolicy = () => {
             {/* Introduction */}
             <div className="mb-8">
               <p className="text-foreground leading-relaxed">
-                [Company Name], operated by [Legal Entity Name] ("Company," "we," "our," or "us"), 
+                Handledly Moving Services, operated by Handledly Moving Services Inc. ("Company," "we," "our," or "us"), 
                 provides moving services through our website at{" "}
-                <a href="https://yourcompany.com" className="text-primary hover:underline">
-                  https://yourcompany.com
+                <a href="https://handledly.com" className="text-primary hover:underline">
+                  https://handledly.com
                 </a>{" "}
                 (the "Service"). This Privacy Policy describes how we collect, use, and protect 
                 your personal information. By using our Service, you agree to the practices 
@@ -164,10 +164,10 @@ const PrivacyPolicy = () => {
               <p className="text-foreground leading-relaxed">
                 For privacy-related inquiries, please contact us at:{" "}
                 <a 
-                  href="mailto:info@yourcompany.com" 
+                  href="mailto:hello@handledly.com" 
                   className="text-primary hover:underline font-medium"
                 >
-                  info@yourcompany.com
+                  hello@handledly.com
                 </a>
               </p>
             </div>
