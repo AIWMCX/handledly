@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import StatsCard from '@/components/admin/StatsCard';
-import { Users, Phone, Calendar, DollarSign, MessageSquare, TrendingUp, BarChart3, FileText, Loader2 } from 'lucide-react';
+import LaunchReadinessTracker from '@/components/admin/LaunchReadinessTracker';
+import { Users, Phone, Calendar, DollarSign, MessageSquare, TrendingUp, BarChart3, FileText, Loader2, Download, FileSpreadsheet, Copy, Check } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 import { usePDFExport } from '@/hooks/usePDFExport';
+import { useDocumentationGenerator } from '@/hooks/useDocumentationGenerator';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 // Chart configuration for chat activity
 const chatChartConfig = {
@@ -39,6 +43,16 @@ const getLast7DaysChats = (conversations: Array<{ created_at: string }> | null |
 
 const Overview = () => {
   const { generatePDF, isGenerating } = usePDFExport();
+  const { generateMarkdownReport } = useDocumentationGenerator();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyMarkdown = () => {
+    const markdown = generateMarkdownReport();
+    navigator.clipboard.writeText(markdown);
+    setCopied(true);
+    toast.success('Markdown report copied to clipboard!');
+    setTimeout(() => setCopied(false), 2000);
+  };
   // Fetch leads data
   const { data: leads, isLoading: leadsLoading } = useQuery({
     queryKey: ['admin-leads-stats'],
@@ -155,26 +169,46 @@ const Overview = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <h1 className="text-2xl font-bold text-foreground">Dashboard Overview</h1>
-        <Button
-          onClick={generatePDF}
-          disabled={isGenerating}
-          variant="outline"
-          className="gap-2"
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            <>
-              <FileText className="h-4 w-4" />
-              Export Report
-            </>
-          )}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={handleCopyMarkdown}
+            variant="outline"
+            size="sm"
+            className="gap-2"
+          >
+            {copied ? (
+              <>
+                <Check className="h-4 w-4" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="h-4 w-4" />
+                Copy Report
+              </>
+            )}
+          </Button>
+          <Button
+            onClick={generatePDF}
+            disabled={isGenerating}
+            variant="default"
+            className="gap-2"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" />
+                Export PDF
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -284,6 +318,9 @@ const Overview = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Launch Readiness Tracker */}
+      <LaunchReadinessTracker />
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
