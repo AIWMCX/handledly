@@ -1,13 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import StatsCard from '@/components/admin/StatsCard';
-import { Users, Phone, Calendar, DollarSign, MessageSquare, TrendingUp, BarChart3 } from 'lucide-react';
+import { Users, Phone, Calendar, DollarSign, MessageSquare, TrendingUp, BarChart3, FileText, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { usePDFExport } from '@/hooks/usePDFExport';
 
 // Chart configuration for chat activity
 const chatChartConfig = {
@@ -36,6 +38,7 @@ const getLast7DaysChats = (conversations: Array<{ created_at: string }> | null |
 };
 
 const Overview = () => {
+  const { generatePDF, isGenerating } = usePDFExport();
   // Fetch leads data
   const { data: leads, isLoading: leadsLoading } = useQuery({
     queryKey: ['admin-leads-stats'],
@@ -152,7 +155,27 @@ const Overview = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-foreground">Dashboard Overview</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">Dashboard Overview</h1>
+        <Button
+          onClick={generatePDF}
+          disabled={isGenerating}
+          variant="outline"
+          className="gap-2"
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            <>
+              <FileText className="h-4 w-4" />
+              Export Report
+            </>
+          )}
+        </Button>
+      </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
