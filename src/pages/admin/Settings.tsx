@@ -6,11 +6,15 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Building, Phone, Mail, MapPin, DollarSign, Clock, Save, X } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Building, Phone, Mail, MapPin, DollarSign, Clock, Save, X, FlaskConical, AlertTriangle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 const Settings = () => {
+  const [testMode, setTestMode] = useState(() => {
+    return localStorage.getItem('handledly_test_mode') === 'true';
+  });
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     company_name: '',
@@ -98,9 +102,60 @@ const Settings = () => {
     );
   }
 
+  const handleTestModeToggle = (enabled: boolean) => {
+    setTestMode(enabled);
+    localStorage.setItem('handledly_test_mode', enabled.toString());
+    toast.info(enabled ? 'Test Mode enabled - notifications will be suppressed' : 'Test Mode disabled - live mode active');
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Business Settings</h1>
+
+      {/* Test Mode Toggle */}
+      <Card className={`border-2 transition-colors ${testMode ? 'border-yellow-500/50 bg-yellow-500/5' : 'border-border/50 bg-card/50'} backdrop-blur-sm`}>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <FlaskConical className={`h-5 w-5 ${testMode ? 'text-yellow-500' : 'text-muted-foreground'}`} />
+            Test Mode
+          </CardTitle>
+          <CardDescription>
+            Enable test mode to safely test the platform without sending real notifications
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="font-medium">
+                {testMode ? 'Test Mode Active' : 'Live Mode'}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {testMode 
+                  ? 'Emails, SMS, and voice calls are suppressed'
+                  : 'All notifications will be sent to real recipients'
+                }
+              </p>
+            </div>
+            <Switch
+              checked={testMode}
+              onCheckedChange={handleTestModeToggle}
+              className={testMode ? 'data-[state=checked]:bg-yellow-500' : ''}
+            />
+          </div>
+          
+          {testMode && (
+            <div className="mt-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-start gap-2">
+              <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5" />
+              <div>
+                <p className="font-medium text-yellow-400">Test Mode Warning</p>
+                <p className="text-sm text-muted-foreground">
+                  Remember to disable test mode before launch on January 26
+                </p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <form onSubmit={handleSubmit} className="grid gap-6">
         {/* Company Information */}
