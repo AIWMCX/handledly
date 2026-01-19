@@ -204,9 +204,15 @@ async function executeCall(data: CallRequest): Promise<void> {
   const ELEVENLABS_PHONE_NUMBER_ID = Deno.env.get('ELEVENLABS_PHONE_NUMBER_ID');
   
   if (!ELEVENLABS_API_KEY || !ELEVENLABS_AGENT_ID || !ELEVENLABS_PHONE_NUMBER_ID) {
-    console.error('[trigger-confirmation-call] Missing ElevenLabs configuration');
+    console.error('[trigger-confirmation-call] Missing ElevenLabs configuration:', {
+      hasApiKey: !!ELEVENLABS_API_KEY,
+      hasAgentId: !!ELEVENLABS_AGENT_ID,
+      hasPhoneNumberId: !!ELEVENLABS_PHONE_NUMBER_ID
+    });
     return;
   }
+  
+  console.log(`[trigger-confirmation-call] ElevenLabs config validated - Agent: ${ELEVENLABS_AGENT_ID.substring(0,8)}..., Phone: ${ELEVENLABS_PHONE_NUMBER_ID.substring(0,8)}...`);
 
   // Parse first name from data
   const firstName = data.firstName || data.customerName?.split(' ')[0] || 'Friend';
@@ -429,7 +435,7 @@ serve(async (req) => {
     if (data.verificationToken) {
       const { data: lead, error: verifyError } = await supabase
         .from('leads')
-        .select('id, verification_token, confirmation_call_status, created_at')
+        .select('id, verification_token, confirmation_call_status, created_at, call_sid, conversation_id')
         .eq('id', data.leadId)
         .single();
 
@@ -450,13 +456,27 @@ serve(async (req) => {
         );
       }
 
-      // Check if call was already initiated (prevent replay)
-      if (lead.confirmation_call_status && lead.confirmation_call_status !== 'failed') {
-        console.log('[trigger-confirmation-call] Call already scheduled for lead:', data.leadId);
+      // Check if call was already processed (prevent replay)
+      // Only block if there's EVIDENCE a call was actually made (has call_sid or conversation_id)
+      // OR if status indicates active/completed processing
+      if (lead.confirmation_call_status === 'calling' || 
+          lead.confirmation_call_status === 'completed' ||
+          lead.confirmation_call_status === 'failed_sms_sent' ||
+          lead.call_sid || lead.conversation_id) {
+        console.log('[trigger-confirmation-call] Call already processed for lead:', data.leadId, {
+          status: lead.confirmation_call_status,
+          hasCallSid: !!lead.call_sid,
+          hasConversationId: !!lead.conversation_id
+        });
         return new Response(
-          JSON.stringify({ success: true, message: 'Call already scheduled' }),
+          JSON.stringify({ success: true, message: 'Call already processed' }),
           { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
+      }
+      
+      // Log if retrying a previously failed attempt
+      if (lead.confirmation_call_status === 'pending' || lead.confirmation_call_status === 'failed') {
+        console.log('[trigger-confirmation-call] Retrying call for lead:', data.leadId, 'previous status:', lead.confirmation_call_status);
       }
 
       // Check lead freshness (created within last 5 minutes)
