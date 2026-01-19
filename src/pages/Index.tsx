@@ -33,6 +33,7 @@ import {
   MobileStickyCTA,
   UrgencyBadge 
 } from "@/components/conversion";
+import { MeetTheTeam } from "@/components/MeetTheTeam";
 
 const services = [
   { 
@@ -314,6 +315,9 @@ export default function Index() {
           </div>
         </Container>
       </Section>
+
+      {/* Meet Our Team - Compact Preview */}
+      <MeetTheTeam variant="compact" />
 
       {/* Testimonials */}
       <Testimonials />
