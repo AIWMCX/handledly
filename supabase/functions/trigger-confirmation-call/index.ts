@@ -486,22 +486,12 @@ serve(async (req) => {
       })
       .eq('id', data.leadId);
 
-    // Execute call immediately in background using EdgeRuntime.waitUntil
-    // This allows the response to return immediately while the call executes
-    // @ts-ignore - EdgeRuntime is available in Deno Deploy/Supabase Edge Functions
-    if (typeof EdgeRuntime !== 'undefined' && EdgeRuntime.waitUntil) {
-      // @ts-ignore
-      EdgeRuntime.waitUntil((async () => {
-        console.log(`[trigger-confirmation-call] Executing call to ${data.phone} immediately`);
-        await executeCall(data);
-      })());
-    } else {
-      // Fallback for environments without EdgeRuntime.waitUntil - execute inline
-      console.log('[trigger-confirmation-call] EdgeRuntime.waitUntil not available, executing call inline');
-      await executeCall(data);
-    }
+    // Execute call synchronously - waitUntil is unreliable for critical operations
+    // The call must complete before returning to ensure it actually happens
+    console.log(`[trigger-confirmation-call] Executing call synchronously to ${data.phone}`);
+    await executeCall(data);
 
-    // Return immediately to the client
+    // Return after call execution completes
     return new Response(
       JSON.stringify({ 
         success: true, 
