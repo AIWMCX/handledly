@@ -132,7 +132,7 @@ async function executeCall(data: CallRequest): Promise<void> {
             error: responseText,
             attempted_at: new Date().toISOString(),
             phone: formattedPhone,
-            delay_seconds: 30,
+            delay_seconds: 0,
           }),
         })
         .eq('id', data.leadId);
@@ -168,7 +168,7 @@ async function executeCall(data: CallRequest): Promise<void> {
         call_notes: JSON.stringify({
           initiated_at: new Date().toISOString(),
           phone: formattedPhone,
-          delay_seconds: 30,
+          delay_seconds: 0,
           dynamic_variables: dynamicVariables,
           api_response: callResult,
         }),
@@ -290,7 +290,7 @@ serve(async (req) => {
       }
     }
 
-    console.log(`[trigger-confirmation-call] Will call ${data.phone} in 30 seconds`);
+    console.log(`[trigger-confirmation-call] Will call ${data.phone} immediately`);
 
     // Update lead status to "pending" immediately
     await supabase
@@ -298,38 +298,34 @@ serve(async (req) => {
       .update({
         confirmation_call_status: 'pending',
         call_notes: JSON.stringify({
-          scheduled_for: new Date(Date.now() + 30000).toISOString(),
-          delay_seconds: 30,
+          scheduled_for: new Date().toISOString(),
+          delay_seconds: 0,
         }),
       })
       .eq('id', data.leadId);
 
-    // Use EdgeRuntime.waitUntil to schedule the call after 30 seconds
-    // This allows the response to return immediately while the call is scheduled
+    // Execute call immediately in background using EdgeRuntime.waitUntil
+    // This allows the response to return immediately while the call executes
     // @ts-ignore - EdgeRuntime is available in Deno Deploy/Supabase Edge Functions
     if (typeof EdgeRuntime !== 'undefined' && EdgeRuntime.waitUntil) {
       // @ts-ignore
       EdgeRuntime.waitUntil((async () => {
-        console.log(`[trigger-confirmation-call] Waiting 30 seconds before calling ${data.phone}...`);
-        await new Promise(resolve => setTimeout(resolve, 30000)); // 30 second delay
-        console.log(`[trigger-confirmation-call] 30 seconds elapsed, initiating call to ${data.phone}`);
+        console.log(`[trigger-confirmation-call] Executing call to ${data.phone} immediately`);
         await executeCall(data);
       })());
     } else {
-      // Fallback for environments without EdgeRuntime.waitUntil
-      console.log('[trigger-confirmation-call] EdgeRuntime.waitUntil not available, executing call with delay inline');
-      setTimeout(async () => {
-        await executeCall(data);
-      }, 30000);
+      // Fallback for environments without EdgeRuntime.waitUntil - execute inline
+      console.log('[trigger-confirmation-call] EdgeRuntime.waitUntil not available, executing call inline');
+      await executeCall(data);
     }
 
     // Return immediately to the client
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Confirmation call scheduled in 30 seconds',
+        message: 'Confirmation call initiated',
         leadId: data.leadId,
-        scheduledFor: new Date(Date.now() + 30000).toISOString(),
+        initiatedAt: new Date().toISOString(),
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
