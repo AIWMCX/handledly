@@ -106,6 +106,97 @@ async function sendSmsFallback(
   }
 }
 
+// Send admin notification when call fails for manual follow-up
+async function sendAdminNotification(
+  data: CallRequest,
+  failureReason: string,
+  smsFallbackSent: boolean
+): Promise<boolean> {
+  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+  if (!RESEND_API_KEY) {
+    console.error('[trigger-confirmation-call] RESEND_API_KEY not configured for admin notification');
+    return false;
+  }
+
+  const firstName = data.firstName || data.customerName?.split(' ')[0] || 'Customer';
+  const formattedQuote = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+  }).format(data.totalQuote);
+
+  const adminEmails = ['aiwmcsrm@gmail.com', 'hello@handled.com'];
+
+  const emailHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #DC2626;">🚨 Call Failed - Manual Follow-up Required</h2>
+      
+      <div style="background: #FEF2F2; border: 1px solid #FECACA; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
+        <p style="margin: 0; color: #DC2626; font-weight: bold;">
+          The automated confirmation call failed. Please follow up manually.
+        </p>
+        ${smsFallbackSent 
+          ? '<p style="margin: 8px 0 0; color: #059669;">✅ SMS fallback was sent successfully</p>'
+          : '<p style="margin: 8px 0 0; color: #DC2626;">❌ SMS fallback also failed</p>'}
+      </div>
+      
+      <h3>Lead Details</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 8px; border-bottom: 1px solid #E5E7EB;"><strong>Name:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E5E7EB;">${data.customerName}</td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #E5E7EB;"><strong>Phone:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E5E7EB;"><a href="tel:${data.phone}">${data.phone}</a></td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #E5E7EB;"><strong>Email:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E5E7EB;"><a href="mailto:${data.email}">${data.email}</a></td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #E5E7EB;"><strong>Quote:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E5E7EB;">${formattedQuote}</td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #E5E7EB;"><strong>Quote #:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E5E7EB;">${data.quoteNumber || 'N/A'}</td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #E5E7EB;"><strong>Service:</strong></td><td style="padding: 8px; border-bottom: 1px solid #E5E7EB;">${SERVICE_LABELS[data.serviceType] || data.serviceType}</td></tr>
+      </table>
+      
+      <div style="margin-top: 20px; padding: 16px; background: #F3F4F6; border-radius: 8px;">
+        <h4 style="margin: 0 0 8px; color: #374151;">Failure Reason:</h4>
+        <code style="display: block; padding: 8px; background: #E5E7EB; border-radius: 4px; font-size: 12px; word-break: break-all;">${failureReason}</code>
+      </div>
+      
+      <div style="margin-top: 24px; text-align: center;">
+        <a href="tel:${data.phone}" style="display: inline-block; padding: 12px 24px; background: #D4AF37; color: #000; text-decoration: none; font-weight: bold; border-radius: 8px;">
+          📞 Call ${firstName} Now
+        </a>
+      </div>
+      
+      <p style="margin-top: 24px; font-size: 12px; color: #6B7280;">
+        Lead ID: ${data.leadId}<br>
+        Timestamp: ${new Date().toISOString()}
+      </p>
+    </div>
+  `;
+
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'Handledly Alerts <alerts@handledly.com>',
+        to: adminEmails,
+        subject: `🚨 URGENT: Call Failed - ${firstName} - Quote ${data.quoteNumber || 'N/A'}`,
+        html: emailHtml,
+      }),
+    });
+
+    if (response.ok) {
+      console.log('[trigger-confirmation-call] Admin notification sent successfully');
+      return true;
+    } else {
+      const errorText = await response.text();
+      console.error('[trigger-confirmation-call] Admin notification failed:', errorText);
+      return false;
+    }
+  } catch (error) {
+    console.error('[trigger-confirmation-call] Admin notification error:', error);
+    return false;
+  }
+}
+
 // The actual call triggering logic
 async function executeCall(data: CallRequest): Promise<void> {
   const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
@@ -184,6 +275,10 @@ async function executeCall(data: CallRequest): Promise<void> {
       console.log('[trigger-confirmation-call] Attempting SMS fallback...');
       const smsSent = await sendSmsFallback(data, responseText);
       
+      // SEND ADMIN NOTIFICATION
+      console.log('[trigger-confirmation-call] Sending admin notification...');
+      const adminNotified = await sendAdminNotification(data, responseText, smsSent);
+      
       // Update lead with failure status and SMS fallback result
       await supabase
         .from('leads')
@@ -194,12 +289,16 @@ async function executeCall(data: CallRequest): Promise<void> {
             attempted_at: new Date().toISOString(),
             phone: formattedPhone,
             sms_fallback: smsSent ? 'sent' : 'failed',
+            admin_notified: adminNotified,
           }),
         })
         .eq('id', data.leadId);
       
       if (smsSent) {
         console.log('[trigger-confirmation-call] Customer notified via SMS fallback');
+      }
+      if (adminNotified) {
+        console.log('[trigger-confirmation-call] Admin team notified for manual follow-up');
       }
       return;
     }
@@ -248,6 +347,10 @@ async function executeCall(data: CallRequest): Promise<void> {
     console.log('[trigger-confirmation-call] Attempting SMS fallback after exception...');
     const smsSent = await sendSmsFallback(data, errorMessage);
     
+    // SEND ADMIN NOTIFICATION
+    console.log('[trigger-confirmation-call] Sending admin notification after exception...');
+    const adminNotified = await sendAdminNotification(data, errorMessage, smsSent);
+    
     // Update lead with error status and SMS fallback result
     try {
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -262,12 +365,16 @@ async function executeCall(data: CallRequest): Promise<void> {
             error: errorMessage,
             attempted_at: new Date().toISOString(),
             sms_fallback: smsSent ? 'sent' : 'failed',
+            admin_notified: adminNotified,
           }),
         })
         .eq('id', data.leadId);
         
       if (smsSent) {
         console.log('[trigger-confirmation-call] Customer notified via SMS fallback');
+      }
+      if (adminNotified) {
+        console.log('[trigger-confirmation-call] Admin team notified for manual follow-up');
       }
     } catch (updateError) {
       console.error('[trigger-confirmation-call] Failed to update lead with error status:', updateError);
