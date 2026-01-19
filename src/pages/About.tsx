@@ -9,6 +9,7 @@ import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
 import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { MeshGradientHero } from "@/components/ui/BackgroundEffects";
 import { SEO } from "@/components/SEO";
+import { MeetTheTeam } from "@/components/MeetTheTeam";
 import { 
   ArrowRight, Shield, Heart, Award, Users, 
   CheckCircle, Star, Truck, MapPin 
@@ -225,6 +226,9 @@ export default function About() {
           </div>
         </Container>
       </Section>
+
+      {/* Meet The Team */}
+      <MeetTheTeam variant="full" />
 
       {/* Timeline with glow effects */}
       <Section className="bg-secondary">
