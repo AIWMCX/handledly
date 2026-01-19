@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { 
   CheckCircle2, 
   Circle, 
@@ -17,9 +18,16 @@ import {
   MessageSquare,
   Phone,
   Mail,
-  Calendar
+  Calendar,
+  ChevronDown,
+  Copy,
+  ExternalLink,
+  Webhook
 } from 'lucide-react';
 import { usePDFExport } from '@/hooks/usePDFExport';
+import { toast } from 'sonner';
+
+const ELEVENLABS_WEBHOOK_URL = 'https://spguevrimwpqygvcxrsk.functions.supabase.co/handle-call-status';
 
 const CLIENT_ACCESS_CODE = 'HANDLEDLY2024'; // Simple access code
 
@@ -27,7 +35,13 @@ const ClientPortal = () => {
   const [accessCode, setAccessCode] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState('');
+  const [webhookOpen, setWebhookOpen] = useState(false);
   const { generatePDF, isGenerating } = usePDFExport();
+
+  const copyWebhookUrl = () => {
+    navigator.clipboard.writeText(ELEVENLABS_WEBHOOK_URL);
+    toast.success('Webhook URL copied to clipboard!');
+  };
 
   // Fetch live metrics
   const { data: leads } = useQuery({
@@ -291,6 +305,87 @@ const ClientPortal = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* ElevenLabs Webhook Configuration Instructions */}
+        <Collapsible open={webhookOpen} onOpenChange={setWebhookOpen}>
+          <Card className="border-border/50 bg-card/50 backdrop-blur-sm border-l-4 border-l-yellow-500">
+            <CollapsibleTrigger asChild>
+              <CardHeader className="cursor-pointer hover:bg-background/50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                      <Webhook className="h-5 w-5 text-yellow-500" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">Configure ElevenLabs Webhook</CardTitle>
+                      <p className="text-sm text-muted-foreground">Required to capture voice call status</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-yellow-500/20 text-yellow-500">Action Required</Badge>
+                    <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${webhookOpen ? 'rotate-180' : ''}`} />
+                  </div>
+                </div>
+              </CardHeader>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <CardContent className="space-y-6">
+                {/* Webhook URL Box */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Your Webhook URL</label>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 p-3 rounded-lg bg-background border border-border font-mono text-sm break-all">
+                      {ELEVENLABS_WEBHOOK_URL}
+                    </div>
+                    <Button onClick={copyWebhookUrl} variant="outline" size="icon" className="flex-shrink-0">
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Step-by-Step Instructions */}
+                <div className="space-y-4">
+                  <h4 className="font-medium text-foreground">Setup Instructions</h4>
+                  <div className="space-y-3">
+                    {[
+                      { step: 1, title: 'Log into ElevenLabs Dashboard', desc: 'Go to elevenlabs.io and sign in to your account' },
+                      { step: 2, title: 'Navigate to Agents', desc: 'Click on "Conversational AI" in the left sidebar' },
+                      { step: 3, title: 'Select Your Agent', desc: 'Choose the Handledly Voice Agent from your agents list' },
+                      { step: 4, title: 'Open Agent Settings', desc: 'Click the "Settings" or gear icon for your agent' },
+                      { step: 5, title: 'Find Webhook Configuration', desc: 'Scroll to the "Post-call Webhooks" or "Webhook URL" section' },
+                      { step: 6, title: 'Paste Webhook URL', desc: 'Copy the URL above and paste it into the webhook field' },
+                      { step: 7, title: 'Save Changes', desc: 'Click "Save" to apply the configuration' },
+                    ].map((item) => (
+                      <div key={item.step} className="flex gap-3 p-3 rounded-lg bg-background/50">
+                        <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                          <span className="text-sm font-semibold text-primary">{item.step}</span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">{item.title}</p>
+                          <p className="text-sm text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Help Link */}
+                <div className="flex items-center justify-between p-4 rounded-lg bg-primary/5 border border-primary/20">
+                  <div>
+                    <p className="font-medium text-foreground">Need help with this step?</p>
+                    <p className="text-sm text-muted-foreground">Contact our support team for assistance</p>
+                  </div>
+                  <Button variant="outline" className="gap-2" asChild>
+                    <a href="https://elevenlabs.io/docs" target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4" />
+                      ElevenLabs Docs
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </CollapsibleContent>
+          </Card>
+        </Collapsible>
 
         {/* Investment Summary */}
         <Card className="border-border/50 bg-gradient-to-r from-primary/10 to-accent/10 backdrop-blur-sm">
