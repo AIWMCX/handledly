@@ -49,6 +49,63 @@ function formatToE164(phone: string): string {
   return `+${digits}`;
 }
 
+// SMS fallback when call fails - ensures customer always gets confirmation
+async function sendSmsFallback(
+  data: CallRequest,
+  failureReason: string
+): Promise<boolean> {
+  const twilioAccountSid = Deno.env.get('TWILIO_ACCOUNT_SID');
+  const twilioAuthToken = Deno.env.get('TWILIO_AUTH_TOKEN');
+  const twilioPhoneNumber = Deno.env.get('TWILIO_PHONE_NUMBER');
+
+  if (!twilioAccountSid || !twilioAuthToken || !twilioPhoneNumber) {
+    console.error('[trigger-confirmation-call] Twilio not configured for SMS fallback');
+    return false;
+  }
+
+  const firstName = data.firstName || data.customerName?.split(' ')[0] || 'there';
+  const formattedQuote = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+  }).format(data.totalQuote);
+
+  const messageBody = `Hi ${firstName}! Thanks for your quote request from Handledly Moving. Your estimate: ${formattedQuote} (Quote #${data.quoteNumber || 'pending'}). We tried calling but couldn't reach you. Reply to this text or call (878) 218-7397 to confirm. - The Handledly Team`;
+
+  try {
+    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`;
+    const credentials = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
+    const formattedPhone = formatToE164(data.phone);
+
+    console.log(`[trigger-confirmation-call] Sending SMS fallback to ${formattedPhone}`);
+
+    const response = await fetch(twilioUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${credentials}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        To: formattedPhone,
+        From: twilioPhoneNumber,
+        Body: messageBody,
+      }),
+    });
+
+    if (response.ok) {
+      console.log('[trigger-confirmation-call] SMS fallback sent successfully');
+      return true;
+    } else {
+      const errorText = await response.text();
+      console.error('[trigger-confirmation-call] SMS fallback failed:', errorText);
+      return false;
+    }
+  } catch (error) {
+    console.error('[trigger-confirmation-call] SMS fallback error:', error);
+    return false;
+  }
+}
+
 // The actual call triggering logic
 async function executeCall(data: CallRequest): Promise<void> {
   const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
@@ -123,19 +180,27 @@ async function executeCall(data: CallRequest): Promise<void> {
     if (!response.ok) {
       console.error('[trigger-confirmation-call] ElevenLabs outbound call failed:', responseText);
       
-      // Update lead with failure status
+      // TRY SMS FALLBACK
+      console.log('[trigger-confirmation-call] Attempting SMS fallback...');
+      const smsSent = await sendSmsFallback(data, responseText);
+      
+      // Update lead with failure status and SMS fallback result
       await supabase
         .from('leads')
         .update({
-          confirmation_call_status: 'failed',
+          confirmation_call_status: smsSent ? 'failed_sms_sent' : 'failed',
           call_notes: JSON.stringify({
             error: responseText,
             attempted_at: new Date().toISOString(),
             phone: formattedPhone,
-            delay_seconds: 0,
+            sms_fallback: smsSent ? 'sent' : 'failed',
           }),
         })
         .eq('id', data.leadId);
+      
+      if (smsSent) {
+        console.log('[trigger-confirmation-call] Customer notified via SMS fallback');
+      }
       return;
     }
 
@@ -178,7 +243,12 @@ async function executeCall(data: CallRequest): Promise<void> {
   } catch (error) {
     console.error('[trigger-confirmation-call] Error executing call:', error);
     
-    // Update lead with error status - reuse existing supabase client from outer scope
+    // TRY SMS FALLBACK
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.log('[trigger-confirmation-call] Attempting SMS fallback after exception...');
+    const smsSent = await sendSmsFallback(data, errorMessage);
+    
+    // Update lead with error status and SMS fallback result
     try {
       const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
       const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -187,13 +257,18 @@ async function executeCall(data: CallRequest): Promise<void> {
       await errorSupabase
         .from('leads')
         .update({
-          confirmation_call_status: 'failed',
+          confirmation_call_status: smsSent ? 'failed_sms_sent' : 'failed',
           call_notes: JSON.stringify({
-            error: error instanceof Error ? error.message : 'Unknown error',
+            error: errorMessage,
             attempted_at: new Date().toISOString(),
+            sms_fallback: smsSent ? 'sent' : 'failed',
           }),
         })
         .eq('id', data.leadId);
+        
+      if (smsSent) {
+        console.log('[trigger-confirmation-call] Customer notified via SMS fallback');
+      }
     } catch (updateError) {
       console.error('[trigger-confirmation-call] Failed to update lead with error status:', updateError);
     }
