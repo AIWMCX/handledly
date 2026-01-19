@@ -41,6 +41,53 @@ const SERVICE_LABELS: Record<string, string> = {
   'moving-help': 'Moving Help / Labor Only',
 };
 
+// Retry helper with exponential backoff for transient API failures
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  options: {
+    maxRetries?: number;
+    baseDelayMs?: number;
+    maxDelayMs?: number;
+    onRetry?: (attempt: number, error: Error) => void;
+  } = {}
+): Promise<T> {
+  const { 
+    maxRetries = 3, 
+    baseDelayMs = 1000, 
+    maxDelayMs = 8000,
+    onRetry 
+  } = options;
+  
+  let lastError: Error;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      if (attempt === maxRetries) {
+        throw lastError;
+      }
+      
+      // Calculate delay with exponential backoff + jitter
+      const delay = Math.min(
+        baseDelayMs * Math.pow(2, attempt - 1) + Math.random() * 500,
+        maxDelayMs
+      );
+      
+      if (onRetry) {
+        onRetry(attempt, lastError);
+      }
+      
+      console.log(`[trigger-confirmation-call] Retry ${attempt}/${maxRetries} after ${Math.round(delay)}ms: ${lastError.message}`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  throw lastError!;
+}
+
 // Format phone number to E.164 format for Twilio
 function formatToE164(phone: string): string {
   const digits = phone.replace(/\D/g, '');
@@ -250,40 +297,70 @@ async function executeCall(data: CallRequest): Promise<void> {
   console.log('[trigger-confirmation-call] Making ElevenLabs outbound call with variables:', dynamicVariables);
 
   try {
-    // Make the actual outbound call via ElevenLabs Twilio integration
-    const response = await fetch(
-      'https://api.elevenlabs.io/v1/convai/twilio/outbound-call',
-      {
-        method: 'POST',
-        headers: {
-          'xi-api-key': ELEVENLABS_API_KEY,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          agent_id: ELEVENLABS_AGENT_ID,
-          agent_phone_number_id: ELEVENLABS_PHONE_NUMBER_ID,
-          to_number: formattedPhone,
-          conversation_initiation_client_data: {
-            dynamic_variables: dynamicVariables
+    // Make the actual outbound call via ElevenLabs Twilio integration WITH RETRY
+    const callResult = await withRetry(
+      async () => {
+        console.log(`[trigger-confirmation-call] Attempting ElevenLabs API call...`);
+        
+        const response = await fetch(
+          'https://api.elevenlabs.io/v1/convai/twilio/outbound-call',
+          {
+            method: 'POST',
+            headers: {
+              'xi-api-key': ELEVENLABS_API_KEY,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              agent_id: ELEVENLABS_AGENT_ID,
+              agent_phone_number_id: ELEVENLABS_PHONE_NUMBER_ID,
+              to_number: formattedPhone,
+              conversation_initiation_client_data: {
+                dynamic_variables: dynamicVariables
+              }
+            }),
           }
-        }),
+        );
+
+        const responseText = await response.text();
+        console.log(`[trigger-confirmation-call] ElevenLabs API response status: ${response.status}`);
+        console.log(`[trigger-confirmation-call] ElevenLabs API response: ${responseText}`);
+
+        if (!response.ok) {
+          // Retry for 5xx errors or 429 rate limit
+          if (response.status >= 500 || response.status === 429) {
+            throw new Error(`ElevenLabs API error (${response.status}): ${responseText}`);
+          }
+          // For 4xx errors (except 429), don't retry - it's a client/config error
+          return { success: false as const, error: responseText, statusCode: response.status };
+        }
+
+        // Parse successful response
+        try {
+          return { success: true as const, data: JSON.parse(responseText) };
+        } catch {
+          return { success: true as const, data: { raw_response: responseText } };
+        }
+      },
+      {
+        maxRetries: 3,
+        baseDelayMs: 1000,
+        onRetry: (attempt, error) => {
+          console.log(`[trigger-confirmation-call] Retry attempt ${attempt} for ${formattedPhone} due to: ${error.message}`);
+        }
       }
     );
 
-    const responseText = await response.text();
-    console.log(`[trigger-confirmation-call] ElevenLabs API response status: ${response.status}`);
-    console.log(`[trigger-confirmation-call] ElevenLabs API response: ${responseText}`);
-
-    if (!response.ok) {
-      console.error('[trigger-confirmation-call] ElevenLabs outbound call failed:', responseText);
+    // Handle non-retryable failure (4xx errors)
+    if (!callResult.success) {
+      console.error('[trigger-confirmation-call] ElevenLabs outbound call failed (non-retryable):', callResult.error);
       
       // TRY SMS FALLBACK
       console.log('[trigger-confirmation-call] Attempting SMS fallback...');
-      const smsSent = await sendSmsFallback(data, responseText);
+      const smsSent = await sendSmsFallback(data, callResult.error);
       
       // SEND ADMIN NOTIFICATION
       console.log('[trigger-confirmation-call] Sending admin notification...');
-      const adminNotified = await sendAdminNotification(data, responseText, smsSent);
+      const adminNotified = await sendAdminNotification(data, callResult.error, smsSent);
       
       // Update lead with failure status and SMS fallback result
       await supabase
@@ -291,11 +368,12 @@ async function executeCall(data: CallRequest): Promise<void> {
         .update({
           confirmation_call_status: smsSent ? 'failed_sms_sent' : 'failed',
           call_notes: JSON.stringify({
-            error: responseText,
+            error: callResult.error,
             attempted_at: new Date().toISOString(),
             phone: formattedPhone,
             sms_fallback: smsSent ? 'sent' : 'failed',
             admin_notified: adminNotified,
+            retryable: false,
           }),
         })
         .eq('id', data.leadId);
@@ -309,19 +387,14 @@ async function executeCall(data: CallRequest): Promise<void> {
       return;
     }
 
-    // Parse the successful response
-    let callResult;
-    try {
-      callResult = JSON.parse(responseText);
-    } catch {
-      callResult = { raw_response: responseText };
-    }
+    // Call succeeded
+    const callData = callResult.data;
 
-    console.log('[trigger-confirmation-call] Outbound call initiated successfully:', callResult);
+    console.log('[trigger-confirmation-call] Outbound call initiated successfully:', callData);
 
     // Extract conversation_id and call_sid from response
-    const conversationId = callResult.conversation_id || null;
-    const callSid = callResult.call_sid || callResult.callSid || null;
+    const conversationId = callData.conversation_id || null;
+    const callSid = callData.call_sid || callData.callSid || null;
 
     console.log(`[trigger-confirmation-call] Storing conversation_id: ${conversationId}, call_sid: ${callSid}`);
 
@@ -340,21 +413,23 @@ async function executeCall(data: CallRequest): Promise<void> {
           phone: formattedPhone,
           delay_seconds: 0,
           dynamic_variables: dynamicVariables,
-          api_response: callResult,
+          api_response: callData,
         }),
       })
       .eq('id', data.leadId);
 
   } catch (error) {
-    console.error('[trigger-confirmation-call] Error executing call:', error);
+    // This catch handles errors after all retries are exhausted (5xx/429 errors)
+    // or network/timeout errors
+    console.error('[trigger-confirmation-call] Error executing call (retries exhausted):', error);
     
     // TRY SMS FALLBACK
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.log('[trigger-confirmation-call] Attempting SMS fallback after exception...');
+    console.log('[trigger-confirmation-call] Attempting SMS fallback after retries exhausted...');
     const smsSent = await sendSmsFallback(data, errorMessage);
     
     // SEND ADMIN NOTIFICATION
-    console.log('[trigger-confirmation-call] Sending admin notification after exception...');
+    console.log('[trigger-confirmation-call] Sending admin notification after retries exhausted...');
     const adminNotified = await sendAdminNotification(data, errorMessage, smsSent);
     
     // Update lead with error status and SMS fallback result
@@ -372,6 +447,7 @@ async function executeCall(data: CallRequest): Promise<void> {
             attempted_at: new Date().toISOString(),
             sms_fallback: smsSent ? 'sent' : 'failed',
             admin_notified: adminNotified,
+            retries_exhausted: true,
           }),
         })
         .eq('id', data.leadId);
