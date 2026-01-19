@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,7 +22,8 @@ import {
   ChevronDown,
   Copy,
   ExternalLink,
-  Webhook
+  Webhook,
+  Undo2
 } from 'lucide-react';
 import { usePDFExport } from '@/hooks/usePDFExport';
 import { toast } from 'sonner';
@@ -100,18 +101,50 @@ const ClientPortal = () => {
     { label: 'PDF Export System', completed: true },
   ];
 
-  const clientActions = [
-    { label: 'Provide Google Ads Conversion ID', completed: false },
-    { label: 'Provide Facebook Pixel ID', completed: false },
-    { label: 'Configure ElevenLabs Webhook', completed: false },
-    { label: 'Approve DNS Configuration', completed: false },
-    { label: 'Schedule E2E Testing', completed: false },
+  const defaultClientActions = [
+    { id: 'google-ads', label: 'Provide Google Ads Conversion ID', completed: false },
+    { id: 'facebook-pixel', label: 'Provide Facebook Pixel ID', completed: false },
+    { id: 'elevenlabs-webhook', label: 'Configure ElevenLabs Webhook', completed: false },
+    { id: 'dns-config', label: 'Approve DNS Configuration', completed: false },
+    { id: 'e2e-testing', label: 'Schedule E2E Testing', completed: false },
   ];
 
+  const [clientActionsState, setClientActionsState] = useState(() => {
+    const saved = localStorage.getItem('handledly-client-actions');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return defaultClientActions;
+      }
+    }
+    return defaultClientActions;
+  });
+
+  const toggleActionComplete = (id: string) => {
+    setClientActionsState((prev: typeof defaultClientActions) => {
+      const updated = prev.map(item => 
+        item.id === id ? { ...item, completed: !item.completed } : item
+      );
+      localStorage.setItem('handledly-client-actions', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  // Celebration effect when all items complete
+  useEffect(() => {
+    const allComplete = clientActionsState.every((item: typeof defaultClientActions[0]) => item.completed);
+    if (allComplete && clientActionsState.length > 0) {
+      toast.success('🚀 All action items completed! Ready for launch!', {
+        duration: 5000,
+      });
+    }
+  }, [clientActionsState]);
+
   const completedDeliverables = deliverables.filter(d => d.completed).length;
-  const completedActions = clientActions.filter(a => a.completed).length;
+  const completedActions = clientActionsState.filter((a: typeof defaultClientActions[0]) => a.completed).length;
   const overallProgress = Math.round(
-    ((completedDeliverables + completedActions) / (deliverables.length + clientActions.length)) * 100
+    ((completedDeliverables + completedActions) / (deliverables.length + clientActionsState.length)) * 100
   );
 
   const totalRevenue = leads?.reduce((sum, lead) => sum + (lead.estimated_quote || 0), 0) || 0;
@@ -186,7 +219,7 @@ const ClientPortal = () => {
           <CardContent>
             <Progress value={overallProgress} className="h-3" />
             <p className="text-sm text-muted-foreground mt-2">
-              {completedDeliverables + completedActions} of {deliverables.length + clientActions.length} items completed
+              {completedDeliverables + completedActions} of {deliverables.length + clientActionsState.length} items completed
             </p>
           </CardContent>
         </Card>
@@ -280,25 +313,45 @@ const ClientPortal = () => {
               <CardTitle className="flex items-center justify-between">
                 <span>Your Action Items</span>
                 <Badge className="bg-accent/20 text-accent">
-                  {completedActions}/{clientActions.length}
+                  {completedActions}/{clientActionsState.length}
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {clientActions.map((item, index) => (
+                {clientActionsState.map((item: { id: string; label: string; completed: boolean }) => (
                   <div
-                    key={index}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-background/50"
+                    key={item.id}
+                    className="flex items-center justify-between gap-3 p-3 rounded-lg bg-background/50"
                   >
-                    {item.completed ? (
-                      <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    ) : (
-                      <Circle className="h-5 w-5 text-accent flex-shrink-0" />
-                    )}
-                    <span className={`text-sm ${item.completed ? 'text-muted-foreground line-through' : 'text-foreground font-medium'}`}>
-                      {item.label}
-                    </span>
+                    <div className="flex items-center gap-3">
+                      {item.completed ? (
+                        <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                      ) : (
+                        <Circle className="h-5 w-5 text-accent flex-shrink-0" />
+                      )}
+                      <span className={`text-sm ${item.completed ? 'text-muted-foreground line-through' : 'text-foreground font-medium'}`}>
+                        {item.label}
+                      </span>
+                    </div>
+                    <Button
+                      variant={item.completed ? "ghost" : "default"}
+                      size="sm"
+                      onClick={() => toggleActionComplete(item.id)}
+                      className={item.completed ? "text-muted-foreground hover:text-foreground" : ""}
+                    >
+                      {item.completed ? (
+                        <>
+                          <Undo2 className="h-4 w-4 mr-1" />
+                          Undo
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="h-4 w-4 mr-1" />
+                          Mark Complete
+                        </>
+                      )}
+                    </Button>
                   </div>
                 ))}
               </div>
