@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, FileText, MessageCircle, PhoneCall } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -43,9 +44,13 @@ export function MobileStickyCTA({
 }: MobileStickyCTAProps) {
   const isMobile = useIsMobile();
   const { hasPassedThreshold } = useScrollProgress();
+  const location = useLocation();
+  
+  // Hide on quote page - user is already there!
+  const isQuotePage = location.pathname === '/quote';
   
   // Show after scrolling past threshold (convert pixels to approximate percentage)
-  const isVisible = isMobile && hasPassedThreshold(15);
+  const isVisible = isMobile && hasPassedThreshold(15) && !isQuotePage;
 
   const handleActionClick = (action: MobileCTAAction) => {
     ConversionEvents.mobileCTAClicked(action, window.location.pathname);

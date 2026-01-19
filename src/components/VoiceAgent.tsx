@@ -189,7 +189,7 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
           {isSpeaking ? (
             <span className="text-primary flex items-center gap-2">
               <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-              Agent speaking...
+              Jack is speaking...
             </span>
           ) : (
             <span className="text-muted-foreground flex items-center gap-2">
@@ -240,7 +240,7 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
           ) : (
             <>
               <Phone className="w-5 h-5" />
-              Start AI Call
+              Talk to Jack Now
             </>
           )}
         </Button>
@@ -250,7 +250,7 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
             {isSpeaking ? (
               <span className="text-primary flex items-center gap-2">
                 <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                Agent speaking...
+                Jack is speaking...
               </span>
             ) : (
               <span className="text-muted-foreground flex items-center gap-2">
@@ -269,7 +269,7 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
       )}
 
       <p className="text-xs text-muted-foreground">
-        Speak with our AI assistant to get an instant quote, schedule your move, or ask questions.
+        Speak with Jack to get an instant quote, schedule your move, or ask questions.
       </p>
     </div>
   );

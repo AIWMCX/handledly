@@ -15,12 +15,12 @@ export function SocialProofBanner({
   position = 'bottom-left',
   className,
 }: SocialProofBannerProps) {
-  const { currentNotification, liveViewers, dismissNotification } = useSocialProof({
+  const { currentNotification, liveViewers, dismissNotification, pauseNotifications } = useSocialProof({
     enabled,
-    intervalMin: 25,
-    intervalMax: 45,
-    autoHideDuration: 5,
-    maxNotifications: 15,
+    intervalMin: 60, // Less aggressive - 60-90 seconds
+    intervalMax: 90,
+    autoHideDuration: 6,
+    maxNotifications: 8, // Fewer per session
   });
 
   const positionClasses = {
@@ -82,11 +82,20 @@ export function SocialProofBanner({
               getBackgroundClass()
             )}
           >
-            {/* Dismiss button */}
+            {/* Dismiss button with "don't show again" on double-click */}
             <button
-              onClick={dismissNotification}
+              onClick={(e) => {
+                if (e.detail === 2) {
+                  // Double-click to dismiss permanently
+                  localStorage.setItem('socialProofDismissed', 'true');
+                  pauseNotifications();
+                } else {
+                  dismissNotification();
+                }
+              }}
               className="absolute top-2 right-2 p-1 rounded-full hover:bg-muted/50 transition-colors"
-              aria-label="Dismiss notification"
+              aria-label="Dismiss notification (double-click to hide permanently)"
+              title="Click to dismiss, double-click to hide permanently"
             >
               <X className="w-3 h-3 text-muted-foreground" />
             </button>

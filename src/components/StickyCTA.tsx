@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Phone, ArrowRight, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -7,19 +7,23 @@ import { cn } from "@/lib/utils";
 export function StickyCTA() {
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const location = useLocation();
+
+  // Hide on quote page - user is already there!
+  const isQuotePage = location.pathname === '/quote';
 
   useEffect(() => {
     const handleScroll = () => {
       // Show after scrolling past hero (approx 500px)
       const shouldShow = window.scrollY > 500;
-      setIsVisible(shouldShow && !isDismissed);
+      setIsVisible(shouldShow && !isDismissed && !isQuotePage);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isDismissed]);
+  }, [isDismissed, isQuotePage]);
 
-  if (!isVisible) return null;
+  if (!isVisible || isQuotePage) return null;
 
   return (
     <div 

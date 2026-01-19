@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageCircle, X, Send, Bot, User, Loader2, Sparkles, Calendar, Clock, DollarSign, Phone, CheckCircle, Mail, PhoneCall } from "lucide-react";
+import { MessageCircle, X, Send, Headset, User, Loader2, Sparkles, Calendar, Clock, DollarSign, Phone, CheckCircle, Mail, PhoneCall } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useAIChat } from "@/hooks/useAIChat";
@@ -155,10 +155,10 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
         <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/50">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full gradient-gold flex items-center justify-center">
-              <Bot className="w-5 h-5 text-primary-foreground" />
+              <Headset className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
-              <p className="font-medium text-foreground text-sm">Jack - AI Assistant</p>
+              <p className="font-medium text-foreground text-sm">Jack - Moving Specialist</p>
               <p className="text-xs text-muted-foreground">
                 {isConnected ? (
                   <span className="flex items-center gap-1">
@@ -179,9 +179,9 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
         <div className="h-[300px] overflow-y-auto p-4 space-y-4">
           {messages.length === 0 && !isLoading && (
             <div className="text-center py-6">
-              <Bot className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
+              <Headset className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
               <p className="text-sm text-muted-foreground">
-                Start a conversation with our AI assistant!
+                Chat with Jack about your upcoming move!
               </p>
             </div>
           )}
@@ -202,7 +202,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
             >
               {message.role === 'assistant' && (
                 <div className="w-8 h-8 rounded-full gradient-gold flex-shrink-0 flex items-center justify-center">
-                  <Bot className="w-4 h-4 text-primary-foreground" />
+                  <Headset className="w-4 h-4 text-primary-foreground" />
                 </div>
               )}
               <div className="flex flex-col gap-1">
@@ -238,7 +238,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
           {isLoading && messages.length > 0 && (
             <div className="flex gap-2 justify-start">
               <div className="w-8 h-8 rounded-full gradient-gold flex-shrink-0 flex items-center justify-center">
-                <Bot className="w-4 h-4 text-primary-foreground" />
+                <Headset className="w-4 h-4 text-primary-foreground" />
               </div>
               <div className="bg-secondary rounded-2xl rounded-tl-sm px-4 py-3">
                 <div className="flex gap-1">
@@ -328,10 +328,10 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
           <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/50">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full gradient-gold flex items-center justify-center">
-                <Bot className="w-5 h-5 text-primary-foreground" />
+                <Headset className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <p className="font-medium text-foreground text-sm">Jack - AI Assistant</p>
+                <p className="font-medium text-foreground text-sm">Jack - Moving Specialist</p>
                 <p className="text-xs text-muted-foreground">
                   {isConnected ? (
                     <span className="flex items-center gap-1">
@@ -360,9 +360,9 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.length === 0 && !isLoading && (
               <div className="text-center py-8">
-                <Bot className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                <Headset className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                 <p className="text-sm text-muted-foreground">
-                  Start a conversation with our AI assistant!
+                  Chat with Jack about your upcoming move!
                 </p>
               </div>
             )}
@@ -383,7 +383,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
               >
                 {message.role === 'assistant' && (
                   <div className="w-8 h-8 rounded-full gradient-gold flex-shrink-0 flex items-center justify-center">
-                    <Bot className="w-4 h-4 text-primary-foreground" />
+                    <Headset className="w-4 h-4 text-primary-foreground" />
                   </div>
                 )}
                 <div className="flex flex-col gap-1">
@@ -419,7 +419,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
             {isLoading && messages.length > 0 && (
               <div className="flex gap-2 justify-start">
                 <div className="w-8 h-8 rounded-full gradient-gold flex-shrink-0 flex items-center justify-center">
-                  <Bot className="w-4 h-4 text-primary-foreground" />
+                  <Headset className="w-4 h-4 text-primary-foreground" />
                 </div>
                 <div className="bg-secondary rounded-2xl rounded-tl-sm px-4 py-3">
                   <div className="flex gap-1">
