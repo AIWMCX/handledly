@@ -451,6 +451,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      timeout_stale_calls: { Args: never; Returns: number }
     }
     Enums: {
       app_role: "admin" | "user"
