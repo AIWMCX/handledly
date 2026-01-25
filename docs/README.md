@@ -52,6 +52,7 @@ Welcome to the comprehensive technical documentation for **Handledly Moving Serv
 ### 8. Operations
 - [Deployment Guide](./15-deployment.md) - Lovable Cloud, environment setup
 - [Launch Readiness](./16-launch-readiness.md) - Checklist and pending items
+- [Incident Response Runbook](./17-incident-response-runbook.md) - Escalation paths, failure scenarios, recovery procedures
 
 ---
 
