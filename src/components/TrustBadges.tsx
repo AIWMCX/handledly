@@ -1,37 +1,40 @@
 import { Container } from "@/components/layout";
 import {
-  USDOTIcon,
-  ColoradoPUCIcon,
-  BBBAccreditedIcon,
   InsuranceCoverageIcon,
   WorkersCompIcon,
 } from "@/components/icons/TrustIcons";
+import { Shield, Truck, Users, Clock } from "lucide-react";
 
 const badges = [
   {
-    Icon: USDOTIcon,
-    label: "USDOT Licensed",
-    sublabel: "Federal Authority",
-  },
-  {
-    Icon: ColoradoPUCIcon,
-    label: "Colorado PUC",
-    sublabel: "State Certified",
-  },
-  {
-    Icon: BBBAccreditedIcon,
-    label: "BBB Accredited",
-    sublabel: "A+ Rating",
+    Icon: Shield,
+    isLucide: true,
+    label: "Licensed & Insured",
+    sublabel: "State Registered",
   },
   {
     Icon: InsuranceCoverageIcon,
-    label: "$2M+ Insured",
-    sublabel: "Full Coverage",
+    isLucide: false,
+    label: "Full Coverage",
+    sublabel: "Protected Moves",
   },
   {
     Icon: WorkersCompIcon,
+    isLucide: false,
     label: "Workers' Comp",
     sublabel: "Team Protected",
+  },
+  {
+    Icon: Truck,
+    isLucide: true,
+    label: "GPS Tracked",
+    sublabel: "Real-Time Updates",
+  },
+  {
+    Icon: Clock,
+    isLucide: true,
+    label: "On-Time Guarantee",
+    sublabel: "We Show Up",
   },
 ];
 
@@ -49,7 +52,11 @@ export function TrustBadges() {
               {/* Premium icon container with golden glow */}
               <div className="relative">
                 <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent/25 to-accent/10 flex items-center justify-center shadow-[inset_0_1px_2px_rgba(255,255,255,0.6)] group-hover:shadow-glow-gold transition-all duration-300">
-                  <badge.Icon size="nav" color="gold" />
+                  {badge.isLucide ? (
+                    <badge.Icon className="w-6 h-6 text-accent" />
+                  ) : (
+                    <badge.Icon size="nav" color="gold" />
+                  )}
                 </div>
                 {/* Subtle glow effect on hover */}
                 <div className="absolute inset-0 rounded-xl bg-accent/20 blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300 -z-10" />

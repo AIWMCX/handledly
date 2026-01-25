@@ -40,21 +40,19 @@ const values = [
 ];
 
 const milestones = [
-  { year: "2010", event: "Founded in Denver with a single truck and a dream" },
-  { year: "2013", event: "Expanded to 5 trucks and 15 team members" },
-  { year: "2016", event: "Opened specialty moving division for pianos and antiques" },
-  { year: "2019", event: "Recognized as Denver's top-rated moving company" },
-  { year: "2022", event: "Launched commercial moving services across Colorado" },
-  { year: "2025", event: "Celebrating 15 years and 10,000+ successful Denver moves" },
+  { title: "Professional Training", description: "Every team member completes hands-on training before their first move" },
+  { title: "Quality Equipment", description: "Modern trucks and premium moving supplies for safe transport" },
+  { title: "Local Knowledge", description: "We know Denver's neighborhoods, buildings, and traffic patterns" },
+  { title: "Customer Focus", description: "Real-time communication and personalized service on every job" },
 ];
 
 const credentials = [
   "Colorado Licensed & Registered",
   "Fully Bonded & Insured",
-  "BBB A+ Rated",
-  "Member of American Moving & Storage Association",
   "Background-Checked Employees",
-  "Drug-Free Workplace Certified",
+  "Professional Liability Coverage",
+  "GPS-Tracked Fleet",
+  "Verified Customer Reviews",
 ];
 
 const denverAreas = [
@@ -119,22 +117,22 @@ export default function About() {
               </h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  Our company was born from a simple observation: moving in Denver 
-                  doesn't have to be stressful. Our founder recognized that 
-                  families and businesses deserved better—movers who actually cared 
-                  about their belongings and their experience.
+                  We're a Denver-based moving team that believes moving should be 
+                  straightforward and stress-free. No drama, no hidden fees, no 
+                  surprises—just professional movers who show up on time and 
+                  handle your belongings with care.
                 </p>
                 <p>
-                  Starting with a single truck and an uncompromising commitment to 
-                  quality, we've grown into Denver's most trusted moving company. 
-                  But growth hasn't changed our values. Every move, whether it's a 
-                  studio apartment in Capitol Hill or a corporate headquarters downtown, 
-                  receives the same attention to detail and personal care.
+                  Our team brings hands-on experience from working in the Denver 
+                  metro area. We know the buildings, the neighborhoods, and what 
+                  it takes to get the job done right. Whether it's a one-bedroom 
+                  apartment or a full house, we treat every move with the same 
+                  level of attention.
                 </p>
                 <p>
-                  Today, with a fleet of modern trucks and a team of trained 
-                  professionals, we continue to raise the bar for what a Denver moving 
-                  experience should be. Because here, your next chapter starts with us.
+                  What sets us apart? We answer our phones, we communicate clearly, 
+                  and we genuinely care about making your move easier. That's it—
+                  no complicated story, just good work.
                 </p>
               </div>
             </div>
@@ -230,26 +228,25 @@ export default function About() {
       {/* Meet The Team */}
       <MeetTheTeam variant="full" />
 
-      {/* Timeline with glow effects */}
+      {/* What We Bring - Simple value props */}
       <Section className="bg-secondary">
         <Container size="narrow">
           <SectionHeader
-            title="Our Journey"
-            subtitle="Milestones along the way."
+            title="What We Bring"
+            subtitle="The things that matter most on moving day."
           />
           
-          <div className="space-y-0">
-            {milestones.map((milestone, index) => (
-              <div key={milestone.year} className="flex gap-6">
-                <div className="flex flex-col items-center">
-                  <div className="w-4 h-4 rounded-full gradient-gold shadow-glow-gold" />
-                  {index < milestones.length - 1 && (
-                    <div className="w-0.5 h-full bg-gradient-to-b from-accent/50 to-border my-2" />
-                  )}
-                </div>
-                <div className="pb-8">
-                  <p className="text-accent font-semibold">{milestone.year}</p>
-                  <p className="text-foreground">{milestone.event}</p>
+          <div className="grid sm:grid-cols-2 gap-6">
+            {milestones.map((item, index) => (
+              <div 
+                key={item.title} 
+                className="flex gap-4 p-6 rounded-xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all animate-fade-in"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="w-3 h-3 rounded-full gradient-gold shadow-glow-gold mt-1.5 shrink-0" />
+                <div>
+                  <p className="font-semibold text-primary mb-1">{item.title}</p>
+                  <p className="text-muted-foreground text-sm">{item.description}</p>
                 </div>
               </div>
             ))}
