@@ -88,9 +88,9 @@ export default function About() {
               Denver's Most <span className="text-accent">Trusted</span> Moving Team
             </h1>
             <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed mb-6">
-              For over 15 years, we've been Denver's trusted partner for seamless, 
-              stress-free moves. Our story is one of dedication, growth, and an 
-              unwavering commitment to excellence.
+              Denver's trusted partner for seamless, stress-free moves. 
+              Our story is one of dedication, quality service, and an 
+              unwavering commitment to treating every move with care.
             </p>
             
             {/* Trust indicators */}
@@ -98,7 +98,7 @@ export default function About() {
               <GoogleReviewsBadge compact />
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/5 border border-primary/10">
                 <Truck className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-primary">10,000+ Denver Moves</span>
+                <span className="text-sm font-medium text-primary">Professional Denver Movers</span>
               </div>
             </div>
           </div>
