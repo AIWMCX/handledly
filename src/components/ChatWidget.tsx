@@ -14,10 +14,16 @@ interface ChatWidgetProps {
 }
 
 const quickActions = [
-  { icon: DollarSign, label: "Get a Quote", prompt: "I'd like to get a quote for my move" },
-  { icon: Clock, label: "Service Hours", prompt: "What are your hours of operation?" },
-  { icon: Calendar, label: "Schedule Move", prompt: "I want to schedule a move" },
-  { icon: Sparkles, label: "Pricing Info", prompt: "How much do you charge for moving?" },
+  { icon: DollarSign, label: "Get Free Quote", prompt: "I'd like to get a free quote for my move", priority: true },
+  { icon: Calendar, label: "Book Same-Day", prompt: "I need a same-day moving service", priority: true },
+  { icon: Clock, label: "Service Hours", prompt: "What are your hours of operation?", priority: false },
+  { icon: Sparkles, label: "View Pricing", prompt: "How much do you charge for moving?", priority: false },
+];
+
+// Proactive conversion prompts shown after message count threshold
+const conversionPrompts = [
+  { message: 3, text: "💡 Ready to get your personalized quote? I just need a few quick details!", cta: "Start My Quote" },
+  { message: 6, text: "📞 Want to talk to someone? Call us at (878) 218-7397 or let me get your quote now!", cta: "Get Quote Now" },
 ];
 
 export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps) {
@@ -25,6 +31,8 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
   const [isOpen, setIsOpen] = useState(variant === "inline");
   const [inputValue, setInputValue] = useState("");
   const [showQuickActions, setShowQuickActions] = useState(true);
+  const [shownConversionPrompts, setShownConversionPrompts] = useState<number[]>([]);
+  const [dismissedPrompt, setDismissedPrompt] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const {
@@ -100,6 +108,31 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
       navigate(`/quote?confirmed=true&quoteNumber=${quoteSubmission.quoteNumber}&email=${quoteSubmission.email}&name=${quoteSubmission.firstName}&total=${quoteSubmission.totalQuote}`);
     }
   };
+
+  // Check if we should show a conversion prompt based on message count
+  const getActiveConversionPrompt = () => {
+    if (dismissedPrompt || isQuoteSubmitted) return null;
+    
+    const userMessageCount = messages.filter(m => m.role === 'user').length;
+    
+    for (const prompt of conversionPrompts) {
+      if (userMessageCount >= prompt.message && !shownConversionPrompts.includes(prompt.message)) {
+        return prompt;
+      }
+    }
+    return null;
+  };
+
+  const handleConversionPromptAction = (prompt: typeof conversionPrompts[0]) => {
+    setShownConversionPrompts(prev => [...prev, prompt.message]);
+    handleSendMessage("I'd like to get a free quote for my move");
+  };
+
+  const dismissConversionPrompt = () => {
+    setDismissedPrompt(true);
+  };
+
+  const activePrompt = getActiveConversionPrompt();
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -234,6 +267,35 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
           {/* Quote Confirmation Card */}
           {isQuoteSubmitted && quoteSubmission && <QuoteConfirmationCard />}
           
+          {/* Conversion Prompt Banner */}
+          {activePrompt && !isLoading && (
+            <div className="mx-2 my-3 p-3 bg-primary/10 border border-primary/30 rounded-xl animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="flex items-start gap-2">
+                <Sparkles className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm text-foreground">{activePrompt.text}</p>
+                  <div className="flex gap-2 mt-2">
+                    <Button
+                      size="sm"
+                      onClick={() => handleConversionPromptAction(activePrompt)}
+                      className="gradient-gold text-primary-foreground text-xs h-7 px-3"
+                    >
+                      {activePrompt.cta}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={dismissConversionPrompt}
+                      className="text-xs h-7 px-2 text-muted-foreground"
+                    >
+                      Later
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {/* Typing indicator */}
           {isLoading && messages.length > 0 && (
             <div className="flex gap-2 justify-start">
@@ -253,15 +315,15 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions - prioritize conversion actions */}
         {showQuickActions && isConnected && messages.length <= 1 && !isQuoteSubmitted && (
           <div className="px-4 pb-2">
             <div className="flex flex-wrap gap-2">
-              {quickActions.slice(0, 2).map((action) => (
+              {quickActions.filter(a => a.priority).map((action) => (
                 <button
                   key={action.label}
                   onClick={() => handleQuickAction(action.label, action.prompt)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary hover:bg-secondary/80 border border-border text-xs font-medium text-foreground transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/30 text-xs font-medium text-foreground transition-colors"
                 >
                   <action.icon className="w-3 h-3 text-primary" />
                   {action.label}
@@ -415,6 +477,35 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
             {/* Quote Confirmation Card */}
             {isQuoteSubmitted && quoteSubmission && <QuoteConfirmationCard />}
             
+            {/* Conversion Prompt Banner */}
+            {activePrompt && !isLoading && (
+              <div className="mx-2 my-3 p-3 bg-primary/10 border border-primary/30 rounded-xl animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="flex items-start gap-2">
+                  <Sparkles className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="text-sm text-foreground">{activePrompt.text}</p>
+                    <div className="flex gap-2 mt-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleConversionPromptAction(activePrompt)}
+                        className="gradient-gold text-primary-foreground text-xs h-7 px-3"
+                      >
+                        {activePrompt.cta}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={dismissConversionPrompt}
+                        className="text-xs h-7 px-2 text-muted-foreground"
+                      >
+                        Later
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {/* Typing indicator */}
             {isLoading && messages.length > 0 && (
               <div className="flex gap-2 justify-start">
@@ -434,18 +525,28 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Actions */}
+          {/* Quick Actions - prioritize conversion actions */}
           {showQuickActions && isConnected && messages.length <= 1 && !isQuoteSubmitted && (
             <div className="px-4 pb-2">
-              <p className="text-xs text-muted-foreground mb-2">Quick actions:</p>
+              <p className="text-xs text-muted-foreground mb-2">How can I help?</p>
               <div className="flex flex-wrap gap-2">
-                {quickActions.map((action) => (
+                {quickActions.filter(a => a.priority).map((action) => (
+                  <button
+                    key={action.label}
+                    onClick={() => handleQuickAction(action.label, action.prompt)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/30 text-xs font-medium text-foreground transition-colors"
+                  >
+                    <action.icon className="w-3 h-3 text-primary" />
+                    {action.label}
+                  </button>
+                ))}
+                {quickActions.filter(a => !a.priority).map((action) => (
                   <button
                     key={action.label}
                     onClick={() => handleQuickAction(action.label, action.prompt)}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary hover:bg-secondary/80 border border-border text-xs font-medium text-foreground transition-colors"
                   >
-                    <action.icon className="w-3 h-3 text-primary" />
+                    <action.icon className="w-3 h-3 text-muted-foreground" />
                     {action.label}
                   </button>
                 ))}
