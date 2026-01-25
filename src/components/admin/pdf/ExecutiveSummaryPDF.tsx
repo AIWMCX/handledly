@@ -1,18 +1,8 @@
-import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { format } from 'date-fns';
 import { PDFBarChart, PDFDonutChart, PDFProgressRing, PDFScoreBar, PDFLineChart } from './charts';
 
-// Register fonts
-Font.register({
-  family: 'Inter',
-  fonts: [
-    { src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2', fontWeight: 400 },
-    { src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuI6fAZ9hiJ-Ek-_EeA.woff2', fontWeight: 600 },
-    { src: 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZ9hiJ-Ek-_EeA.woff2', fontWeight: 700 },
-  ],
-});
-
-// Brand Colors
+// Brand Colors - using system fonts to avoid CORS issues
 const colors = {
   navy: '#1E3A5F',
   gold: '#F9B233',
@@ -31,13 +21,13 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: colors.white,
     padding: 40,
-    fontFamily: 'Inter',
+    fontFamily: 'Helvetica',
   },
   coverPage: {
     flexDirection: 'column',
     backgroundColor: colors.navy,
     padding: 0,
-    fontFamily: 'Inter',
+    fontFamily: 'Helvetica',
   },
   coverContent: {
     flex: 1,
