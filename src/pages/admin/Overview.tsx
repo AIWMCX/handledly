@@ -15,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { usePDFExport } from '@/hooks/usePDFExport';
+import { useExecutivePDFExport } from '@/hooks/useExecutivePDFExport';
 import { useDocumentationGenerator } from '@/hooks/useDocumentationGenerator';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -47,6 +48,7 @@ const getLast7DaysChats = (conversations: Array<{ created_at: string }> | null |
 
 const Overview = () => {
   const { generatePDF, isGenerating } = usePDFExport();
+  const { generateExecutivePDF, isGenerating: isGeneratingExecutive } = useExecutivePDFExport();
   const { generateMarkdownReport } = useDocumentationGenerator();
   const [copied, setCopied] = useState(false);
   const [viewMode, setViewMode] = useState<'standard' | 'launch'>('standard');
@@ -210,7 +212,8 @@ const Overview = () => {
           <Button
             onClick={generatePDF}
             disabled={isGenerating}
-            variant="default"
+            variant="outline"
+            size="sm"
             className="gap-2"
           >
             {isGenerating ? (
@@ -221,7 +224,25 @@ const Overview = () => {
             ) : (
               <>
                 <Download className="h-4 w-4" />
-                Export PDF
+                Deliverables
+              </>
+            )}
+          </Button>
+          <Button
+            onClick={generateExecutivePDF}
+            disabled={isGeneratingExecutive}
+            variant="default"
+            className="gap-2"
+          >
+            {isGeneratingExecutive ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" />
+                Executive PDF
               </>
             )}
           </Button>
