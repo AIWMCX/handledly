@@ -18,6 +18,7 @@ import ClientPortal from "./pages/ClientPortal";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Overview, Leads, Conversations, CallLogs, Appointments, UserManagement, Settings } from "./pages/admin";
+import AIQuality from "./pages/admin/AIQuality";
 import {
   LocalMoving,
   ResidentialMovers,
@@ -68,6 +69,7 @@ const App = () => (
                 <Route path="leads" element={<Leads />} />
                 <Route path="conversations" element={<Conversations />} />
                 <Route path="calls" element={<CallLogs />} />
+                <Route path="ai-quality" element={<AIQuality />} />
                 <Route path="appointments" element={<Appointments />} />
                 <Route path="users" element={<UserManagement />} />
                 <Route path="settings" element={<Settings />} />

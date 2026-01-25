@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_quality_reviews: {
+        Row: {
+          accuracy_score: number | null
+          conversation_id: string
+          created_at: string
+          customer_rating: number | null
+          flagged_for_improvement: boolean | null
+          id: string
+          improvement_category: string | null
+          quality_score: number | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string
+        }
+        Insert: {
+          accuracy_score?: number | null
+          conversation_id: string
+          created_at?: string
+          customer_rating?: number | null
+          flagged_for_improvement?: boolean | null
+          id?: string
+          improvement_category?: string | null
+          quality_score?: number | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by: string
+        }
+        Update: {
+          accuracy_score?: number | null
+          conversation_id?: string
+          created_at?: string
+          customer_rating?: number | null
+          flagged_for_improvement?: boolean | null
+          id?: string
+          improvement_category?: string | null
+          quality_score?: number | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_quality_reviews_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           created_at: string
@@ -103,13 +153,59 @@ export type Database = {
         }
         Relationships: []
       }
+      call_retry_queue: {
+        Row: {
+          created_at: string
+          id: string
+          last_error: string | null
+          lead_id: string
+          max_attempts: number
+          processed_at: string | null
+          retry_attempt: number
+          scheduled_for: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          lead_id: string
+          max_attempts?: number
+          processed_at?: string | null
+          retry_attempt?: number
+          scheduled_for: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          lead_id?: string
+          max_attempts?: number
+          processed_at?: string | null
+          retry_attempt?: number
+          scheduled_for?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "call_retry_queue_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_conversations: {
         Row: {
           created_at: string
+          customer_satisfaction: number | null
           ended_at: string | null
           id: string
           lead_id: string | null
           metadata: Json | null
+          quality_reviewed: boolean | null
           session_id: string
           source_page: string | null
           started_at: string
@@ -118,10 +214,12 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          customer_satisfaction?: number | null
           ended_at?: string | null
           id?: string
           lead_id?: string | null
           metadata?: Json | null
+          quality_reviewed?: boolean | null
           session_id: string
           source_page?: string | null
           started_at?: string
@@ -130,10 +228,12 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          customer_satisfaction?: number | null
           ended_at?: string | null
           id?: string
           lead_id?: string | null
           metadata?: Json | null
+          quality_reviewed?: boolean | null
           session_id?: string
           source_page?: string | null
           started_at?: string
@@ -194,6 +294,7 @@ export type Database = {
           call_duration_seconds: number | null
           call_ended_at: string | null
           call_notes: string | null
+          call_retry_count: number | null
           call_sid: string | null
           call_summary: string | null
           call_transcript: string | null
@@ -212,6 +313,7 @@ export type Database = {
           move_date: string | null
           move_from_address: string | null
           move_to_address: string | null
+          next_retry_at: string | null
           notes: string | null
           phone: string
           prefer_email_only: boolean | null
@@ -231,6 +333,7 @@ export type Database = {
           call_duration_seconds?: number | null
           call_ended_at?: string | null
           call_notes?: string | null
+          call_retry_count?: number | null
           call_sid?: string | null
           call_summary?: string | null
           call_transcript?: string | null
@@ -249,6 +352,7 @@ export type Database = {
           move_date?: string | null
           move_from_address?: string | null
           move_to_address?: string | null
+          next_retry_at?: string | null
           notes?: string | null
           phone: string
           prefer_email_only?: boolean | null
@@ -268,6 +372,7 @@ export type Database = {
           call_duration_seconds?: number | null
           call_ended_at?: string | null
           call_notes?: string | null
+          call_retry_count?: number | null
           call_sid?: string | null
           call_summary?: string | null
           call_transcript?: string | null
@@ -286,6 +391,7 @@ export type Database = {
           move_date?: string | null
           move_from_address?: string | null
           move_to_address?: string | null
+          next_retry_at?: string | null
           notes?: string | null
           phone?: string
           prefer_email_only?: boolean | null

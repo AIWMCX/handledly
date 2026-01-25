@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { useRealtimeLeads } from '@/hooks/useRealtimeLeads';
+import LiveIndicator from './LiveIndicator';
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -17,6 +19,7 @@ interface AdminHeaderProps {
 
 const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
   const { user, signOut } = useAuth();
+  const { isConnected, lastUpdate } = useRealtimeLeads();
 
   const handleSignOut = async () => {
     await signOut();
@@ -39,8 +42,10 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
       {/* Title - visible on mobile */}
       <h1 className="text-lg font-semibold text-foreground lg:hidden">Dashboard</h1>
 
-      {/* Spacer for desktop */}
-      <div className="hidden lg:block" />
+      {/* Live indicator for desktop */}
+      <div className="hidden lg:flex flex-1 justify-center">
+        <LiveIndicator isConnected={isConnected} lastUpdate={lastUpdate} />
+      </div>
 
       {/* User Menu */}
       <DropdownMenu>
