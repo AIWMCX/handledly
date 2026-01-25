@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -27,28 +25,34 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Search, Filter, Phone, FileText } from 'lucide-react';
+import { Search, Filter, Phone, FileText, RefreshCw, RotateCcw } from 'lucide-react';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { usePaginatedCallLogs } from '@/hooks/usePaginatedQuery';
+import PaginationControls from '@/components/admin/PaginationControls';
 
 const CallLogs = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedLead, setSelectedLead] = useState<any>(null);
 
-  const { data: leads, isLoading } = useQuery({
-    queryKey: ['admin-call-logs'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('leads')
-        .select('*')
-        .not('confirmation_call_status', 'eq', 'pending')
-        .order('confirmation_call_time', { ascending: false, nullsFirst: false });
-      if (error) throw error;
-      return data;
-    },
-  });
+  const {
+    data: leads,
+    totalCount,
+    page,
+    pageSize,
+    totalPages,
+    isLoading,
+    isFetching,
+    hasNextPage,
+    hasPreviousPage,
+    goToPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+    refetch,
+  } = usePaginatedCallLogs({ pageSize: 25 });
 
   const filteredLeads = leads?.filter((lead) => {
     const matchesSearch =
@@ -62,6 +66,9 @@ const CallLogs = () => {
     const colors: Record<string, string> = {
       completed: 'bg-green-500/20 text-green-400',
       failed: 'bg-red-500/20 text-red-400',
+      failed_sms_sent: 'bg-orange-500/20 text-orange-400',
+      timeout: 'bg-yellow-500/20 text-yellow-400',
+      calling: 'bg-blue-500/20 text-blue-400',
       'no-answer': 'bg-yellow-500/20 text-yellow-400',
       'in-progress': 'bg-blue-500/20 text-blue-400',
     };
@@ -91,16 +98,27 @@ const CallLogs = () => {
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>
               <SelectItem value="failed">Failed</SelectItem>
-              <SelectItem value="no-answer">No Answer</SelectItem>
-              <SelectItem value="in-progress">In Progress</SelectItem>
+              <SelectItem value="failed_sms_sent">SMS Fallback</SelectItem>
+              <SelectItem value="timeout">Timeout</SelectItem>
+              <SelectItem value="calling">In Progress</SelectItem>
             </SelectContent>
           </Select>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => refetch()}
+            disabled={isFetching}
+          >
+            <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+          </Button>
         </div>
       </div>
 
       <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-lg">Call History ({filteredLeads?.length || 0})</CardTitle>
+          <CardTitle className="text-lg">
+            Call History ({totalCount.toLocaleString()})
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -115,62 +133,89 @@ const CallLogs = () => {
               <p>No call logs found</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-border/50">
-                    <TableHead>Lead</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Call Time</TableHead>
-                    <TableHead>Has Notes</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredLeads?.map((lead) => (
-                    <TableRow key={lead.id} className="border-border/50">
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{lead.full_name}</p>
-                          <p className="text-xs text-muted-foreground">{lead.email}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">{lead.phone}</TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(lead.confirmation_call_status || '')}>
-                          {lead.confirmation_call_status || 'unknown'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {lead.confirmation_call_time
-                          ? format(new Date(lead.confirmation_call_time), 'MMM d, h:mm a')
-                          : '-'}
-                      </TableCell>
-                      <TableCell>
-                        {lead.call_notes || lead.call_transcript ? (
-                          <Badge variant="secondary">
-                            <FileText className="h-3 w-3 mr-1" />
-                            Yes
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedLead(lead)}
-                        >
-                          View Details
-                        </Button>
-                      </TableCell>
+            <>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-border/50">
+                      <TableHead>Lead</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Retries</TableHead>
+                      <TableHead>Call Time</TableHead>
+                      <TableHead>Has Notes</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredLeads?.map((lead) => (
+                      <TableRow key={lead.id} className="border-border/50">
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{lead.full_name}</p>
+                            <p className="text-xs text-muted-foreground">{lead.email}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-mono text-sm">{lead.phone}</TableCell>
+                        <TableCell>
+                          <Badge className={getStatusColor(lead.confirmation_call_status || '')}>
+                            {lead.confirmation_call_status || 'unknown'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {lead.call_retry_count > 0 ? (
+                            <div className="flex items-center gap-1">
+                              <RotateCcw className="h-3 w-3 text-muted-foreground" />
+                              <span className="text-sm">{lead.call_retry_count}/3</span>
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {lead.confirmation_call_time
+                            ? format(new Date(lead.confirmation_call_time), 'MMM d, h:mm a')
+                            : '-'}
+                        </TableCell>
+                        <TableCell>
+                          {lead.call_notes || lead.call_transcript ? (
+                            <Badge variant="secondary">
+                              <FileText className="h-3 w-3 mr-1" />
+                              Yes
+                            </Badge>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedLead(lead)}
+                          >
+                            View Details
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <PaginationControls
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                totalPages={totalPages}
+                hasNextPage={hasNextPage}
+                hasPreviousPage={hasPreviousPage}
+                isFetching={isFetching}
+                onPageChange={goToPage}
+                onPageSizeChange={setPageSize}
+                onNextPage={nextPage}
+                onPreviousPage={previousPage}
+              />
+            </>
           )}
         </CardContent>
       </Card>
@@ -195,6 +240,18 @@ const CallLogs = () => {
                       {selectedLead.confirmation_call_status || 'unknown'}
                     </Badge>
                   </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Retry Attempts</span>
+                    <span className="text-sm">{selectedLead.call_retry_count || 0}/3</span>
+                  </div>
+                  {selectedLead.next_retry_at && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Next Retry</span>
+                      <span className="text-sm">
+                        {format(new Date(selectedLead.next_retry_at), 'MMM d, h:mm a')}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Call Time</span>
                     <span className="text-sm">

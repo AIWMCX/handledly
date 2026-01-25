@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,10 +27,12 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Search, Filter, Eye, Phone, Mail, Download } from 'lucide-react';
+import { Search, Filter, Eye, Phone, Mail, Download, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+import { usePaginatedLeads } from '@/hooks/usePaginatedQuery';
+import PaginationControls from '@/components/admin/PaginationControls';
 
 // CSV Export utility
 const exportToCSV = (data: any[], filename: string) => {
@@ -66,17 +68,22 @@ const Leads = () => {
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const queryClient = useQueryClient();
 
-  const { data: leads, isLoading } = useQuery({
-    queryKey: ['admin-leads'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('leads')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
+  const {
+    data: leads,
+    totalCount,
+    page,
+    pageSize,
+    totalPages,
+    isLoading,
+    isFetching,
+    hasNextPage,
+    hasPreviousPage,
+    goToPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+    refetch,
+  } = usePaginatedLeads({ pageSize: 25 });
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
@@ -87,7 +94,7 @@ const Leads = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-leads'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-leads-paginated'] });
       toast.success('Lead status updated');
     },
     onError: () => {
@@ -108,6 +115,7 @@ const Leads = () => {
     const colors: Record<string, string> = {
       new: 'bg-blue-500/20 text-blue-400',
       contacted: 'bg-yellow-500/20 text-yellow-400',
+      qualified: 'bg-cyan-500/20 text-cyan-400',
       booked: 'bg-green-500/20 text-green-400',
       completed: 'bg-primary/20 text-primary',
     };
@@ -137,10 +145,19 @@ const Leads = () => {
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="new">New</SelectItem>
               <SelectItem value="contacted">Contacted</SelectItem>
+              <SelectItem value="qualified">Qualified</SelectItem>
               <SelectItem value="booked">Booked</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>
             </SelectContent>
           </Select>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => refetch()}
+            disabled={isFetching}
+          >
+            <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+          </Button>
           <Button
             variant="outline"
             onClick={() => exportToCSV(filteredLeads || [], 'leads')}
@@ -155,7 +172,9 @@ const Leads = () => {
 
       <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-lg">All Leads ({filteredLeads?.length || 0})</CardTitle>
+          <CardTitle className="text-lg">
+            All Leads ({totalCount.toLocaleString()})
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -165,76 +184,93 @@ const Leads = () => {
               ))}
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-border/50">
-                    <TableHead>Name</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead>Move Date</TableHead>
-                    <TableHead>Quote</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredLeads?.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                        No leads found
-                      </TableCell>
+            <>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-border/50">
+                      <TableHead>Name</TableHead>
+                      <TableHead>Contact</TableHead>
+                      <TableHead>Move Date</TableHead>
+                      <TableHead>Quote</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ) : (
-                    filteredLeads?.map((lead) => (
-                      <TableRow key={lead.id} className="border-border/50">
-                        <TableCell className="font-medium">{lead.full_name}</TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-1">
-                            <span className="text-sm">{lead.email}</span>
-                            <span className="text-xs text-muted-foreground">{lead.phone}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {lead.move_date ? format(new Date(lead.move_date), 'MMM d, yyyy') : '-'}
-                        </TableCell>
-                        <TableCell>
-                          {lead.estimated_quote ? `$${lead.estimated_quote.toLocaleString()}` : '-'}
-                        </TableCell>
-                        <TableCell>
-                          <Select
-                            value={lead.status}
-                            onValueChange={(value) => updateStatusMutation.mutate({ id: lead.id, status: value })}
-                          >
-                            <SelectTrigger className="w-28 h-8">
-                              <Badge className={getStatusColor(lead.status)}>{lead.status}</Badge>
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="new">New</SelectItem>
-                              <SelectItem value="contacted">Contacted</SelectItem>
-                              <SelectItem value="booked">Booked</SelectItem>
-                              <SelectItem value="completed">Completed</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {format(new Date(lead.created_at), 'MMM d, h:mm a')}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setSelectedLead(lead)}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredLeads?.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                          No leads found
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+                    ) : (
+                      filteredLeads?.map((lead) => (
+                        <TableRow key={lead.id} className="border-border/50">
+                          <TableCell className="font-medium">{lead.full_name}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-col gap-1">
+                              <span className="text-sm">{lead.email}</span>
+                              <span className="text-xs text-muted-foreground">{lead.phone}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {lead.move_date ? format(new Date(lead.move_date), 'MMM d, yyyy') : '-'}
+                          </TableCell>
+                          <TableCell>
+                            {lead.estimated_quote ? `$${lead.estimated_quote.toLocaleString()}` : '-'}
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={lead.status}
+                              onValueChange={(value) => updateStatusMutation.mutate({ id: lead.id, status: value })}
+                            >
+                              <SelectTrigger className="w-28 h-8">
+                                <Badge className={getStatusColor(lead.status)}>{lead.status}</Badge>
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="new">New</SelectItem>
+                                <SelectItem value="contacted">Contacted</SelectItem>
+                                <SelectItem value="qualified">Qualified</SelectItem>
+                                <SelectItem value="booked">Booked</SelectItem>
+                                <SelectItem value="completed">Completed</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {format(new Date(lead.created_at), 'MMM d, h:mm a')}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setSelectedLead(lead)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <PaginationControls
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                totalPages={totalPages}
+                hasNextPage={hasNextPage}
+                hasPreviousPage={hasPreviousPage}
+                isFetching={isFetching}
+                onPageChange={goToPage}
+                onPageSizeChange={setPageSize}
+                onNextPage={nextPage}
+                onPreviousPage={previousPage}
+              />
+            </>
           )}
         </CardContent>
       </Card>
@@ -325,6 +361,18 @@ const Leads = () => {
                         {selectedLead.confirmation_call_status || 'pending'}
                       </Badge>
                     </div>
+                    {selectedLead.call_retry_count > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Retry Attempts</span>
+                        <span>{selectedLead.call_retry_count}/3</span>
+                      </div>
+                    )}
+                    {selectedLead.next_retry_at && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Next Retry</span>
+                        <span>{format(new Date(selectedLead.next_retry_at), 'MMM d, h:mm a')}</span>
+                      </div>
+                    )}
                     {selectedLead.confirmation_call_time && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Last Call</span>

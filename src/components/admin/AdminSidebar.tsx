@@ -23,8 +23,9 @@ const navItems = [
   { to: '/admin/leads', icon: Users, label: 'Leads' },
   { to: '/admin/conversations', icon: MessageSquare, label: 'Conversations' },
   { to: '/admin/calls', icon: Phone, label: 'Call Logs' },
+  { to: '/admin/ai-quality', icon: ShieldCheck, label: 'AI Quality' },
   { to: '/admin/appointments', icon: Calendar, label: 'Appointments' },
-  { to: '/admin/users', icon: ShieldCheck, label: 'User Management' },
+  { to: '/admin/users', icon: Users, label: 'User Management' },
   { to: '/admin/settings', icon: Settings, label: 'Settings' },
 ];
 
