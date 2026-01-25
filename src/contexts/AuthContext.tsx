@@ -2,10 +2,25 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
+// SECURITY: Strict whitelist of authorized admin emails
+// Only these 3 accounts have access to admin panel, dashboards, and client portal
+const AUTHORIZED_ADMIN_EMAILS: readonly string[] = [
+  'aiwmcsrm@gmail.com',
+  'nevulis22@gmail.com', 
+  'saych.88@gmail.com',
+] as const;
+
+// Check if email is in the authorized whitelist (case-insensitive)
+const isAuthorizedEmail = (email: string | undefined): boolean => {
+  if (!email) return false;
+  return AUTHORIZED_ADMIN_EMAILS.includes(email.toLowerCase());
+};
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   isAdmin: boolean;
+  isAuthorized: boolean; // New: checks email whitelist
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
@@ -27,6 +42,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // SECURITY: Derived state - user must be in email whitelist to be authorized
+  const isAuthorized = isAuthorizedEmail(user?.email);
 
   const checkAdminRole = async (userId: string) => {
     try {
@@ -106,7 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isAdmin, isLoading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, session, isAdmin, isAuthorized, isLoading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

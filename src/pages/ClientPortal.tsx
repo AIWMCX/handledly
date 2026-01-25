@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/contexts/AuthContext';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,35 +18,43 @@ import {
   Users, 
   DollarSign, 
   MessageSquare,
-  Phone,
-  Mail,
-  Calendar,
   ChevronDown,
   Copy,
-  ExternalLink,
+  Undo2,
   Webhook,
-  Undo2
+  Loader2,
+  ShieldAlert,
+  Home,
+  LogOut,
+  ExternalLink,
+  Mail,
+  Phone,
+  Calendar
 } from 'lucide-react';
 import { usePDFExport } from '@/hooks/usePDFExport';
 import { toast } from 'sonner';
 
 const ELEVENLABS_WEBHOOK_URL = 'https://spguevrimwpqygvcxrsk.functions.supabase.co/handle-call-status';
 
-const CLIENT_ACCESS_CODE = 'HANDLEDLY2024'; // Simple access code
-
 const ClientPortal = () => {
-  const [accessCode, setAccessCode] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const { user, isAuthorized, isLoading: authLoading, signOut } = useAuth();
   const [webhookOpen, setWebhookOpen] = useState(false);
   const { generatePDF, isGenerating } = usePDFExport();
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [user, authLoading, navigate]);
 
   const copyWebhookUrl = () => {
     navigator.clipboard.writeText(ELEVENLABS_WEBHOOK_URL);
     toast.success('Webhook URL copied to clipboard!');
   };
 
-  // Fetch live metrics
+  // Fetch live metrics - only when authorized
   const { data: leads } = useQuery({
     queryKey: ['client-portal-leads'],
     queryFn: async () => {
@@ -52,7 +62,7 @@ const ClientPortal = () => {
       if (error) throw error;
       return data;
     },
-    enabled: isAuthenticated,
+    enabled: isAuthorized,
   });
 
   const { data: quotes } = useQuery({
@@ -62,7 +72,7 @@ const ClientPortal = () => {
       if (error) throw error;
       return data;
     },
-    enabled: isAuthenticated,
+    enabled: isAuthorized,
   });
 
   const { data: conversations } = useQuery({
@@ -72,18 +82,8 @@ const ClientPortal = () => {
       if (error) throw error;
       return data;
     },
-    enabled: isAuthenticated,
+    enabled: isAuthorized,
   });
-
-  const handleAccessSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (accessCode === CLIENT_ACCESS_CODE) {
-      setIsAuthenticated(true);
-      setError('');
-    } else {
-      setError('Invalid access code. Please contact your project manager.');
-    }
-  };
 
   // Checklist items
   const deliverables = [
@@ -134,12 +134,12 @@ const ClientPortal = () => {
   // Celebration effect when all items complete
   useEffect(() => {
     const allComplete = clientActionsState.every((item: typeof defaultClientActions[0]) => item.completed);
-    if (allComplete && clientActionsState.length > 0) {
+    if (allComplete && clientActionsState.length > 0 && isAuthorized) {
       toast.success('🚀 All action items completed! Ready for launch!', {
         duration: 5000,
       });
     }
-  }, [clientActionsState]);
+  }, [clientActionsState, isAuthorized]);
 
   const completedDeliverables = deliverables.filter(d => d.completed).length;
   const completedActions = clientActionsState.filter((a: typeof defaultClientActions[0]) => a.completed).length;
@@ -149,7 +149,20 @@ const ClientPortal = () => {
 
   const totalRevenue = leads?.reduce((sum, lead) => sum + (lead.estimated_quote || 0), 0) || 0;
 
-  if (!isAuthenticated) {
+  // Loading state
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Verifying access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Not logged in
+  if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md border-border/50 bg-card/50 backdrop-blur-sm">
@@ -158,26 +171,56 @@ const ClientPortal = () => {
               <Lock className="h-6 w-6 text-primary" />
             </div>
             <CardTitle className="text-2xl">Client Portal</CardTitle>
-            <p className="text-muted-foreground text-sm mt-2">
-              Enter your access code to view project status
-            </p>
+            <CardDescription>
+              Please sign in to access the project portal
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleAccessSubmit} className="space-y-4">
-              <Input
-                type="password"
-                placeholder="Access Code"
-                value={accessCode}
-                onChange={(e) => setAccessCode(e.target.value)}
-                className="text-center text-lg tracking-widest"
-              />
-              {error && (
-                <p className="text-sm text-red-500 text-center">{error}</p>
-              )}
-              <Button type="submit" className="w-full">
-                Access Portal
-              </Button>
-            </form>
+            <Button onClick={() => navigate('/auth')} className="w-full">
+              Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // SECURITY: Not authorized (email not in whitelist)
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-destructive/50 bg-card/50 backdrop-blur-sm">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center">
+              <ShieldAlert className="h-8 w-8 text-destructive" />
+            </div>
+            <CardTitle className="text-2xl font-bold text-foreground">
+              Unauthorized Access
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
+              Your account ({user.email}) is not authorized to access the Client Portal. 
+              Access is restricted to authorized personnel only.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button
+              onClick={() => navigate('/')}
+              className="w-full"
+            >
+              <Home className="mr-2 h-4 w-4" />
+              Return to Home
+            </Button>
+            <Button
+              onClick={async () => {
+                await signOut();
+                navigate('/auth');
+              }}
+              variant="outline"
+              className="w-full"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out & Use Different Account
+            </Button>
           </CardContent>
         </Card>
       </div>

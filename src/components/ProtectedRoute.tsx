@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Loader2, ShieldX, Home, LogOut } from 'lucide-react';
+import { Loader2, ShieldX, Home, LogOut, ShieldAlert } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -11,7 +11,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = true }) => {
-  const { user, isAdmin, isLoading, signOut } = useAuth();
+  const { user, isAdmin, isAuthorized, isLoading, signOut } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">Verifying access...</p>
         </div>
       </div>
     );
@@ -35,6 +35,49 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
     return null;
   }
 
+  // SECURITY: First check email whitelist - this is the primary security layer
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-destructive/50 bg-card/50 backdrop-blur-sm">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center">
+              <ShieldAlert className="h-8 w-8 text-destructive" />
+            </div>
+            <CardTitle className="text-2xl font-bold text-foreground">
+              Unauthorized Access
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
+              Your account ({user.email}) is not authorized to access this system. 
+              Access is restricted to authorized personnel only.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button
+              onClick={() => navigate('/')}
+              className="w-full"
+            >
+              <Home className="mr-2 h-4 w-4" />
+              Return to Home
+            </Button>
+            <Button
+              onClick={async () => {
+                await signOut();
+                navigate('/auth');
+              }}
+              variant="outline"
+              className="w-full"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out & Use Different Account
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // SECURITY: Then check admin role in database
   if (requireAdmin && !isAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -44,10 +87,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
               <ShieldX className="h-8 w-8 text-destructive" />
             </div>
             <CardTitle className="text-2xl font-bold text-foreground">
-              Access Denied
+              Admin Access Required
             </CardTitle>
             <CardDescription className="text-muted-foreground">
-              You don't have admin privileges to access this page. Contact an administrator if you believe this is an error.
+              Your account is authorized but lacks admin privileges. 
+              Please contact the system administrator.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
