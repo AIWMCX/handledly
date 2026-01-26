@@ -12,9 +12,12 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useFormPersistence } from '@/hooks/useFormPersistence';
 import { useUTMParams } from '@/hooks/useUTMParams';
+import { useBotProtection } from '@/hooks/useBotProtection';
 import { ConversionEvents, PageTiming } from '@/lib/analytics';
 import { QuoteFormData, ServiceType, PropertyType } from '@/types/conversion';
+import { HoneypotField } from '@/components/forms/HoneypotField';
 import { cn } from '@/lib/utils';
+import { toast } from '@/hooks/use-toast';
 
 // Parse date string as local date to avoid timezone offset issues
 const parseLocalDate = (dateString: string): Date | undefined => {
@@ -89,6 +92,16 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
   // UTM tracking for marketing attribution
   const utmParams = useUTMParams();
 
+  // Bot protection
+  const botProtection = useBotProtection({
+    formId: 'quote_wizard',
+    minSubmitTime: 3000, // Minimum 3 seconds to fill form
+    maxSubmitTime: 1800000, // Maximum 30 minutes
+    onBotDetected: (reason, score) => {
+      console.warn(`Bot detected: ${reason} (score: ${score})`);
+    },
+  });
+
   // Form persistence
   const { savedData, saveData, clearData, hasRestoredData, markRestored } = useFormPersistence<QuoteFormData>({
     formId: 'quote_wizard',
@@ -160,16 +173,32 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
     setStepStartTime(Date.now());
   };
 
-  // Handle form submission
+  // Handle form submission with bot protection
   const handleSubmit = async () => {
     if (!validateStep(3)) return;
 
     setIsSubmitting(true);
 
     try {
+      // Validate bot protection before submitting
+      const botValidation = await botProtection.validate();
+      
+      if (!botValidation.valid) {
+        toast({
+          title: "Submission blocked",
+          description: "Please try again in a moment.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       // Track final step
       const timeSpent = Math.round((Date.now() - stepStartTime) / 1000);
       ConversionEvents.formStepCompleted(3, timeSpent, 'quote_wizard');
+
+      // Get client fingerprint for server-side tracking
+      const fingerprint = await botProtection.getFingerprint();
 
       // Include UTM params in submission for marketing attribution
       const dataWithUTM = {
@@ -181,6 +210,8 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
         utm_campaign: utmParams.utm_campaign,
         utm_content: utmParams.utm_content,
         utm_term: utmParams.utm_term,
+        // Add fingerprint for server-side validation
+        _clientFingerprint: fingerprint,
       };
 
       await onSubmit(dataWithUTM as QuoteFormData);
@@ -223,7 +254,10 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
   }, [formData]);
 
   return (
-    <div className={cn('w-full max-w-2xl mx-auto', className)}>
+    <div 
+      className={cn('w-full max-w-2xl mx-auto', className)}
+      {...botProtection.formProps}
+    >
       {/* Welcome Back Banner */}
       <AnimatePresence>
         {showWelcomeBack && (
@@ -570,6 +604,9 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                     I prefer email communication only (no phone calls)
                   </Label>
                 </div>
+
+                {/* Hidden honeypot field for bot detection */}
+                <HoneypotField onHoneypotChange={botProtection.onHoneypotChange} />
               </div>
 
               {/* Quote Preview */}
