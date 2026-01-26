@@ -1,4 +1,4 @@
-import { Header, Footer } from "@/components/layout";
+import { Header, Footer, Container } from "@/components/layout";
 import { ChatWidget } from "@/components/ChatWidget";
 import { VoiceAgent } from "@/components/VoiceAgent";
 import { Testimonials } from "@/components/Testimonials";
@@ -13,6 +13,8 @@ import { RelatedServices } from "./RelatedServices";
 import { ServiceCTA } from "./ServiceCTA";
 import { SocialProofBanner, MobileStickyCTA } from "@/components/conversion";
 import { SEO } from "@/components/SEO";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import type { ServiceData } from "@/data/servicesData";
 
 interface ServicePageTemplateProps {
@@ -30,6 +32,17 @@ export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
       />
       
       <Header />
+      
+      {data.closed && (
+        <Container className="pt-24 lg:pt-28">
+          <Alert className="bg-muted border-muted-foreground/20">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Service Currently Unavailable</strong> — {data.title} is temporarily closed. Please check back later or contact us for alternative options.
+            </AlertDescription>
+          </Alert>
+        </Container>
+      )}
       
       <ServiceHeroBanner 
         serviceName={data.title} 
