@@ -288,6 +288,167 @@ export type Database = {
           },
         ]
       }
+      circuit_breaker_config: {
+        Row: {
+          created_at: string
+          current_daily_spend: number | null
+          current_hourly_spend: number | null
+          daily_limit: number
+          enabled: boolean | null
+          hourly_limit: number
+          id: string
+          last_reset_daily: string | null
+          last_reset_hourly: string | null
+          service_name: string
+          trip_reason: string | null
+          tripped: boolean | null
+          tripped_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_daily_spend?: number | null
+          current_hourly_spend?: number | null
+          daily_limit?: number
+          enabled?: boolean | null
+          hourly_limit?: number
+          id?: string
+          last_reset_daily?: string | null
+          last_reset_hourly?: string | null
+          service_name: string
+          trip_reason?: string | null
+          tripped?: boolean | null
+          tripped_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_daily_spend?: number | null
+          current_hourly_spend?: number | null
+          daily_limit?: number
+          enabled?: boolean | null
+          hourly_limit?: number
+          id?: string
+          last_reset_daily?: string | null
+          last_reset_hourly?: string | null
+          service_name?: string
+          trip_reason?: string | null
+          tripped?: boolean | null
+          tripped_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      client_trust_scores: {
+        Row: {
+          blocked_requests: number | null
+          client_identifier: string
+          created_at: string
+          flags: Json | null
+          id: string
+          last_request_at: string | null
+          total_requests: number | null
+          trust_score: number | null
+          updated_at: string
+        }
+        Insert: {
+          blocked_requests?: number | null
+          client_identifier: string
+          created_at?: string
+          flags?: Json | null
+          id?: string
+          last_request_at?: string | null
+          total_requests?: number | null
+          trust_score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          blocked_requests?: number | null
+          client_identifier?: string
+          created_at?: string
+          flags?: Json | null
+          id?: string
+          last_request_at?: string | null
+          total_requests?: number | null
+          trust_score?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cost_tracker: {
+        Row: {
+          created_at: string
+          estimated_cost: number
+          id: string
+          ip_hash: string | null
+          lead_id: string | null
+          metadata: Json | null
+          service_type: string
+          session_id: string | null
+          success: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          estimated_cost?: number
+          id?: string
+          ip_hash?: string | null
+          lead_id?: string | null
+          metadata?: Json | null
+          service_type: string
+          session_id?: string | null
+          success?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          estimated_cost?: number
+          id?: string
+          ip_hash?: string | null
+          lead_id?: string | null
+          metadata?: Json | null
+          service_type?: string
+          session_id?: string | null
+          success?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cost_tracker_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      honeypot_detections: {
+        Row: {
+          blocked: boolean | null
+          created_at: string
+          detection_data: Json | null
+          detection_type: string
+          id: string
+          ip_hash: string
+          page: string | null
+        }
+        Insert: {
+          blocked?: boolean | null
+          created_at?: string
+          detection_data?: Json | null
+          detection_type: string
+          id?: string
+          ip_hash: string
+          page?: string | null
+        }
+        Update: {
+          blocked?: boolean | null
+          created_at?: string
+          detection_data?: Json | null
+          detection_type?: string
+          id?: string
+          ip_hash?: string
+          page?: string | null
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           bedrooms: number | null
@@ -520,6 +681,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_circuit_breaker: {
+        Args: { p_service_name: string }
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           ip_identifier: string
@@ -540,6 +705,16 @@ export type Database = {
       }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       get_client_identifier: { Args: never; Returns: string }
+      get_cost_summary: {
+        Args: { p_days?: number }
+        Returns: {
+          avg_cost: number
+          date: string
+          request_count: number
+          service_type: string
+          total_cost: number
+        }[]
+      }
       get_public_business_info: {
         Args: never
         Returns: {
@@ -549,6 +724,10 @@ export type Database = {
           service_areas: string[]
         }[]
       }
+      get_tiered_rate_limit: {
+        Args: { p_base_limit?: number; p_identifier: string }
+        Returns: number
+      }
       get_user_id_by_email: { Args: { email_input: string }; Returns: string }
       has_role: {
         Args: {
@@ -556,6 +735,25 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      record_service_cost: {
+        Args: {
+          p_cost: number
+          p_ip_hash?: string
+          p_lead_id?: string
+          p_metadata?: Json
+          p_service_type: string
+          p_session_id?: string
+        }
+        Returns: boolean
+      }
+      record_trust_violation: {
+        Args: {
+          p_identifier: string
+          p_penalty?: number
+          p_violation_type: string
+        }
+        Returns: number
       }
       timeout_stale_calls: { Args: never; Returns: number }
     }
