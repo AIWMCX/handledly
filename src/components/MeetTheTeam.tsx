@@ -67,7 +67,7 @@ export function MeetTheTeam({ variant = "full" }: MeetTheTeamProps) {
           <div className="mt-12 text-center">
             <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full glass-card shadow-depth-2">
               <span className="text-muted-foreground">
-                Want to join our team?
+                Want to join us?
               </span>
               <Button asChild variant="ghost" size="sm" className="text-accent hover:text-accent/80">
                 <Link to="/contact">
