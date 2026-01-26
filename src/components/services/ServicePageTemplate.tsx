@@ -1,4 +1,4 @@
-import { Header, Footer, Container } from "@/components/layout";
+import { Header, Footer, Container, Section } from "@/components/layout";
 import { ChatWidget } from "@/components/ChatWidget";
 import { VoiceAgent } from "@/components/VoiceAgent";
 import { Testimonials } from "@/components/Testimonials";
@@ -11,10 +11,12 @@ import { FeatureCards } from "./FeatureCards";
 import { WhyExpertCare } from "./WhyExpertCare";
 import { RelatedServices } from "./RelatedServices";
 import { ServiceCTA } from "./ServiceCTA";
+import { ComingSoonSignup } from "./ComingSoonSignup";
 import { SocialProofBanner, MobileStickyCTA } from "@/components/conversion";
 import { SEO } from "@/components/SEO";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { AlertCircle, Clock, Sparkles } from "lucide-react";
 import type { ServiceData } from "@/data/servicesData";
 
 interface ServicePageTemplateProps {
@@ -22,6 +24,8 @@ interface ServicePageTemplateProps {
 }
 
 export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
+  const isUnavailable = data.closed || data.comingSoon;
+
   return (
     <div className="min-h-screen bg-background">
       <SEO 
@@ -33,7 +37,8 @@ export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
       
       <Header />
       
-      {data.closed && (
+      {/* Closed Service Alert */}
+      {data.closed && !data.comingSoon && (
         <Container className="pt-24 lg:pt-28">
           <Alert className="bg-muted border-muted-foreground/20">
             <AlertCircle className="h-4 w-4" />
@@ -41,6 +46,36 @@ export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
               <strong>Service Currently Unavailable</strong> — {data.title} is temporarily closed. Please check back later or contact us for alternative options.
             </AlertDescription>
           </Alert>
+        </Container>
+      )}
+
+      {/* Coming Soon Banner */}
+      {data.comingSoon && (
+        <Container className="pt-24 lg:pt-28">
+          <div className="p-6 rounded-2xl bg-gradient-to-r from-accent/10 via-primary/5 to-accent/10 border border-accent/30">
+            <div className="flex flex-col md:flex-row md:items-center gap-6">
+              <div className="flex items-center gap-4 flex-1">
+                <div className="w-14 h-14 rounded-2xl bg-accent/20 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-7 h-7 text-accent" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge className="bg-accent text-white">
+                      <Clock className="w-3 h-3 mr-1" />
+                      Coming Soon
+                    </Badge>
+                  </div>
+                  <h3 className="font-heading text-xl font-semibold text-primary">{data.title} is Launching Soon!</h3>
+                  <p className="text-sm text-muted-foreground">
+                    We're preparing to offer this service. Sign up to be notified when it's available.
+                  </p>
+                </div>
+              </div>
+              <div className="md:w-80">
+                <ComingSoonSignup serviceName={data.title} serviceSlug={data.slug} />
+              </div>
+            </div>
+          </div>
         </Container>
       )}
       
@@ -68,7 +103,25 @@ export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
       
       <RelatedServices services={data.relatedServices} />
       
-      <ServiceCTA steps={data.ctaSteps} />
+      {/* Show CTA only if service is available */}
+      {!isUnavailable && <ServiceCTA steps={data.ctaSteps} />}
+      
+      {/* Show signup CTA for coming soon services */}
+      {data.comingSoon && (
+        <Section className="bg-secondary">
+          <Container size="narrow">
+            <div className="text-center mb-8">
+              <h2 className="font-heading text-2xl lg:text-3xl font-semibold text-primary mb-2">
+                Don't Miss the Launch
+              </h2>
+              <p className="text-muted-foreground">
+                Be among the first to experience our {data.title} service when it goes live.
+              </p>
+            </div>
+            <ComingSoonSignup serviceName={data.title} serviceSlug={data.slug} />
+          </Container>
+        </Section>
+      )}
       
       <Testimonials />
       
