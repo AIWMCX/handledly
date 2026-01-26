@@ -53,6 +53,7 @@ const heavyItemsServices = [
     title: "Piano Moving",
     description: "Upright and grand pianos moved with precision. Specialized equipment and trained handlers.",
     features: ["Upright pianos", "Grand pianos", "Climate-controlled"],
+    closed: true, // Temporarily not available
   },
   {
     icon: Package,
@@ -323,16 +324,22 @@ export default function Services() {
             </div>
           </div>
 
-          {/* Heavy Items Sub-Services Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
             {heavyItemsServices.map((service, index) => (
               <div
                 key={service.title}
-                className={`p-6 rounded-2xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all hover-lift animate-fade-in ${
+                className={`p-6 rounded-2xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all hover-lift animate-fade-in relative ${
                   service.isSameDay ? 'border-accent/50 ring-1 ring-accent/20' : ''
-                }`}
+                } ${service.closed ? 'opacity-60' : ''}`}
                 style={{ animationDelay: `${index * 100}ms` }}
               >
+                {service.closed && (
+                  <div className="absolute -top-2 -right-2 z-10">
+                    <Badge className="bg-muted text-muted-foreground border border-border shadow-sm text-xs">
+                      Closed
+                    </Badge>
+                  </div>
+                )}
                 <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
                   <service.icon className="w-6 h-6 text-accent" />
                 </div>

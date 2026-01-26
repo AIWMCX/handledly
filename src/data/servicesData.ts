@@ -24,6 +24,7 @@ export interface SubService {
   title: string;
   description: string;
   icon: LucideIcon;
+  closed?: boolean;
 }
 
 export interface ServiceData {
@@ -43,6 +44,7 @@ export interface ServiceData {
   ctaSteps: string[];
   subServices?: SubService[];
   hasSameDay?: boolean;
+  closed?: boolean; // Service temporarily not available
   // SEO fields
   metaTitle: string;
   metaDescription: string;
@@ -139,7 +141,7 @@ export const servicesData: Record<string, ServiceData> = {
       'Safe placement at destination',
     ],
     subServices: [
-      { title: 'Piano Moving', description: 'Upright and grand pianos moved with precision', icon: Piano },
+      { title: 'Piano Moving', description: 'Upright and grand pianos moved with precision', icon: Piano, closed: true },
       { title: 'Pool Table Moving', description: 'Disassembly, transport, and expert reassembly', icon: Package },
       { title: 'Heavy Items (Under 300 lbs)', description: 'Appliances, large furniture, gym equipment', icon: Dumbbell },
       { title: 'Heavy Items (300+ lbs)', description: 'Safes, gun safes, commercial equipment', icon: Shield },
@@ -159,6 +161,7 @@ export const servicesData: Record<string, ServiceData> = {
     headline: 'Professional Piano Moving',
     highlightText: 'Handled with Care',
     subheading: 'Upright, Grand & Baby Grand Piano Specialists',
+    closed: true, // Temporarily not available
     introParagraphs: [
       "Pianos are among the most challenging items to move. Their weight, delicate mechanisms, and sentimental value demand specialized expertise. Our piano movers have the training, equipment, and experience to ensure your instrument arrives in perfect condition.",
       "From upright pianos to concert grands, we use specialized piano boards, custom straps, and climate-controlled transport when needed. Your piano's safety is our top priority."
@@ -291,6 +294,7 @@ export const servicesData: Record<string, ServiceData> = {
     headline: 'Professional Junk Removal',
     highlightText: 'Gone Today',
     subheading: 'Furniture, Appliances, Construction Debris & More',
+    closed: true, // Temporarily not available
     introParagraphs: [
       "Need stuff gone fast? Our junk removal team handles everything from old furniture to construction debris. We do the heavy lifting while you point and watch. Same-day service available throughout Denver.",
       "We're committed to responsible disposal: items are recycled, donated, or properly disposed of. You get a clean space, and we minimize landfill impact."
