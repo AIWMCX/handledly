@@ -6,6 +6,52 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Cost per AI message (approximate for Gemini Flash)
+const AI_COST_PER_MESSAGE = 0.002;
+
+// Initialize Supabase client for cost tracking
+const getSupabaseClient = () => {
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  return createClient(supabaseUrl, supabaseKey);
+};
+
+// Check if circuit breaker allows this request
+async function checkCircuitBreaker(): Promise<{ allowed: boolean; reason?: string }> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase.rpc('check_circuit_breaker', {
+      p_service_name: 'ai_chat'
+    });
+    
+    if (error) {
+      console.warn('[ai-chat] Circuit breaker check failed:', error.message);
+      return { allowed: true }; // Fail open
+    }
+    
+    return { allowed: data === true, reason: data ? undefined : 'Circuit breaker tripped' };
+  } catch (err) {
+    console.warn('[ai-chat] Circuit breaker error:', err);
+    return { allowed: true }; // Fail open
+  }
+}
+
+// Record cost after successful AI call
+async function recordCost(sessionId?: string, ipHash?: string): Promise<void> {
+  try {
+    const supabase = getSupabaseClient();
+    await supabase.rpc('record_service_cost', {
+      p_service_type: 'ai_chat',
+      p_cost: AI_COST_PER_MESSAGE,
+      p_session_id: sessionId || null,
+      p_ip_hash: ipHash || null,
+      p_metadata: {}
+    });
+  } catch (err) {
+    console.warn('[ai-chat] Failed to record cost:', err);
+  }
+}
+
 // Professional moving assistant system prompt with quote collection workflow - CONVERSION OPTIMIZED
 const SYSTEM_PROMPT = `You are Jack, a friendly and professional moving specialist for Handledly Moving Services in Denver, Colorado. Your MAIN GOAL is to help potential customers AND convert them to qualified leads by collecting quote information.
 
@@ -148,6 +194,19 @@ serve(async (req) => {
   }
 
   try {
+    // CIRCUIT BREAKER CHECK - Prevent cost explosion
+    const circuitCheck = await checkCircuitBreaker();
+    if (!circuitCheck.allowed) {
+      console.warn(`[ai-chat] Circuit breaker tripped: ${circuitCheck.reason}`);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Service temporarily unavailable due to high demand. Please try again later.',
+          code: 'CIRCUIT_BREAKER_TRIPPED'
+        }),
+        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       console.error('LOVABLE_API_KEY is not configured');
@@ -157,7 +216,7 @@ serve(async (req) => {
       );
     }
 
-    const { message, conversationHistory = [], sessionId } = await req.json() as ChatRequest;
+    const { message, conversationHistory = [], sessionId, ipHash } = await req.json() as ChatRequest & { ipHash?: string };
 
     if (!message || typeof message !== 'string') {
       return new Response(
@@ -167,6 +226,9 @@ serve(async (req) => {
     }
 
     console.log(`[ai-chat] Session ${sessionId}: Processing message - "${message.substring(0, 50)}..."`);
+    
+    // Record cost for this request
+    await recordCost(sessionId, ipHash);
 
     // Build messages array with system prompt and conversation history
     const messages: Message[] = [
