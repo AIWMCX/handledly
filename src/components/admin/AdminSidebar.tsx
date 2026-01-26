@@ -8,7 +8,8 @@ import {
   Settings,
   X,
   Truck,
-  ShieldCheck
+  ShieldCheck,
+  DollarSign
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ const navItems = [
   { to: '/admin/conversations', icon: MessageSquare, label: 'Conversations' },
   { to: '/admin/calls', icon: Phone, label: 'Call Logs' },
   { to: '/admin/ai-quality', icon: ShieldCheck, label: 'AI Quality' },
+  { to: '/admin/cost-monitoring', icon: DollarSign, label: 'Cost Monitoring' },
   { to: '/admin/appointments', icon: Calendar, label: 'Appointments' },
   { to: '/admin/users', icon: Users, label: 'User Management' },
   { to: '/admin/settings', icon: Settings, label: 'Settings' },
