@@ -25,6 +25,7 @@ export interface SubService {
   description: string;
   icon: LucideIcon;
   closed?: boolean;
+  comingSoon?: boolean;
 }
 
 export interface ServiceData {
@@ -45,6 +46,7 @@ export interface ServiceData {
   subServices?: SubService[];
   hasSameDay?: boolean;
   closed?: boolean; // Service temporarily not available
+  comingSoon?: boolean; // Service planned but not yet launched
   // SEO fields
   metaTitle: string;
   metaDescription: string;

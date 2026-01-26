@@ -47,7 +47,15 @@ const localMovingServices = [
 ];
 
 // HEAVY ITEMS sub-services
-const heavyItemsServices = [
+const heavyItemsServices: {
+  icon: typeof Piano;
+  title: string;
+  description: string;
+  features: string[];
+  closed?: boolean;
+  comingSoon?: boolean;
+  isSameDay?: boolean;
+}[] = [
   {
     icon: Piano,
     title: "Piano Moving",
@@ -330,20 +338,28 @@ export default function Services() {
                 key={service.title}
                 className={`p-6 rounded-2xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all hover-lift animate-fade-in relative ${
                   service.isSameDay ? 'border-accent/50 ring-1 ring-accent/20' : ''
-                } ${service.closed ? 'opacity-60' : ''}`}
+                } ${service.closed || service.comingSoon ? 'opacity-70' : ''}`}
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                {service.closed && (
+                {service.closed && !service.comingSoon && (
                   <div className="absolute -top-2 -right-2 z-10">
                     <Badge className="bg-muted text-muted-foreground border border-border shadow-sm text-xs">
                       Closed
                     </Badge>
                   </div>
                 )}
+                {service.comingSoon && (
+                  <div className="absolute -top-2 -right-2 z-10">
+                    <Badge className="bg-accent text-white shadow-gold text-xs">
+                      <Clock className="w-3 h-3 mr-1" />
+                      Coming Soon
+                    </Badge>
+                  </div>
+                )}
                 <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
                   <service.icon className="w-6 h-6 text-accent" />
                 </div>
-                {service.isSameDay && (
+                {service.isSameDay && !service.closed && !service.comingSoon && (
                   <Badge className="mb-3 bg-accent text-white">
                     <Zap className="w-3 h-3 mr-1" />
                     Same-Day
