@@ -322,7 +322,7 @@ const generateQuoteNumber = (): string => {
                 <div className="w-px h-4 bg-border hidden sm:block" />
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-primary" />
-                  <span className="text-sm text-primary font-medium">$2M+ Insured</span>
+                  <span className="text-sm text-primary font-medium">$750K Insured</span>
                 </div>
                 <div className="w-px h-4 bg-border hidden sm:block" />
                 <div className="flex items-center gap-2">
