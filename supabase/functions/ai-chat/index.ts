@@ -1,10 +1,37 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+// Secure CORS - restrict to production domains
+const ALLOWED_ORIGINS = [
+  'https://handledly.com',
+  'https://www.handledly.com',
+  'https://id-preview--c4ec72c4-17ec-431f-865b-98773c111e46.lovable.app',
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+
+function getCorsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get('origin') || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  };
+}
+
+// Rate limiting configuration
+const RATE_LIMIT_MAX = 30; // 30 requests per minute
+const RATE_LIMIT_WINDOW = 1; // 1 minute
+
+// Get client identifier for rate limiting
+function getClientIdentifier(req: Request): string {
+  const forwarded = req.headers.get('x-forwarded-for');
+  if (forwarded) return forwarded.split(',')[0].trim();
+  const realIp = req.headers.get('x-real-ip');
+  if (realIp) return realIp;
+  return 'unknown';
+}
 
 // Cost per AI message (approximate for Gemini Flash)
 const AI_COST_PER_MESSAGE = 0.002;
@@ -188,12 +215,46 @@ function extractQuoteData(response: string): { cleanResponse: string; quoteData:
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // RATE LIMIT CHECK - Prevent abuse
+    const clientId = getClientIdentifier(req);
+    const supabase = getSupabaseClient();
+    
+    const { data: allowed, error: rateLimitError } = await supabase.rpc('check_rate_limit_readonly', {
+      p_table_name: 'edge_ai_chat',
+      p_identifier: clientId,
+      p_max_requests: RATE_LIMIT_MAX,
+      p_time_window_minutes: RATE_LIMIT_WINDOW,
+    });
+    
+    if (!rateLimitError && !allowed) {
+      console.warn(`[ai-chat] Rate limit exceeded for ${clientId}`);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Too many requests. Please wait a moment before trying again.',
+          code: 'RATE_LIMIT_EXCEEDED',
+          retryable: true,
+          retryAfter: 60,
+        }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' } }
+      );
+    }
+    
+    // Record rate limit entry
+    if (!rateLimitError) {
+      await supabase.from('rate_limit_tracker').insert({
+        identifier: clientId,
+        table_name: 'edge_ai_chat',
+      });
+    }
+    
     // CIRCUIT BREAKER CHECK - Prevent cost explosion
     const circuitCheck = await checkCircuitBreaker();
     if (!circuitCheck.allowed) {

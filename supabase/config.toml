@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.circuit-breaker-alert]
 verify_jwt = false
+
+[functions.health-check]
+verify_jwt = false
