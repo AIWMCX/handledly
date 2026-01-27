@@ -569,6 +569,129 @@ export type Database = {
         }
         Relationships: []
       }
+      leads_archive: {
+        Row: {
+          archived_at: string | null
+          bedrooms: number | null
+          call_duration_seconds: number | null
+          call_ended_at: string | null
+          call_notes: string | null
+          call_retry_count: number | null
+          call_sid: string | null
+          call_summary: string | null
+          call_transcript: string | null
+          confirmation_call_status: string | null
+          confirmation_call_time: string | null
+          conversation_id: string | null
+          created_at: string
+          email: string
+          email_sent: boolean | null
+          email_sent_at: string | null
+          estimated_quote: number | null
+          full_name: string
+          has_specialty_items: boolean | null
+          id: string
+          lead_source: string | null
+          move_date: string | null
+          move_from_address: string | null
+          move_to_address: string | null
+          next_retry_at: string | null
+          notes: string | null
+          phone: string
+          prefer_email_only: boolean | null
+          property_type: string | null
+          specialty_items: string[] | null
+          status: string
+          updated_at: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+          verification_token: string | null
+        }
+        Insert: {
+          archived_at?: string | null
+          bedrooms?: number | null
+          call_duration_seconds?: number | null
+          call_ended_at?: string | null
+          call_notes?: string | null
+          call_retry_count?: number | null
+          call_sid?: string | null
+          call_summary?: string | null
+          call_transcript?: string | null
+          confirmation_call_status?: string | null
+          confirmation_call_time?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          email: string
+          email_sent?: boolean | null
+          email_sent_at?: string | null
+          estimated_quote?: number | null
+          full_name: string
+          has_specialty_items?: boolean | null
+          id?: string
+          lead_source?: string | null
+          move_date?: string | null
+          move_from_address?: string | null
+          move_to_address?: string | null
+          next_retry_at?: string | null
+          notes?: string | null
+          phone: string
+          prefer_email_only?: boolean | null
+          property_type?: string | null
+          specialty_items?: string[] | null
+          status?: string
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          verification_token?: string | null
+        }
+        Update: {
+          archived_at?: string | null
+          bedrooms?: number | null
+          call_duration_seconds?: number | null
+          call_ended_at?: string | null
+          call_notes?: string | null
+          call_retry_count?: number | null
+          call_sid?: string | null
+          call_summary?: string | null
+          call_transcript?: string | null
+          confirmation_call_status?: string | null
+          confirmation_call_time?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          email?: string
+          email_sent?: boolean | null
+          email_sent_at?: string | null
+          estimated_quote?: number | null
+          full_name?: string
+          has_specialty_items?: boolean | null
+          id?: string
+          lead_source?: string | null
+          move_date?: string | null
+          move_from_address?: string | null
+          move_to_address?: string | null
+          next_retry_at?: string | null
+          notes?: string | null
+          phone?: string
+          prefer_email_only?: boolean | null
+          property_type?: string | null
+          specialty_items?: string[] | null
+          status?: string
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          verification_token?: string | null
+        }
+        Relationships: []
+      }
       quote_requests: {
         Row: {
           base_price: number | null
@@ -681,6 +804,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      archive_old_leads: { Args: never; Returns: number }
       check_circuit_breaker: {
         Args: { p_service_name: string }
         Returns: boolean
