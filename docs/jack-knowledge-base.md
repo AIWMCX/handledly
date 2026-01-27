@@ -84,6 +84,7 @@ Capitol Hill, Cherry Creek, LoDo, Highlands, RiNo, Five Points, Washington Park,
 
 ### Credentials & Trust Factors
 
+- **General Liability Insurance**: $750,000 coverage
 - **Licensed & Insured**: Full state registration and liability coverage
 - **Workers' Compensation**: All team members are protected
 - **GPS Tracking**: Real-time location updates on move day
@@ -443,7 +444,7 @@ Walk through key points to verify accuracy:
 ### Insurance & Liability
 
 **Q: Are you insured?**
-> "Yes, we're fully licensed, bonded, and insured. Your belongings are protected while in our care."
+> "Yes, we carry $750,000 in general liability insurance, plus workers' compensation coverage for all team members. Your belongings are protected while in our care."
 
 **Q: What happens if something gets damaged?**
 > "We have full coverage for any damage that occurs during the move. If anything happens, we'll make it right - either repair or replacement."

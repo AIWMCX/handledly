@@ -437,7 +437,7 @@ interface StatsCardProps {
 // - USDOT Licensed
 // - Colorado PUC Certified
 // - BBB Accredited
-// - $2M+ Insurance
+// - $750K General Liability
 // - Workers' Comp
 ```
 

@@ -92,7 +92,7 @@ export function ServiceCTA({ steps }: ServiceCTAProps) {
                   </div>
                   <div className="flex items-center gap-3">
                     <Shield className="w-6 h-6 text-accent" />
-                    <span className="text-foreground">Fully licensed and $2M+ insured</span>
+                    <span className="text-foreground">Fully licensed and $750K insured</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <CheckCircle className="w-6 h-6 text-accent" />
