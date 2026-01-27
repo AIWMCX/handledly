@@ -16,7 +16,7 @@ const localBusinessSchema = {
   "@id": "https://handledly.com/#organization",
   "name": "Handledly Moving Services",
   "alternateName": "Handledly",
-  "description": "Denver's #1 rated professional moving company. Flat hourly rates, no hidden fees. Local moves, heavy items, pianos, safes, same-day service.",
+  "description": "America's First AI-Powered Moving SaaS Platform. Automate dispatching, elevate service, build trust at scale.",
   "url": "https://handledly.com",
   "logo": "https://handledly.com/logo.png",
   "image": "https://handledly.com/og-image.png",
@@ -186,7 +186,7 @@ export function SEO({
       <meta property="og:image" content={fullOgImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
-      <meta property="og:image:alt" content="Handledly Moving Services - Denver's #1 Rated Movers" />
+      <meta property="og:image:alt" content="America's First AI-Powered Moving SaaS Platform" />
       {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
       <meta property="og:site_name" content="Handledly Moving Services" />
       <meta property="og:locale" content="en_US" />
@@ -196,7 +196,7 @@ export function SEO({
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={fullOgImage} />
-      <meta name="twitter:image:alt" content="Handledly Moving Services - Denver's #1 Rated Movers" />
+      <meta name="twitter:image:alt" content="America's First AI-Powered Moving SaaS Platform" />
       
       {/* Canonical */}
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
