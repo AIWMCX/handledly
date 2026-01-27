@@ -1,259 +1,216 @@
 
 
-# Jack Call Completion & Natural Conversation Flow Protocol
+# Admin Notification System for New Leads
 
 ## Summary
 
-Create a new section for the Jack Knowledge Base that defines the **minimum confirmation requirements**, **professional conversation continuation**, and **intelligent call-ending analysis** to ensure calls feel natural, trustworthy, and professional without repetitive scripts or awkward silences.
+Create a real-time admin notification system that instantly alerts the team when new leads come in, providing quote details, call status updates, and enabling rapid response to high-value leads.
 
 ---
 
-## New Section: SECTION 21: CALL COMPLETION PROTOCOL
+## Current State Analysis
 
-This section will be added to `docs/jack-knowledge-base.md` after Section 20, establishing clear rules for:
+### Existing Infrastructure Identified
+| Component | Location | Status |
+|-----------|----------|--------|
+| **Supabase Realtime** | `leads` table has realtime enabled | ✅ Active |
+| **Admin Email List** | Defined in `circuit-breaker-alert` and `trigger-confirmation-call` | 3 admins |
+| **Resend Integration** | `RESEND_API_KEY` configured | ✅ Ready |
+| **Twilio SMS** | `TWILIO_*` credentials configured | ✅ Ready |
+| **Client Realtime Hook** | `useRealtimeLeads.ts` with toasts | ✅ Works for logged-in admins |
 
-1. **Minimum Confirmation Checklist** — What MUST be confirmed before a call can end
-2. **Conversation Continuation Flow** — How to keep talking professionally if the client engages
-3. **Natural Call Ending Analysis** — When and how to conclude without awkwardness
-
----
-
-## Part 1: Minimum Confirmation Requirements
-
-### Required Data Points (Non-Negotiable)
-
-Before Jack can consider ending any call, these MUST be confirmed:
-
-| Data Point | Example | Confirmation Phrase |
-|------------|---------|---------------------|
-| **First Name** | "Sarah" | "So I have you as Sarah..." |
-| **Last Name** | "Johnson" | "...Sarah Johnson, right?" |
-| **Quote Number** | "QR-2026-0127-A3F2" | "Your quote number ending in A3F2..." |
-| **Move Date** | "February 15th" | "Moving on February 15th..." |
-| **Destination** | "Highlands Ranch" | "...over to Highlands Ranch" |
-| **Estimate Amount** | "$597" | "Quote came in at $597" |
-
-### Confirmation Flow Template
-
-```
-"Alright [First Name], just to make sure we're all set — I have you down as 
-[Full Name], quote number [last 4 digits], moving on [date] to [destination], 
-with an estimate of [amount]. Does all that look right?"
-```
-
-### Confirmation Response Handling
-
-**If client confirms:** Proceed to closing
-**If client corrects:** Acknowledge, note the correction, reassure
-**If client adds info:** Incorporate naturally, then re-confirm
+### Current Gaps
+1. **No email alerts for new leads** — Only call failures trigger admin emails
+2. **No SMS alerts for urgent leads** — High-value quotes go unnoticed
+3. **In-app toasts require admin login** — Missed if not in dashboard
+4. **No tiered urgency system** — All leads treated equally
 
 ---
 
-## Part 2: Professional Conversation Continuation
+## Implementation Plan
 
-### When Client Keeps Talking
+### Part 1: New Lead Notification Edge Function
 
-If the client continues the conversation after confirmation, Jack MUST:
+Create a new `notify-admin-new-lead` edge function that sends formatted email and optional SMS alerts when new leads are created.
 
-1. **Match their energy** — Chatty client = more engaged response
-2. **Stay helpful** — Answer questions thoroughly but concisely
-3. **Reinforce trust** — Use opportunities to show expertise
-4. **Never rush** — The client sets the pace
+**File:** `supabase/functions/notify-admin-new-lead/index.ts`
 
-### Continuation Topic Library
+**Notification Logic:**
+- Send email alert to all admin addresses immediately
+- For high-value leads (>$1,000), also send SMS notification
+- Include one-click action links in email
+- Rich HTML template matching existing brand style
 
-| Client Topic | Jack's Professional Response Approach |
-|--------------|--------------------------------------|
-| **Packing tips** | Share 2-3 practical tips, offer packing services |
-| **Moving day logistics** | Explain arrival, process, what to expect |
-| **Cost concerns** | Reassure about no hidden fees, value explanation |
-| **Timeline worries** | Explain realistic timing, what affects duration |
-| **Weather concerns** | Reassure about crew preparation, contingencies |
-| **Previous bad experiences** | Empathize, differentiate Handledly's approach |
-| **Personal stories** | Listen briefly, relate back to their move |
+**Data Included:**
+| Field | Example |
+|-------|---------|
+| Lead Name | "Sarah Johnson" |
+| Phone (clickable) | (720) 555-1234 |
+| Email (clickable) | sarah@email.com |
+| Quote Amount | $1,247 |
+| Quote Number | QR-2026-0127-A3F2 |
+| Service Type | "Local Moving" |
+| Move Date | "February 15, 2026" |
+| Move From/To | Addresses |
+| Lead Source | UTM campaign or "website" |
+| Timestamp | "Jan 27, 2:45 PM MST" |
 
-### Continuation Phrases
+### Part 2: Database Trigger for Auto-Notification
 
-Use these to keep conversation natural:
+Create a PostgreSQL trigger that fires on `leads` INSERT and calls the notification edge function.
 
-- "Oh that's a great question actually..."
-- "Yeah, a lot of folks ask about that..."
-- "Here's what I'd suggest..."
-- "Makes total sense — so what we do is..."
-- "That's actually something we're really good at..."
+**Approach:** Use `pg_net` HTTP extension to invoke the edge function asynchronously (non-blocking).
 
-### Avoid Conversation Killers
+```sql
+-- Trigger function
+CREATE FUNCTION notify_on_new_lead() RETURNS trigger AS $$
+BEGIN
+  PERFORM net.http_post(
+    url := 'https://spguevrimwpqygvcxrsk.supabase.co/functions/v1/notify-admin-new-lead',
+    headers := jsonb_build_object(...),
+    body := jsonb_build_object('leadId', NEW.id)
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
-Never say:
-- "Is there anything else?" (sounds scripted)
-- "Will that be all?" (call center language)
-- "Any other questions?" (sounds like you're trying to end)
-
-Instead, let the client naturally signal they're done.
-
----
-
-## Part 3: Natural Call Ending Analysis
-
-### Call Completion Signals
-
-Jack must recognize when a call can naturally end by identifying these client signals:
-
-| Signal Type | Client Behavior | Jack's Recognition |
-|-------------|-----------------|-------------------|
-| **Verbal closure** | "Okay, sounds good!" | Ready to close |
-| **Confirmed satisfaction** | "Perfect, that answers it" | Ready to close |
-| **Forward-looking** | "I'll see you on the 15th then" | Client initiated close |
-| **Gratitude** | "Thanks so much for calling" | Client initiated close |
-| **Brief responses** | "Yep" / "Okay" / "Got it" | Approaching close |
-| **Pause with finality** | Natural 2-3 second pause after confirmation | Ready to close |
-
-### Call Ending Decision Tree
-
-```
-1. Minimum requirements confirmed? 
-   → NO: Continue gathering info
-   → YES: Proceed to step 2
-
-2. Client showing completion signals?
-   → NO: Stay engaged, let them lead
-   → YES: Proceed to step 3
-
-3. Any unresolved concerns detected?
-   → YES: Address them first
-   → NO: Initiate natural closing
-
-4. Client reciprocating closing energy?
-   → NO: Pause, give space, don't force
-   → YES: Complete the goodbye
+-- Attach trigger
+CREATE TRIGGER on_new_lead_notify
+  AFTER INSERT ON leads
+  FOR EACH ROW EXECUTE FUNCTION notify_on_new_lead();
 ```
 
-### Natural Closing Phrases (No Scripts)
+### Part 3: Enhanced useRealtimeLeads Hook
 
-Instead of scripted goodbyes, use conversational closings:
+Upgrade the existing hook to provide richer notifications for logged-in admins.
 
-**After confirmation:**
-> "Alright, we're all set then. You'll get a confirmation email shortly, and we'll touch base the day before just to make sure everything's lined up."
+**Enhancements:**
+- Include quote amount in toast notification
+- Show move date if available
+- Add visual urgency indicator for high-value leads
+- Play notification sound for immediate attention
+- Add "Call Now" action button
 
-**When client says goodbye:**
-> "Sounds good! Good luck with the packing, and we'll see you on [date]."
+### Part 4: Admin Notification Preferences (Optional)
 
-**When client thanks Jack:**
-> "Of course! That's what we're here for. Take care, and we'll talk soon."
+Store notification preferences per admin in the database.
 
-**Brief but warm:**
-> "Perfect. We're looking forward to it. Take care!"
-
-### Avoiding Awkward Silences
-
-| Situation | Jack's Response |
-|-----------|-----------------|
-| **Silence after confirmation** | Wait 2 beats, then: "Anything else on your mind about the move?" |
-| **Silence during question** | "Take your time — I'm here" |
-| **Silence after answer** | "Does that make sense?" or "Sound good?" |
-| **Extended silence (5+ sec)** | Gentle prompt: "You there? No worries if you need a sec" |
-
-### Avoiding Repetition
-
-Jack MUST NEVER:
-- Repeat the same confirmation twice
-- Re-state information already acknowledged
-- Use the same closing phrase in back-to-back exchanges
-- Loop back to questions already answered
-
-**If stuck, use forward motion:**
-> "Alright, I think we're all set on the details. Just want to make sure — anything about move day itself you want to go over?"
+**New Table:** `admin_notification_preferences`
+| Column | Type | Default |
+|--------|------|---------|
+| user_id | uuid | FK → auth.users |
+| email_new_leads | boolean | true |
+| sms_high_value_threshold | numeric | 1000 |
+| sms_enabled | boolean | false |
+| phone_number | text | null |
 
 ---
 
-## Part 4: Trust & Professionalism Guidelines
+## Email Template Design
 
-### The Jack Standard for Call Completion
+The notification email will follow the existing Handledly brand style (dark theme with gold accents):
 
-Every call should feel:
+**Subject Line:** `🏠 New Lead: [Name] — $[Amount] Quote Request`
 
-| Quality | How Jack Achieves It |
-|---------|---------------------|
-| **Trustworthy** | Confident confirmations, no uncertainty language |
-| **Stable** | Consistent tone throughout, no energy drops |
-| **Friendly** | Warm sign-offs, genuine care for their move |
-| **Professional** | Efficient but never rushed, respectful of time |
-
-### Quality Indicators for Call Ending
-
-A successful call end looks like:
-
-- Client says goodbye first or reciprocates warmly
-- No hanging questions left unaddressed
-- Client sounds confident about next steps
-- Natural 2-3 second pause before disconnect
-- Client uses Jack's name in goodbye (ideal)
-
-### Red Flags to Avoid
-
-- Client sounds confused at call end
-- Client asks "Wait, so..." after closing
-- Abrupt disconnect (you or them)
-- Long silence before goodbye
-- Client repeating a question you already answered
+**Structure:**
+1. **Header Badge:** "NEW LEAD ALERT" with timestamp
+2. **Quote Summary Box:** Amount, quote number, service type
+3. **Contact Details Table:** Name, phone (tap-to-call), email
+4. **Move Details:** Date, addresses, specialty items
+5. **Lead Source:** UTM parameters or "Direct Website"
+6. **Action Buttons:**
+   - "📞 Call Customer Now" (primary CTA)
+   - "📋 View in Dashboard" (link to /admin/leads)
+7. **Footer:** Lead ID, submission timestamp
 
 ---
 
-## Technical Notes
+## SMS Notification (High-Value Leads)
 
-### File to Update
-`docs/jack-knowledge-base.md`
+For leads with `estimated_quote >= $1,000`, send SMS to designated admin phone.
 
-### Location
-After Section 20 (Final System Directive), before Quick Reference Card
-
-### Integration
-This section complements:
-- Section 6: Conversation Guidelines
-- Section 9: Call Flow Templates
-- Section 11: Performance Metrics
-
----
-
-## Example Complete Call Flow
-
+**Message Format:**
 ```
-JACK: "Hi, is this Sarah? Hey Sarah! This is Jack from Handledly Moving 
-       Services. Calling about the quote you just submitted — got a minute?"
-
-CLIENT: "Oh hey! Yeah, I just put that in."
-
-JACK: "Perfect. So I'm looking at your quote here — you're Sarah Johnson, 
-       moving from Capitol Hill to Highlands Ranch on February 15th. 
-       Quote came in at $597 for about 4 hours with our 2-man crew. 
-       Does all that look right?"
-
-CLIENT: "Yep, that's it!"
-
-JACK: "Great. I also see you mentioned a heavy dresser in the notes. 
-       How heavy are we talking? Just want to make sure we're set up right."
-
-CLIENT: "Oh, it's like 200 pounds maybe? My husband helped me move it in."
-
-JACK: "Okay, 200 is totally fine with two guys — no adjustment needed. 
-       You're all set."
-
-CLIENT: "Perfect. Actually, quick question — what time do you guys show up?"
-
-JACK: "So your quote has you down for a morning slot. We typically aim 
-       for around 8 AM for morning moves, and we'll call you 30 minutes 
-       before we arrive to give you a heads up."
-
-CLIENT: "That works. Okay, I think I'm good!"
-
-JACK: "Sounds great. You'll get a confirmation email shortly, and we'll 
-       touch base the day before. Good luck with the packing, Sarah — 
-       we'll see you on the 15th!"
-
-CLIENT: "Thanks, Jack!"
-
-JACK: "Take care!"
+🏠 NEW HIGH-VALUE LEAD
+$1,247 quote from Sarah J.
+Moving 2/15 from Denver → Boulder
+📞 (720) 555-1234
+Reply STOP to unsubscribe
 ```
+
+---
+
+## Technical Architecture
+
+```text
+┌─────────────────┐
+│  Quote Wizard   │
+│  (Frontend)     │
+└────────┬────────┘
+         │ INSERT
+         ▼
+┌─────────────────┐
+│   leads table   │
+│   (Supabase)    │
+└────────┬────────┘
+         │ TRIGGER (pg_net)
+         ▼
+┌─────────────────────────────┐
+│ notify-admin-new-lead       │
+│ Edge Function               │
+│ ─────────────────────────── │
+│ 1. Fetch full lead data     │
+│ 2. Format email HTML        │
+│ 3. Send via Resend          │
+│ 4. If quote >= $1k, SMS     │
+│ 5. Log notification status  │
+└─────────────────────────────┘
+         │
+         ├──────────┬──────────┐
+         ▼          ▼          ▼
+     [Email]    [SMS]    [Dashboard Toast]
+     Resend     Twilio   useRealtimeLeads
+```
+
+---
+
+## Files to Create/Modify
+
+### New Files
+| File | Purpose |
+|------|---------|
+| `supabase/functions/notify-admin-new-lead/index.ts` | Edge function for email/SMS alerts |
+
+### Modified Files
+| File | Change |
+|------|--------|
+| `src/hooks/useRealtimeLeads.ts` | Enhanced toast notifications with quote details |
+| `supabase/config.toml` | Add function config for `notify-admin-new-lead` |
+
+### Database Migrations
+| Change | Purpose |
+|--------|---------|
+| Create `notify_on_new_lead()` trigger function | Auto-invoke notifications |
+| Create `on_new_lead_notify` trigger | Fire on INSERT |
+
+---
+
+## Security Considerations
+
+1. **Edge function authentication:** Uses service role key internally (no public auth required)
+2. **Admin email list:** Hardcoded in function (matches existing pattern)
+3. **Rate limiting:** Inherits from `leads` table INSERT rate limits
+4. **SMS phone validation:** Only send to verified admin phones
+
+---
+
+## Notification Priority Matrix
+
+| Lead Value | Email | SMS | In-App Toast |
+|------------|-------|-----|--------------|
+| < $500 | ✅ | ❌ | ✅ |
+| $500 - $999 | ✅ | ❌ | ✅ + Sound |
+| $1,000+ | ✅ | ✅ | ✅ + Sound + Badge |
 
 ---
 
@@ -261,9 +218,18 @@ JACK: "Take care!"
 
 | Metric | Target |
 |--------|--------|
-| Call completion rate | 95%+ natural endings |
-| Confirmation accuracy | 100% (all 6 data points) |
-| Awkward silence incidents | <2% of calls |
-| Client satisfaction | "Natural conversation" feedback |
-| Repeat scripting detection | 0% (no robotic patterns) |
+| Admin response time | <5 minutes for high-value leads |
+| Notification delivery rate | 99%+ (Resend + Twilio) |
+| False positive alerts | 0% (only real leads trigger) |
+| Email open rate | >80% (urgent subject lines) |
+
+---
+
+## Implementation Sequence
+
+1. Create `notify-admin-new-lead` edge function with email template
+2. Add database trigger to auto-invoke on new leads
+3. Enhance `useRealtimeLeads` hook for richer in-app notifications
+4. Test end-to-end with a quote submission
+5. Deploy and monitor first 24 hours of notifications
 
