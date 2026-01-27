@@ -1,63 +1,173 @@
 
-# Plan: Update Insurance Liability Amount to $750,000
+# Complete Header & SEO Update for Launch
 
 ## Summary
-Change all instances of "$2M+ Insured" to "$750,000 General Liability" across the codebase and documentation.
+Update all header messaging and SEO metadata across the entire project to reflect the new positioning: **"America's First AI-Powered Moving SaaS Platform"** with the tagline **"Automate Dispatching. Elevate Service. Build Trust at Scale."**
+
+---
 
 ## Files to Update
 
-### 1. Frontend Components
+### 1. Header Component
+**File:** `src/components/layout/Header.tsx`
 
-| File | Line | Current Text | New Text |
-|------|------|--------------|----------|
-| `src/pages/Quote.tsx` | 325 | `$2M+ Insured` | `$750K Insured` |
-| `src/components/layout/Footer.tsx` | 106 | `USDOT Licensed & $2M+ Insured` | `USDOT Licensed & $750K Insured` |
-| `src/components/services/ServiceCTA.tsx` | 95 | `Fully licensed and $2M+ insured` | `Fully licensed and $750K insured` |
+| Line | Current | New |
+|------|---------|-----|
+| 50 | `First Moving AI SaaS in the U.S.` | `America's First AI-Powered Moving SaaS` |
 
-### 2. Documentation
+### 2. Hero Section (Homepage)
+**File:** `src/pages/Index.tsx`
 
-| File | Line | Current Text | New Text |
-|------|------|--------------|----------|
-| `docs/04-component-library.md` | 440 | `$2M+ Insurance` | `$750K General Liability` |
-| `docs/jack-knowledge-base.md` | Multiple | `Licensed & Insured` references | Add specific `$750,000 General Liability` |
+| Line | Current | New |
+|------|---------|-----|
+| 82-85 | Old SEO title/description | New AI SaaS positioning |
+| 102 | `America's First Moving AI SaaS Platform` | Keep as-is |
+| 105-106 | `Automate Your Dispatching` | Update to full tagline |
+| 109-111 | Current description | New professional SaaS description |
 
-## Technical Details
-
-### Consistent Formatting Options
-Two formatting approaches for the amount:
-
-**Option A: Abbreviated ($750K)**
-- Shorter, fits better in badges and compact UI
-- Examples: `$750K Insured`, `$750K General Liability`
-
-**Option B: Full ($750,000)**
-- More professional, clearer for legal/compliance
-- Examples: `$750,000 Insured`, `$750,000 General Liability`
-
-**Recommendation:** Use `$750K` for UI badges (space-constrained) and `$750,000` for documentation/knowledge base.
-
-### Jack Knowledge Base Updates
-The voice agent knowledge base will be updated to include:
-```text
-CREDENTIALS:
-- General Liability Insurance: $750,000 coverage
+**New SEO Component Call:**
+```tsx
+<SEO 
+  title="Handledly | America's First AI-Powered Moving SaaS Platform"
+  description="Automate Dispatching. Elevate Service. Build Trust at Scale. The future of moving operations — AI-powered scheduling, instant quotes, and seamless customer communication."
+  canonicalUrl="https://handledly.com/"
+  keywords={['moving SaaS', 'AI moving platform', 'dispatch automation', 'moving company software', 'Denver movers']}
+/>
 ```
 
-And in FAQ responses:
-```text
-Q: Are you insured?
-"Yes, we carry $750,000 in general liability insurance, plus workers' compensation coverage for all team members."
+**New Hero Headline:**
+```tsx
+<h1>Automate Dispatching.<br/><span className="text-accent">Elevate Service.</span><br/>Build Trust at Scale.</h1>
 ```
 
-## Implementation Steps
+**New Description:**
+```tsx
+"The future of moving operations is here. AI-powered scheduling, instant quotes, and 24/7 customer communication — all in one intelligent platform."
+```
 
-1. Update `src/pages/Quote.tsx` line 325
-2. Update `src/components/layout/Footer.tsx` line 106  
-3. Update `src/components/services/ServiceCTA.tsx` line 95
-4. Update `docs/04-component-library.md` line 440
-5. Update `docs/jack-knowledge-base.md` with specific liability amount in credentials and FAQ sections
+### 3. SEO Component (Structured Data)
+**File:** `src/components/SEO.tsx`
+
+Update the JSON-LD schema to reflect new positioning:
+
+| Line | Field | Current | New |
+|------|-------|---------|-----|
+| 19 | description | `Denver's #1 rated professional moving company...` | `America's First AI-Powered Moving SaaS Platform. Automate dispatching, elevate service, build trust at scale.` |
+| 189 | og:image:alt | `Denver's #1 Rated Movers` | `America's First AI-Powered Moving SaaS Platform` |
+| 199 | twitter:image:alt | `Denver's #1 Rated Movers` | `America's First AI-Powered Moving SaaS Platform` |
+
+### 4. Static HTML (index.html)
+**File:** `index.html`
+
+Update all meta tags for initial page load:
+
+| Line | Tag | Current | New |
+|------|-----|---------|-----|
+| 8 | title | `Denver's #1 Rated Professional Movers` | `America's First AI-Powered Moving SaaS Platform` |
+| 9 | meta description | Denver-focused description | SaaS platform description |
+| 11 | meta keywords | Local moving keywords | Add SaaS and AI keywords |
+| 16 | og:title | `Denver's #1 Rated Professional Movers` | `America's First AI-Powered Moving SaaS Platform` |
+| 17 | og:description | Denver services description | SaaS tagline |
+| 25 | twitter:title | `Denver's #1 Rated Professional Movers` | `America's First AI-Powered Moving SaaS Platform` |
+| 26 | twitter:description | Denver services description | SaaS tagline |
+
+---
+
+## Complete New Content
+
+### Header Tagline (under logo)
+```
+America's First AI-Powered Moving SaaS
+```
+
+### Hero Section Content
+**Badge:** `America's First AI-Powered Moving SaaS Platform`
+
+**Headline (multi-line for impact):**
+```
+Automate Dispatching.
+Elevate Service.
+Build Trust at Scale.
+```
+
+**Description:**
+```
+The future of moving operations is here. AI-powered scheduling, instant quotes, 
+and 24/7 customer communication — all in one intelligent platform.
+```
+
+### SEO Meta Tags (All Pages)
+
+**Title:**
+```
+Handledly | America's First AI-Powered Moving SaaS Platform
+```
+
+**Description:**
+```
+Automate Dispatching. Elevate Service. Build Trust at Scale. AI-powered moving operations with instant quotes, smart scheduling, and seamless customer communication.
+```
+
+**Keywords (Combined):**
+```
+moving SaaS, AI moving platform, dispatch automation, moving company software, 
+AI scheduling, instant quotes, Denver movers, professional moving services
+```
+
+### JSON-LD Schema Update
+```json
+{
+  "@type": "MovingCompany",
+  "name": "Handledly Moving Services",
+  "description": "America's First AI-Powered Moving SaaS Platform. Automate dispatching, elevate service, build trust at scale.",
+  ...
+}
+```
+
+---
+
+## Technical Implementation Order
+
+1. **Update Header.tsx** — New tagline under logo
+2. **Update Index.tsx** — Hero section (badge, headline, description) + SEO component call
+3. **Update SEO.tsx** — JSON-LD schema + image alt texts
+4. **Update index.html** — All static meta tags for initial page load
+
+---
+
+## Visual Preview
+
+```text
+┌────────────────────────────────────────────────────────────────┐
+│  [H] Handledly                                                 │
+│      America's First AI-Powered Moving SaaS                    │
+│                                                                │
+│  Home  Services  Get Quote  About  Contact    (878) 218-7397   │
+└────────────────────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────────────────────┐
+│                                                                │
+│  ⚡ America's First AI-Powered Moving SaaS Platform           │
+│                                                                │
+│  Automate Dispatching.                                         │
+│  Elevate Service.                                              │
+│  Build Trust at Scale.                                         │
+│                                                                │
+│  The future of moving operations is here. AI-powered           │
+│  scheduling, instant quotes, and 24/7 customer communication   │
+│  — all in one intelligent platform.                            │
+│                                                                │
+│  [Get Instant Quote →]  [📞 (878) 218-7397]                   │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+```
+
+---
 
 ## Impact
-- All customer-facing trust badges will display accurate insurance information
-- Jack (voice agent) will have correct information for customer calls
-- Maintains brand consistency across all touchpoints
+
+- All customer-facing pages will display consistent AI SaaS positioning
+- Search engines will index the new "First AI-Powered Moving SaaS" messaging
+- Social media shares will show updated titles and descriptions
+- Structured data (JSON-LD) will reflect the new company positioning
+- Professional launch-ready branding across all touchpoints
