@@ -177,7 +177,7 @@ serve(async (req) => {
 
     // Get signature header
     const signatureHeader = req.headers.get('elevenlabs-signature');
-    const webhookSecret = Deno.env.get('ELEVENLABS_WEBHOOK_SECRET');
+    const webhookSecret = Deno.env.get('ELEVENLABS_WEBHOOKS_SECRET');
 
     // Validate HMAC signature if secret is configured
     if (webhookSecret) {
