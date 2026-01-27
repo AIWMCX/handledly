@@ -47,7 +47,7 @@ export function Header() {
             </div>
             <div className="hidden sm:block">
               <p className="font-heading text-lg font-semibold text-primary">Handledly</p>
-              <p className="text-xs text-accent font-medium tracking-wide">First Moving AI SaaS in the U.S.</p>
+              <p className="text-xs text-accent font-medium tracking-wide">America's First AI-Powered Moving SaaS</p>
             </div>
           </Link>
 

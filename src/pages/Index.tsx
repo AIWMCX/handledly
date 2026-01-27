@@ -79,10 +79,10 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       <SEO 
-        title="Handledly Moving Services - Denver's #1 Rated Professional Movers"
-        description="Professional moving services in Denver. Flat hourly rates, no hidden fees. Local moves, heavy items, pianos, safes, same-day service. Get your free quote today!"
+        title="Handledly | America's First AI-Powered Moving SaaS Platform"
+        description="Automate Dispatching. Elevate Service. Build Trust at Scale. AI-powered moving operations with instant quotes, smart scheduling, and seamless customer communication."
         canonicalUrl="https://handledly.com/"
-        keywords={['Denver movers', 'moving company Denver', 'local movers', 'professional movers', 'Denver moving services']}
+        keywords={['moving SaaS', 'AI moving platform', 'dispatch automation', 'moving company software', 'AI scheduling', 'instant quotes', 'Denver movers', 'professional moving services']}
       />
       
       <AnnouncementBar />
@@ -103,11 +103,13 @@ export default function Index() {
               </div>
               
               <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold leading-tight mb-6">
-                Automate Your <span className="text-accent">Dispatching</span>
+                Automate Dispatching.<br />
+                <span className="text-accent">Elevate Service.</span><br />
+                Build Trust at Scale.
               </h1>
               
               <p className="text-lg lg:text-xl text-muted-foreground mb-4 max-w-2xl leading-relaxed">
-                The future of moving is here. AI-powered scheduling, instant quotes, and seamless 
+                The future of moving operations is here. AI-powered scheduling, instant quotes, and 24/7 
                 customer communication — all in one intelligent platform.
               </p>
 
