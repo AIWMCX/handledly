@@ -1,144 +1,63 @@
 
-# План: Комплексная база знаний для ИИ-агента Jack (ElevenLabs)
+# Plan: Update Insurance Liability Amount to $750,000
 
-## Обзор задачи
+## Summary
+Change all instances of "$2M+ Insured" to "$750,000 General Liability" across the codebase and documentation.
 
-Создать профессиональную, структурированную базу знаний для голосового агента Jack, которая:
-- Включает small talk и дружелюбное профессиональное общение
-- Содержит ограничители поведения (guardrails) для безопасности
-- Имеет бизнес-логику по 300+ lb предметам (требуется 3 грузчика)
-- Делает агента умнее чем живого диспетчера
-- Повышает customer satisfaction без усложнения
+## Files to Update
 
----
+### 1. Frontend Components
 
-## Структура базы знаний
+| File | Line | Current Text | New Text |
+|------|------|--------------|----------|
+| `src/pages/Quote.tsx` | 325 | `$2M+ Insured` | `$750K Insured` |
+| `src/components/layout/Footer.tsx` | 106 | `USDOT Licensed & $2M+ Insured` | `USDOT Licensed & $750K Insured` |
+| `src/components/services/ServiceCTA.tsx` | 95 | `Fully licensed and $2M+ insured` | `Fully licensed and $750K insured` |
 
-### 1. Идентичность и личность агента
+### 2. Documentation
+
+| File | Line | Current Text | New Text |
+|------|------|--------------|----------|
+| `docs/04-component-library.md` | 440 | `$2M+ Insurance` | `$750K General Liability` |
+| `docs/jack-knowledge-base.md` | Multiple | `Licensed & Insured` references | Add specific `$750,000 General Liability` |
+
+## Technical Details
+
+### Consistent Formatting Options
+Two formatting approaches for the amount:
+
+**Option A: Abbreviated ($750K)**
+- Shorter, fits better in badges and compact UI
+- Examples: `$750K Insured`, `$750K General Liability`
+
+**Option B: Full ($750,000)**
+- More professional, clearer for legal/compliance
+- Examples: `$750,000 Insured`, `$750,000 General Liability`
+
+**Recommendation:** Use `$750K` for UI badges (space-constrained) and `$750,000` for documentation/knowledge base.
+
+### Jack Knowledge Base Updates
+The voice agent knowledge base will be updated to include:
 ```text
-┌─────────────────────────────────────────────────────────────────┐
-│  JACK - Moving Specialist                                       │
-├─────────────────────────────────────────────────────────────────┤
-│  Характер: Дружелюбный, профессиональный, спокойный            │
-│  Тон: Nonchalant professional - уверенный, но не навязчивый    │
-│  Стиль: Естественная речь, не роботизированная                 │
-│  Прерываемость: ДА - клиент может перебить в любой момент      │
-└─────────────────────────────────────────────────────────────────┘
+CREDENTIALS:
+- General Liability Insurance: $750,000 coverage
 ```
 
-### 2. Секции базы знаний
-
-**Section 1: Identity & Role**
-- Кто такой Jack и его миссия
-- Контекст звонка (подтверждение заявки)
-
-**Section 2: Company Information**
-- Handledly Moving Services
-- Контакты: (878) 218-7397
-- Часы работы
-- Зоны обслуживания (30+ городов Denver Metro)
-
-**Section 3: Pricing & Services**
-- Полная таблица почасовых ставок
-- Все типы услуг с описанием
-- Specialty items с flat fees
-
-**Section 4: Quote Logic & 300lb Rule**
-- Критическое правило: предметы >300 lbs = 3 грузчика
-- Примеры: gun safes, commercial safes, hot tubs
-- Формулы пересчёта котировки
-
-**Section 5: Small Talk Library**
-- Приветствия и прощания
-- Ответы на "How are you?"
-- Комментарии о погоде
-- Эмпатия к стрессу переезда
-
-**Section 6: Conversation Guidelines**
-- Правила открытия разговора
-- Переходы между темами
-- Обработка возражений
-
-**Section 7: Safety Guardrails**
-- Запрещённые темы
-- Что делать при провокациях
-- Эскалация к человеку
-
-**Section 8: FAQ Dataset**
-- 50+ типичных вопросов и ответов
-- Страховка, оплата, отмена
-
----
-
-## Технические детали
-
-### Формат: Markdown для ElevenLabs Knowledge Base
-- Структурированные секции с headers
-- Таблицы для цен и услуг
-- Примеры диалогов в code blocks
-- Чёткие DO/DON'T списки
-
-### Интеграция с динамическими переменными
-```
-{{customer_first_name}} - имя клиента
-{{quote_total}} - сумма котировки
-{{service_type}} - тип услуги
-{{move_date}} - дата переезда
-{{crew_size}} - размер бригады
-{{estimated_hours}} - часы
-{{move_from}} / {{move_to}} - адреса
+And in FAQ responses:
+```text
+Q: Are you insured?
+"Yes, we carry $750,000 in general liability insurance, plus workers' compensation coverage for all team members."
 ```
 
----
+## Implementation Steps
 
-## Пример критических правил
+1. Update `src/pages/Quote.tsx` line 325
+2. Update `src/components/layout/Footer.tsx` line 106  
+3. Update `src/components/services/ServiceCTA.tsx` line 95
+4. Update `docs/04-component-library.md` line 440
+5. Update `docs/jack-knowledge-base.md` with specific liability amount in credentials and FAQ sections
 
-### Правило 300+ lbs (КРИТИЧЕСКОЕ)
-```
-IF item_weight > 300 lbs:
-  - Требуется минимум 3 грузчика
-  - Специальное оборудование (heavy-duty dollies)
-  - Пересчёт котировки: $179/hour × hours (вместо $149)
-  - Примеры: gun safes, commercial safes (500-2000 lbs), hot tubs
-```
-
-### Guardrails (Ограничители)
-```
-НИКОГДА:
-- Не обсуждать конкурентов негативно
-- Не давать гарантий по точному времени прибытия
-- Не обещать скидки без согласования
-- Не отвечать на личные/неуместные вопросы
-- Не грубить даже при провокациях
-
-ВСЕГДА:
-- Оставаться профессиональным
-- Предлагать передать человеку при сложностях
-- Подтверждать понимание перед действием
-```
-
----
-
-## Что будет создано
-
-1. **Полный Markdown файл** (~3000 слов) для загрузки в ElevenLabs
-2. **Структура знаний**:
-   - Company Profile
-   - Service Catalog with Pricing
-   - Quote Validation Logic
-   - Small Talk Scripts
-   - FAQ Database (50+ Q&A)
-   - Safety Guidelines
-   - Escalation Procedures
-
----
-
-## Ожидаемый результат
-
-После загрузки этой базы знаний Jack будет:
-- Понимать контекст каждого звонка через динамические переменные
-- Правильно пересчитывать котировки для тяжёлых предметов
-- Вести естественные разговоры с small talk
-- Никогда не говорить ничего неуместного или грубого
-- Автоматически эскалировать сложные ситуации
-- Повышать customer satisfaction через эмпатию и профессионализм
+## Impact
+- All customer-facing trust badges will display accurate insurance information
+- Jack (voice agent) will have correct information for customer calls
+- Maintains brand consistency across all touchpoints
