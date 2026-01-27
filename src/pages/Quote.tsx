@@ -326,11 +326,6 @@ const generateQuoteNumber = (): string => {
                 </div>
                 <div className="w-px h-4 bg-border hidden sm:block" />
                 <div className="flex items-center gap-2">
-                  <Star className="w-4 h-4 text-accent fill-accent" />
-                  <span className="text-sm text-primary font-medium">BBB A+ Rated</span>
-                </div>
-                <div className="w-px h-4 bg-border hidden sm:block" />
-                <div className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-primary" />
                   <span className="text-sm text-primary font-medium">No Hidden Fees</span>
                 </div>

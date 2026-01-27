@@ -48,7 +48,6 @@ export {
   // Premium Trust Badge Icons
   USDOTIcon,
   ColoradoPUCIcon,
-  BBBAccreditedIcon,
   InsuranceCoverageIcon,
   WorkersCompIcon,
   // Premium Stats Icons

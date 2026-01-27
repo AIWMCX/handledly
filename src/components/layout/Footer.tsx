@@ -106,10 +106,6 @@ export function Footer() {
                 <span className="text-xs font-medium text-white">USDOT Licensed & $750K Insured</span>
               </div>
               <div className="flex items-center gap-2">
-                <Award className="w-4 h-4 text-accent" />
-                <span className="text-xs text-white/80">BBB A+ Rated</span>
-              </div>
-              <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-accent" />
                 <span className="text-xs text-white/80">Workers' Comp Coverage</span>
               </div>

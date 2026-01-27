@@ -436,7 +436,6 @@ interface StatsCardProps {
 // Shows:
 // - USDOT Licensed
 // - Colorado PUC Certified
-// - BBB Accredited
 // - $750K General Liability
 // - Workers' Comp
 ```
@@ -585,8 +584,7 @@ interface IconWrapperProps {
 
 ### TrustIcons
 **File**: `src/components/icons/TrustIcons.tsx`
-**Purpose**: Trust badge icons (USDOT, BBB, etc.)
-
+**Purpose**: Trust badge icons (USDOT, Insurance, etc.)
 ### ServiceIcons
 **File**: `src/components/icons/ServiceIcons.tsx`
 **Purpose**: Service-specific icons

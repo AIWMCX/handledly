@@ -39,21 +39,6 @@ export function ColoradoPUCIcon({ size = 'feature', color = 'current', className
   );
 }
 
-export function BBBAccreditedIcon({ size = 'feature', color = 'current', className }: Omit<IconProps, 'children'>) {
-  return (
-    <IconWrapper size={size} color={color} className={className}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
-        {/* Torch with A+ badge */}
-        <path d="M12 2c-1 2-2 3-2 5s1 3 2 3 2-1 2-3-1-3-2-5z" fill="currentColor" fillOpacity="0.2" />
-        <path d="M10 10h4v12h-4z" fill="currentColor" fillOpacity="0.1" />
-        <path d="M8 10h8" strokeWidth="2.5" />
-        <path d="M9 14h6" />
-        <circle cx="18" cy="6" r="4" fill="currentColor" fillOpacity="0.15" stroke="currentColor" />
-        <text x="18" y="8" textAnchor="middle" fontSize="5" fill="currentColor" fontWeight="bold">A+</text>
-      </svg>
-    </IconWrapper>
-  );
-}
 
 export function InsuranceCoverageIcon({ size = 'feature', color = 'current', className }: Omit<IconProps, 'children'>) {
   return (
