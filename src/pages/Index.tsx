@@ -96,19 +96,19 @@ export default function Index() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Content */}
             <div>
-              {/* Denver anchor badge */}
+              {/* First Moving AI SaaS Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-6 shadow-depth-1">
-                <MapPin className="w-4 h-4 text-accent" />
-                <span className="text-sm font-medium text-foreground">Denver's #1 Rated Moving Company</span>
+                <Zap className="w-4 h-4 text-accent" />
+                <span className="text-sm font-medium text-foreground">America's First Moving AI SaaS Platform</span>
               </div>
               
               <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold leading-tight mb-6">
-                Moving Made <span className="text-accent">Simple</span>
+                Automate Your <span className="text-accent">Dispatching</span>
               </h1>
               
               <p className="text-lg lg:text-xl text-muted-foreground mb-4 max-w-2xl leading-relaxed">
-                No hidden fees, no surprises. Just one simple hourly rate that includes everything — 
-                truck, materials, assembly, and protection.
+                The future of moving is here. AI-powered scheduling, instant quotes, and seamless 
+                customer communication — all in one intelligent platform.
               </p>
 
               <div className="flex flex-wrap items-center gap-4 mb-6 text-sm">
