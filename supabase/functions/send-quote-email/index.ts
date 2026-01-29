@@ -9,6 +9,7 @@ const ALLOWED_ORIGINS = [
   'https://handledly.com',
   'https://www.handledly.com',
   'https://id-preview--c4ec72c4-17ec-431f-865b-98773c111e46.lovable.app',
+  'https://c4ec72c4-17ec-431f-865b-98773c111e46.lovableproject.com',
   'http://localhost:5173',
   'http://localhost:3000',
 ];
