@@ -1,73 +1,111 @@
 
-# Comprehensive Pricing & "200lb Iron Law" Update Plan
+
+# Master Prompt & System-Wide Pricing/Iron Law Update
 
 ## Executive Summary
 
-This plan implements critical updates to Handledly's pricing structure and enforces the **200lb Iron Law** across all systems before the February 1st, 2026 launch. All changes will be made with precision and thorough cross-verification to ensure zero errors, zero miscommunication, and a polished, professional launch.
+This plan creates a **comprehensive Master Prompt** that serves as the single source of truth for all pricing and the **200lb Iron Law**, then updates ALL remaining inconsistencies across frontend, backend, edge functions, and documentation to ensure 100% consistency before the February 1st launch.
 
 ---
 
-## Part 1: New Pricing Structure
+## Part 1: Current State Analysis
 
-### Current Pricing vs. New Pricing Comparison
+### Critical Inconsistencies Found
 
-| Service Type | OLD Rate | NEW Rate | Change |
-|--------------|----------|----------|--------|
-| Labor Only - 2 Movers | $129/hr | **$139/hr** | +$10 |
-| 2 Movers + Truck | $149/hr | **$159/hr** | +$10 |
-| Heavy Items | $159/hr | **$169/hr** | +$10 |
-| Labor Only - 3 Movers | $159/hr | **$169/hr** | +$10 |
-| 3 Movers + Truck | $179/hr | **$189/hr** (or $199) | +$10-20 |
-| 3 Movers + 2 Trucks | $199/hr | **$209/hr** (or $219) | +$10-20 |
-| Labor Only - 4 Movers | $229/hr | **$239/hr** (or $249) | +$10-20 |
-| 4 Movers + Truck | $249/hr | **$259/hr** (or $269) | +$10-20 |
-| Electronic Payment Fee | $5 | **$5** | No change |
-
-**Negotiation Flexibility**: $10 discount available if customer hesitates on booking.
-
-**Operational Note**: If addresses are close, the second truck can be provided without additional charge, or the crew can make a second trip.
+| Location | Issue | Current | Should Be |
+|----------|-------|---------|-----------|
+| `jack-knowledge-base.md` (line 590) | Heavy item probe | "300+ lbs?" | "200+ lbs?" |
+| `jack-knowledge-base.md` (line 616) | Rate quote | "$149 to $179" | "$159 to $179" |
+| `jack-knowledge-base.md` (lines 729-746) | Quick Reference | $149/hr, 300lb rule | $159/hr, 200lb Iron Law |
+| `jack-knowledge-base.md` (lines 815, 884-885, 926) | References | 300 lbs | 200 lbs |
+| `jack-knowledge-base.md` (lines 1333-1350) | Quick Reference #2 | Same issues | Same fixes |
+| `src/pages/Services.tsx` (lines 74-81) | Heavy Items | "Under 300 lbs", "300+ lbs" | "Under 200 lbs", "200+ lbs" |
+| `src/pages/Services.tsx` (line 177) | Badge | "From $149/hr" | "From $139/hr" |
+| `src/components/PricingDisplay.tsx` (lines 140-141) | Safes | "300 lbs" | "200 lbs" |
+| `src/lib/quoteCalculator.ts` (lines 231-232) | SPECIALTY_ITEMS | "Under 300lbs", "300-800lbs" | "Under 200lbs", "200-800lbs" |
 
 ---
 
-## Part 2: The 200lb Iron Law
+## Part 2: Master Prompt Document
 
-### The Rule (CRITICAL - MANDATORY)
+Create a new file `docs/MASTER-PRICING-PROMPT.md` that serves as the **single source of truth** for:
 
-**Any item weighing 200 pounds or more REQUIRES:**
-- Minimum 3 movers
-- Truck included
-- Rate adjustment to **$179/hr** (Iron Law rate)
-- NO EXCEPTIONS
+### 2.1 Complete Pricing Table (February 2026)
 
-### Change from Previous
+```text
+HANDLEDLY MOVING SERVICES - OFFICIAL PRICING
+=============================================
+Effective: February 1, 2026
 
-| Aspect | OLD Rule | NEW Rule |
-|--------|----------|----------|
-| Weight Threshold | 300 lbs | **200 lbs** |
-| Rate Adjustment | $179/hr | **$179/hr** (unchanged) |
-| Crew Requirement | 3+ movers | **3+ movers** (unchanged) |
+LABOR ONLY (No Truck):
+- 2 Movers: $139/hour
+- 3 Movers: $169/hour  
+- 4 Movers: $239/hour
 
-### Items That Trigger the 200lb Iron Law
+MOVING WITH TRUCK:
+- 2 Movers + Truck: $159/hour (Most Popular)
+- 3 Movers + Truck: $189/hour
+- 3 Movers + 2 Trucks: $209/hour
+- 4 Movers + Truck: $259/hour
 
-- All pianos (upright and grand)
-- All pool tables
-- All safes and gun safes
-- Large appliances (commercial refrigerators, etc.)
-- Gym equipment (commercial-grade)
+HEAVY ITEMS:
+- Base Rate: $169/hour (by situation)
+- Iron Law Rate: $179/hour (200+ lb items)
+
+FEES:
+- Electronic Payment: +$5
+- Negotiation Discount: $10 (if customer hesitates)
+```
+
+### 2.2 The 200lb Iron Law (CRITICAL)
+
+```text
+⚠️ 200LB IRON LAW - NON-NEGOTIABLE
+==================================
+
+TRIGGER: Any single item weighing 200 pounds or more
+
+REQUIREMENTS (NO EXCEPTIONS):
+1. Minimum 3 movers
+2. Truck included
+3. Rate: $179/hour
+
+ITEMS THAT ALWAYS TRIGGER IRON LAW:
+- All pianos (upright, baby grand, grand)
+- All pool tables (slate)
+- All safes & gun safes (200+ lbs)
 - Hot tubs
-- Any item customer describes as "heavy" or "took multiple people to move"
+- Commercial gym equipment
+- Large commercial appliances
 
-### How Jack Handles 200lb Iron Law
+PROBING SCRIPT:
+"Do you happen to know the approximate weight? Or was it 
+something that took a few people to move in originally?"
 
-When a customer mentions a heavy item:
+EXPLANATION SCRIPT:
+"For items over 200 pounds, we always bring a 3-mover crew 
+with our heavy-duty equipment - it's our safety standard. 
+That means the rate adjusts to $179/hour, but it ensures 
+your item and floors stay protected."
+```
 
-1. **Probe**: "Do you happen to know the approximate weight? Or was it something that took a few people to move in originally?"
+### 2.3 Specialty Item Flat Fees
 
-2. **Apply Rule**: If 200+ lbs OR unclear but sounds heavy:
-   > "For items over 200 pounds, we always bring a 3-mover crew with our heavy-duty equipment - it's our safety standard. That means the rate adjusts to $179/hour, but it ensures your item and floors stay protected."
-
-3. **Clarify if Needed**: If customer is unsure:
-   > "No worries - we'll confirm the details and if it turns out to be under 200 pounds, we'll adjust accordingly. Better to be prepared!"
+```text
+SPECIALTY ITEM PRICING
+======================
+Upright Piano:      $150 (requires 3 movers)
+Baby Grand Piano:   $250 (requires 3 movers)
+Grand Piano:        $350 (requires 3-4 movers)
+Gun Safe (<200 lbs): $100 (2 movers)
+Gun Safe (200-500 lbs): $175 (3 movers @ $179/hr)
+Gun Safe (500+ lbs):    $250 (3-4 movers)
+Pool Table (move only): $350 (3 movers)
+Pool Table (full):      $550 (3 movers)
+Hot Tub:           $400 (4 movers)
+Gym Equipment:     $125
+Motorcycle:        $200
+```
 
 ---
 
@@ -76,201 +114,177 @@ When a customer mentions a heavy item:
 ### 3.1 Core Quote Calculator
 **File**: `src/lib/quoteCalculator.ts`
 
-Updates needed:
-- `HOURLY_RATES` object: Update all rate values
-- `CREW_CONFIGURATIONS` array: Update all rate and description values
-- Change references from 300lb to 200lb in `HeavyItemsSubType`
-- Update `estimateCrewSize()` to default to 3 movers for heavy items
+**Lines 231-232** - Fix SPECIALTY_ITEMS labels:
+- `'safe-small'`: Change "Under 300lbs" → "Under 200lbs"
+- `'safe-large'`: Change "300-800lbs" → "200-800lbs"
 
-### 3.2 Pricing Display Component
+### 3.2 Services Page
+**File**: `src/pages/Services.tsx`
+
+**Lines 74-81** - Fix heavy items categories:
+- "Heavy Items (Under 300 lbs)" → "Heavy Items (Under 200 lbs)"
+- "Heavy Items (300+ lbs)" → "Heavy Items (200+ lbs)"
+
+**Line 177** - Fix price badge:
+- "From $149/hr" → "From $139/hr"
+
+### 3.3 Pricing Display
 **File**: `src/components/PricingDisplay.tsx`
 
-Updates needed:
-- All displayed rates will automatically update from `quoteCalculator`
-- Update Heavy Items section to reflect 200lb rule
-- Update descriptions for clarity
+**Lines 140-141** - Fix safes labels:
+- "Safes (Under 300 lbs)" → "Safes (Under 200 lbs)"
+- "Safes (300+ lbs)" → "Safes (200+ lbs)"
 
-### 3.3 Instant Quote Preview
-**File**: `src/components/conversion/InstantQuotePreview.tsx`
-
-Updates needed:
-- `SERVICE_BASE_RATES` object: Update all rate values
-- Ensure heavy-items rate reflects new $169/hr base
-
-### 3.4 Jack Knowledge Base
+### 3.4 Jack Knowledge Base (Major Update)
 **File**: `docs/jack-knowledge-base.md`
 
-Updates needed (comprehensive rewrite of relevant sections):
-- Section 3: Pricing table updates
-- Section 4: Change 300lb Rule to 200lb Iron Law throughout
-- Update all example scripts and quote formulas
-- Update specialty items table
+**Updates Required:**
 
-### 3.5 AI Chat System Prompt
-**File**: `supabase/functions/ai-chat/index.ts`
-
-Updates needed:
-- `SYSTEM_PROMPT` pricing section: Update all rates
-- Add 200lb Iron Law explanation
-- Ensure Jack knows to probe for weight on any heavy-sounding items
-
-### 3.6 Services Data
-**File**: `src/data/servicesData.ts`
-
-Updates needed:
-- Change "Heavy Items (Under 300 lbs)" to "Heavy Items (Under 200 lbs)"
-- Change "Heavy Items (300+ lbs)" to "Heavy Items (200+ lbs)"
-- Update descriptions accordingly
-
-### 3.7 Send Quote Email
-**File**: `supabase/functions/send-quote-email/index.ts`
-
-Updates needed:
-- `SPECIALTY_LABELS` object: Update weight references from 300 to 200
-- Ensure email displays correct pricing
+1. **Line 590**: Change "300+ lbs" → "200+ lbs"
+2. **Line 616**: Change "$149 to $179" → "$159 to $179"
+3. **Lines 729-746 (Quick Reference #1)**: 
+   - "$149/hr" → "$159/hr"
+   - "$179/hr" → "$189/hr" (for 3 movers)
+   - "$209/hr" → "$259/hr" (for 4 movers)
+   - "300LB RULE" → "200LB IRON LAW"
+   - "300 lbs" → "200 lbs"
+   - "Safe (300+ lbs)" → "Safe (200+ lbs)"
+4. **Line 815**: "One item over 300 lbs" → "One item over 200 lbs"
+5. **Lines 884-885**: "300 lbs" → "200 lbs", "300lb rule" → "200lb Iron Law"
+6. **Line 926**: "300+ lbs Case" → "200+ lbs Case"
+7. **Line 930**: "$149 to $179" → "$159 to $179"
+8. **Lines 1333-1350 (Quick Reference #2)**: Same updates as Quick Reference #1
+9. **Line 1375**: "January 2026" → "February 2026"
+10. **Line 1376**: "Version: 2.0" → "Version: 3.0"
 
 ---
 
-## Part 4: Implementation Checklist
+## Part 4: New Master Prompt Document Structure
 
-### Phase 1: Core Calculator (Foundation)
-```text
-[ ] Update HOURLY_RATES in quoteCalculator.ts
-[ ] Update CREW_CONFIGURATIONS in quoteCalculator.ts
-[ ] Update HeavyItemsSubType enum values (300 -> 200)
-[ ] Update SPECIALTY_ITEMS weight labels
-[ ] Update estimateCrewSize() for heavy items
+Create `docs/MASTER-PRICING-PROMPT.md`:
+
+```markdown
+# HANDLEDLY MASTER PRICING & IRON LAW REFERENCE
+## Version 3.0 - February 2026
+
+### CRITICAL: This is the SINGLE SOURCE OF TRUTH
+
+All systems must align with this document:
+- Frontend (quoteCalculator.ts, PricingDisplay.tsx, Services.tsx)
+- Backend Edge Functions (ai-chat, send-quote-email)
+- AI Knowledge Base (jack-knowledge-base.md)
+- Customer Communications (emails, SMS)
+
+---
+
+## SECTION 1: OFFICIAL HOURLY RATES
+
+[Complete pricing table]
+
+## SECTION 2: THE 200LB IRON LAW
+
+[Complete Iron Law specification]
+
+## SECTION 3: SPECIALTY ITEMS
+
+[Complete specialty fees]
+
+## SECTION 4: INCLUSIONS
+
+[What's included with every move]
+
+## SECTION 5: FEES & DISCOUNTS
+
+[Electronic payment, negotiation discount]
+
+## SECTION 6: SERVICE AREAS
+
+[Denver Metro coverage]
+
+## SECTION 7: JACK AI SCRIPTS
+
+[Standardized probing and explanation scripts]
+
+## SECTION 8: QUICK REFERENCE CARD
+
+[Updated quick reference with correct rates]
+
+## CHANGE LOG
+- v3.0 (Feb 2026): Updated to 200lb Iron Law, new pricing
+- v2.0 (Jan 2026): Initial production release
 ```
 
-### Phase 2: UI Components
+---
+
+## Part 5: Implementation Order
+
+### Phase 1: Create Master Document (Foundation)
 ```text
-[ ] InstantQuotePreview.tsx - SERVICE_BASE_RATES
-[ ] PricingDisplay.tsx - Verify auto-updates from calculator
-[ ] servicesData.ts - Heavy item descriptions
+[1] Create docs/MASTER-PRICING-PROMPT.md
 ```
 
-### Phase 3: AI & Documentation
+### Phase 2: Update Core Calculator
 ```text
-[ ] ai-chat/index.ts - System prompt pricing updates
-[ ] ai-chat/index.ts - Add 200lb Iron Law section
-[ ] jack-knowledge-base.md - Full pricing table update
-[ ] jack-knowledge-base.md - 300lb -> 200lb Iron Law rewrite
+[2] Fix src/lib/quoteCalculator.ts SPECIALTY_ITEMS (300→200)
 ```
 
-### Phase 4: Email & Edge Functions
+### Phase 3: Update Frontend
 ```text
-[ ] send-quote-email/index.ts - SPECIALTY_LABELS update
-[ ] Deploy updated edge functions
+[3] Fix src/pages/Services.tsx (300→200, $149→$139)
+[4] Fix src/components/PricingDisplay.tsx (300→200)
+```
+
+### Phase 4: Update Knowledge Base
+```text
+[5] Fix docs/jack-knowledge-base.md (all 10+ locations)
 ```
 
 ### Phase 5: Verification
 ```text
-[ ] Test quote calculator with 2, 3, 4 mover configs
-[ ] Test heavy item detection triggers 3-mover minimum
-[ ] Test email displays correct rates
-[ ] Test Jack responds correctly about 200lb items
-[ ] Review all pricing displays on website
+[6] Search codebase for remaining "300" references
+[7] Search codebase for remaining "$149" references
+[8] Test quote calculator
+[9] Test AI chat responses
 ```
 
 ---
 
-## Part 5: Technical Details
+## Part 6: Technical Summary
 
-### New HOURLY_RATES Object
-```typescript
-export const HOURLY_RATES = {
-  // Labor Only (no truck)
-  'labor-2-movers': 139,
-  'labor-3-movers': 169,
-  'labor-4-movers': 239, // or 249
-  // Moving (with truck)
-  'moving-2-movers': 159,
-  'moving-3-movers': 189, // or 199
-  'moving-3-movers-2-trucks': 209, // or 219
-  'moving-4-movers': 259, // or 269
-  // Heavy Items (Iron Law rate)
-  'heavy-items': 169,
-  // Iron Law Rate (200+ lbs)
-  'iron-law-minimum': 179,
-} as const;
-```
+| File | Changes | Priority |
+|------|---------|----------|
+| `docs/MASTER-PRICING-PROMPT.md` | CREATE new master document | CRITICAL |
+| `src/lib/quoteCalculator.ts` | Lines 231-232 (300→200) | HIGH |
+| `src/pages/Services.tsx` | Lines 74-81, 177 (300→200, $149→$139) | HIGH |
+| `src/components/PricingDisplay.tsx` | Lines 140-141 (300→200) | HIGH |
+| `docs/jack-knowledge-base.md` | 10+ locations, version bump | CRITICAL |
 
-### New CREW_CONFIGURATIONS Array
-```typescript
-export const CREW_CONFIGURATIONS = [
-  { value: 'labor-2-movers', label: 'Labor Only - 2 Movers', rate: 139, hasTruck: false, crew: 2, description: 'Loading/unloading help' },
-  { value: 'moving-2-movers', label: '2 Movers + Truck', rate: 159, hasTruck: true, crew: 2, description: 'Studios & 1-2 BR', popular: true },
-  { value: 'labor-3-movers', label: 'Labor Only - 3 Movers', rate: 169, hasTruck: false, crew: 3, description: 'Larger jobs or 200+ lb items' },
-  { value: 'moving-3-movers', label: '3 Movers + Truck', rate: 189, hasTruck: true, crew: 3, description: '2-3 BR or heavy items' },
-  { value: 'moving-3-movers-2-trucks', label: '3 Movers + 2 Trucks', rate: 209, hasTruck: true, crew: 3, description: 'When more capacity needed' },
-  { value: 'labor-4-movers', label: 'Labor Only - 4 Movers', rate: 239, hasTruck: false, crew: 4, description: 'Large loading projects' },
-  { value: 'moving-4-movers', label: '4 Movers + Truck', rate: 259, hasTruck: true, crew: 4, description: '3-4 BR homes' },
-] as const;
-```
-
-### Jack's Updated Pricing Knowledge
-```text
-SERVICES & PRICING (Updated February 2026):
-- Labor Only - 2 Movers: $139/hour
-- 2 Movers + Truck: $159/hour (Most Popular)
-- Heavy Items: $169/hour (by situation)
-- Labor Only - 3 Movers: $169/hour
-- 3 Movers + Truck: $189-199/hour
-- 3 Movers + 2 Trucks: $209-219/hour
-- Labor Only - 4 Movers: $239-249/hour
-- 4 Movers + Truck: $259-269/hour
-
-IRON LAW - 200LB RULE (MANDATORY):
-Any item 200+ pounds = 3 movers minimum at $179/hour
-This applies to: pianos, pool tables, safes, gun safes, large appliances, gym equipment, hot tubs
-
-NEGOTIATION: $10 discount available if customer hesitates
-ELECTRONIC PAYMENT: +$5 processing fee
-```
+**Total files**: 5 (1 new, 4 updates)
+**Estimated time**: 30-40 minutes
 
 ---
 
-## Part 6: Quality Assurance
+## Part 7: Post-Implementation Verification
 
-### Pre-Launch Verification Checklist
+### Automated Checks
+1. `grep -r "300.*lb" src/` should return 0 results
+2. `grep -r "\$149" src/` should return 0 results
+3. All pricing displays show correct rates
 
-1. **Calculator Accuracy**
-   - Quote for 2-mover local move shows $159/hr
-   - Quote for heavy item auto-upgrades to 3 movers at $179/hr
-   - Specialty fees calculate correctly
-
-2. **UI Consistency**
-   - PricingDisplay shows all 7 crew configurations with correct rates
-   - InstantQuotePreview shows correct base rates
-   - All "$149" references removed, replaced with "$159"
-
-3. **Jack's Responses**
-   - Jack quotes correct rates when asked
-   - Jack applies 200lb Iron Law when customer mentions heavy items
-   - Jack politely explains rate adjustments
-
-4. **Email Templates**
-   - Quote emails show correct hourly rates
-   - Specialty item labels reflect 200lb threshold
-
-5. **Documentation**
-   - Jack Knowledge Base fully updated
-   - No references to "300lb rule" remain
+### Manual Verification
+1. Visit `/services` - confirm heavy items show 200lb threshold
+2. Visit homepage pricing section - confirm all rates correct
+3. Test AI chat - ask about heavy safe, confirm $179/hr rate
+4. Submit test quote with heavy item - verify correct calculation
 
 ---
 
 ## Summary
 
-| Item | Action | Priority |
-|------|--------|----------|
-| quoteCalculator.ts | Update all rates + 200lb rule | CRITICAL |
-| InstantQuotePreview.tsx | Update SERVICE_BASE_RATES | HIGH |
-| servicesData.ts | Update heavy item descriptions | HIGH |
-| ai-chat/index.ts | Update system prompt | CRITICAL |
-| jack-knowledge-base.md | Full rewrite of pricing + Iron Law | CRITICAL |
-| send-quote-email/index.ts | Update specialty labels | HIGH |
-| Deploy edge functions | ai-chat, send-quote-email | CRITICAL |
+This plan ensures:
+- **Single source of truth** via `MASTER-PRICING-PROMPT.md`
+- **100% consistency** across all 5 affected files
+- **Zero 300lb references** remaining in codebase
+- **Zero $149 references** remaining in codebase
+- **Professional, polished** launch on February 1st
 
-**Total files to modify: 7**
-**Estimated implementation time: 45-60 minutes**
-**Testing required: Calculator, UI, AI Chat, Email**
