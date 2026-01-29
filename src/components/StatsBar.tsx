@@ -11,14 +11,14 @@ const stats = [
   { 
     value: 4.9, 
     suffix: "/5", 
-    label: "Google Rating",
+    label: "Customer Rating",
     Icon: GoogleRatingIcon,
     highlight: true,
   },
   { 
-    value: 500, 
-    suffix: "+", 
-    label: "5-Star Reviews",
+    value: 97, 
+    suffix: "%", 
+    label: "Satisfaction Rate",
     Icon: ReviewCountIcon,
     highlight: false,
   },

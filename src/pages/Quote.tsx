@@ -338,7 +338,7 @@ const generateQuoteNumber = (): string => {
 
               {/* Bottom trust text */}
               <p className="text-center text-xs text-muted-foreground mt-6">
-                No obligation • Free estimate • Same-day response • Join 10,000+ happy Denver customers
+                No obligation • Free estimate • Same-day response • Denver's trusted movers
               </p>
             </div>
           ) : (
