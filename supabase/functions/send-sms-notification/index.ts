@@ -121,6 +121,24 @@ Deno.serve(async (req) => {
 
     // Format phone number (ensure E.164 format)
     const cleanPhone = phone.replace(/\D/g, "");
+    
+    // CRITICAL: Validate US phone number before sending SMS
+    const isValidUS = (cleanPhone.length === 10 && cleanPhone[0] !== '0' && cleanPhone[0] !== '1') ||
+                      (cleanPhone.length === 11 && cleanPhone.startsWith('1') && cleanPhone[1] !== '0' && cleanPhone[1] !== '1');
+    
+    if (!isValidUS) {
+      console.warn(`[send-sms-notification] Skipping SMS - non-US phone number detected: ${phone}`);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          skipped: true,
+          reason: "Non-US phone number not supported",
+          message: "SMS only available for US phone numbers" 
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
     const formattedPhone = cleanPhone.startsWith("1") ? `+${cleanPhone}` : `+1${cleanPhone}`;
 
     // Compose SMS message

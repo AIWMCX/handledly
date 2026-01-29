@@ -3,7 +3,9 @@
  * Provides retry logic, error handling, and rate limit detection
  */
 
-export type QuoteErrorType = 
+import { isValidUSPhone } from './phoneValidation';
+
+export type QuoteErrorType =
   | 'RATE_LIMITED' 
   | 'VALIDATION_ERROR' 
   | 'NETWORK_ERROR' 
@@ -200,11 +202,9 @@ export function validateQuoteData(data: {
 
   if (!data.phone?.trim()) {
     errors.push('Phone number is required');
-  } else {
-    const digits = data.phone.replace(/\D/g, '');
-    if (digits.length < 10) {
-      errors.push('Please enter a valid phone number (10+ digits)');
-    }
+  } else if (!isValidUSPhone(data.phone)) {
+    // Strict US-only validation - blocks international numbers
+    errors.push('We currently serve US customers only. Please enter a valid 10-digit US phone number.');
   }
 
   if (!data.serviceType) {
