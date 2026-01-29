@@ -1,294 +1,326 @@
 # HANDLEDLY MASTER PRICING & IRON LAW REFERENCE
 ## Version 3.0 - February 2026
 
----
+### CRITICAL: This is the SINGLE SOURCE OF TRUTH
 
-## ⚠️ CRITICAL: THIS IS THE SINGLE SOURCE OF TRUTH
-
-**All systems MUST align with this document:**
-- Frontend (`quoteCalculator.ts`, `PricingDisplay.tsx`, `Services.tsx`)
-- Backend Edge Functions (`ai-chat`, `send-quote-email`)
-- AI Knowledge Base (`jack-knowledge-base.md`)
+All systems must align with this document:
+- Frontend (quoteCalculator.ts, PricingDisplay.tsx, Services.tsx)
+- Backend Edge Functions (ai-chat, send-quote-email)
+- AI Knowledge Base (jack-knowledge-base.md)
 - Customer Communications (emails, SMS)
-
-**When updating pricing or rules:**
-1. Update THIS document first
-2. Then update all referenced files
-3. Verify with codebase search for old values
 
 ---
 
 ## SECTION 1: OFFICIAL HOURLY RATES
 
-### Effective: February 1, 2026
+**HANDLEDLY MOVING SERVICES - OFFICIAL PRICING**
+Effective: February 1, 2026
 
-```
-HANDLEDLY MOVING SERVICES - OFFICIAL PRICING
-=============================================
+### LABOR ONLY (No Truck):
+- **2 Movers**: $139/hour
+- **3 Movers**: $169/hour  
+- **4 Movers**: $239/hour
 
-LABOR ONLY (No Truck):
-┌──────────────────────┬────────────┬─────────────────────────┐
-│ Crew Size            │ Hourly Rate│ Best For                │
-├──────────────────────┼────────────┼─────────────────────────┤
-│ 2 Movers Labor       │ $139/hour  │ Loading/unloading help  │
-│ 3 Movers Labor       │ $169/hour  │ Larger jobs, 200+ lb    │
-│ 4 Movers Labor       │ $239/hour  │ Large loading projects  │
-└──────────────────────┴────────────┴─────────────────────────┘
+### MOVING WITH TRUCK:
+- **2 Movers + Truck**: $159/hour (Most Popular)
+- **3 Movers + Truck**: $189/hour
+- **3 Movers + 2 Trucks**: $209/hour
+- **4 Movers + Truck**: $259/hour
 
-MOVING WITH TRUCK:
-┌──────────────────────┬────────────┬─────────────────────────┐
-│ Crew Size            │ Hourly Rate│ Best For                │
-├──────────────────────┼────────────┼─────────────────────────┤
-│ 2 Movers + Truck     │ $159/hour  │ Studios, 1-2 BR ⭐       │
-│ 3 Movers + Truck     │ $189/hour  │ 2-3 BR or heavy items   │
-│ 3 Movers + 2 Trucks  │ $209/hour  │ More capacity needed    │
-│ 4 Movers + Truck     │ $259/hour  │ 3-4 BR homes            │
-└──────────────────────┴────────────┴─────────────────────────┘
+### HEAVY ITEMS:
+- **Base Rate**: $169/hour (by situation)
+- **Iron Law Rate**: $179/hour (200+ lb items)
 
-HEAVY ITEMS:
-┌──────────────────────┬────────────┬─────────────────────────┐
-│ Type                 │ Hourly Rate│ Requirement             │
-├──────────────────────┼────────────┼─────────────────────────┤
-│ Base Rate            │ $169/hour  │ By situation            │
-│ Iron Law Rate        │ $179/hour  │ 200+ lb items (3 movers)│
-└──────────────────────┴────────────┴─────────────────────────┘
-
-⭐ = Most Popular
-```
-
-### Minimum Hours
-- All moves have a **2-hour minimum**
-- Travel time to first location is included
+### FEES:
+- **Electronic Payment**: +$5
+- **Negotiation Discount**: $10 (if customer hesitates)
 
 ---
 
 ## SECTION 2: THE 200LB IRON LAW
 
-### ⚠️ NON-NEGOTIABLE SAFETY REQUIREMENT
+### ⚠️ 200LB IRON LAW - NON-NEGOTIABLE
 
+**TRIGGER**: Any single item weighing 200 pounds or more
+
+**REQUIREMENTS (NO EXCEPTIONS)**:
+1. Minimum 3 movers
+2. Truck included
+3. Rate: $179/hour
+
+### ITEMS THAT ALWAYS TRIGGER IRON LAW:
+- All pianos (upright, baby grand, grand)
+- All pool tables (slate)
+- All safes & gun safes (200+ lbs)
+- Hot tubs
+- Commercial gym equipment
+- Large commercial appliances
+- Anything described as "super heavy", "took multiple guys", "barely moved it"
+
+### PROBING SCRIPT:
 ```
-╔═══════════════════════════════════════════════════════════════╗
-║  200LB IRON LAW - NO EXCEPTIONS                               ║
-╠═══════════════════════════════════════════════════════════════╣
-║                                                               ║
-║  TRIGGER: Any single item weighing 200 pounds or more         ║
-║                                                               ║
-║  REQUIREMENTS:                                                ║
-║  ✓ Minimum 3 movers                                          ║
-║  ✓ Truck included                                            ║
-║  ✓ Rate: $179/hour                                           ║
-║                                                               ║
-║  NO EXCEPTIONS - Safety and liability requirement             ║
-║                                                               ║
-╚═══════════════════════════════════════════════════════════════╝
+"Do you happen to know the approximate weight? Or was it 
+something that took a few people to move in originally?"
 ```
 
-### Items That ALWAYS Trigger Iron Law
+### EXPLANATION SCRIPT:
+```
+"For items over 200 pounds, we always bring a 3-mover crew 
+with our heavy-duty equipment - it's our safety standard. 
+That means the rate adjusts to $179/hour, but it ensures 
+your item and floors stay protected."
+```
 
-| Item | Typical Weight | Required Crew |
-|------|----------------|---------------|
-| Upright Piano | 400-500 lbs | 3 movers |
-| Baby Grand Piano | 500-600 lbs | 3 movers |
-| Grand Piano | 600-1200 lbs | 3-4 movers |
-| Pool Table (slate) | 700-1000 lbs | 3 movers |
-| Gun Safe (200+ lbs) | 200-2000 lbs | 3-4 movers |
-| Commercial Safe | 500-5000 lbs | 3-4 movers |
-| Hot Tub | 400-800 lbs | 4 movers |
-| Large Armoire | 200-500 lbs | 3 movers |
-| Commercial Gym Equipment | 200-800 lbs | 3-4 movers |
-
-### Red Flags to Listen For (Probe for Weight)
-
-- "It's a really big safe"
-- "My husband's gun collection"
-- "It took 4 guys to bring it in"
-- "The old movers wouldn't touch it"
-- "It's been in the basement for years"
-- "It's solid wood/marble/slate"
-- "It's a commercial-grade [anything]"
-- "It's antique/vintage [furniture]"
+### DE-ESCALATION SCRIPT:
+```
+"Totally fine — we'll confirm. If it ends up clearly under 
+200 pounds, we adjust. We'd rather be prepared than risk damage."
+```
 
 ---
 
 ## SECTION 3: SPECIALTY ITEM FLAT FEES
 
-```
-SPECIALTY ITEM PRICING
-======================
+**SPECIALTY ITEM PRICING**
 
-PIANOS:
-┌─────────────────────┬────────┬─────────────────┬──────────────┐
-│ Item                │ Fee    │ Crew Required   │ Weight       │
-├─────────────────────┼────────┼─────────────────┼──────────────┤
-│ Upright Piano       │ $150   │ 3 movers        │ 400-500 lbs  │
-│ Baby Grand Piano    │ $250   │ 3 movers        │ 500-600 lbs  │
-│ Grand Piano         │ $350   │ 3-4 movers      │ 600-1200 lbs │
-└─────────────────────┴────────┴─────────────────┴──────────────┘
-
-GUN SAFES:
-┌─────────────────────┬────────┬─────────────────┬──────────────┐
-│ Item                │ Fee    │ Crew Required   │ Weight       │
-├─────────────────────┼────────┼─────────────────┼──────────────┤
-│ Under 200 lbs       │ $100   │ 2 movers        │ <200 lbs     │
-│ 200-500 lbs         │ $175   │ 3 movers @ $179 │ 200-500 lbs  │
-│ 500+ lbs            │ $250   │ 3-4 movers      │ 500+ lbs     │
-└─────────────────────┴────────┴─────────────────┴──────────────┘
-
-OTHER HEAVY ITEMS:
-┌─────────────────────┬────────┬─────────────────┬──────────────┐
-│ Item                │ Fee    │ Crew Required   │ Weight       │
-├─────────────────────┼────────┼─────────────────┼──────────────┤
-│ Pool Table (move)   │ $350   │ 3 movers        │ 700-1000 lbs │
-│ Pool Table (full)   │ $550   │ 3 movers        │ 700-1000 lbs │
-│ Hot Tub             │ $400   │ 4 movers        │ 400-800 lbs  │
-│ Gym Equipment       │ $125   │ 2-3 movers      │ Varies       │
-│ Motorcycle          │ $200   │ 2-3 movers      │ 400-800 lbs  │
-└─────────────────────┴────────┴─────────────────┴──────────────┘
-
-IMPORTANT: All items 200+ lbs trigger Iron Law rate of $179/hour
-```
+| Item | Price | Crew Required |
+|------|-------|---------------|
+| Upright Piano | $150 | 3 movers |
+| Baby Grand Piano | $250 | 3 movers |
+| Grand Piano | $350 | 3-4 movers |
+| Gun Safe (<200 lbs) | $100 | 2 movers |
+| Gun Safe (200-500 lbs) | $175 | 3 movers @ $179/hr |
+| Gun Safe (500+ lbs) | $250 | 3-4 movers |
+| Pool Table (move only) | $350 | 3 movers |
+| Pool Table (full service) | $550 | 3 movers |
+| Hot Tub | $400 | 4 movers |
+| Gym Equipment | $125 | 2-3 movers |
+| Motorcycle | $200 | 2-3 movers |
 
 ---
 
-## SECTION 4: WHAT'S INCLUDED
+## SECTION 4: INCLUSIONS
 
-### Every Move Includes:
-- ✅ Professional moving crew
-- ✅ Moving truck with fuel included
-- ✅ All packing materials (blankets, wrap, tape)
-- ✅ Furniture disassembly & reassembly
-- ✅ NO stair or elevator fees
-- ✅ NO truck/fuel surcharges
-- ✅ Free basic packing supplies
+**WHAT'S INCLUDED WITH EVERY MOVE:**
+- Professional movers with training
+- Moving blankets and straps
+- Floor and doorframe protection
+- Basic furniture disassembly/reassembly
+- Loading, transport, and unloading
+- Professional-grade moving equipment
 
-### NO Hidden Fees Policy
-The quote is the quote. No surprises on move day.
+**NOT INCLUDED:**
+- Packing materials (boxes, tape, bubble wrap)
+- Long-term storage
+- Packing services (available as add-on)
 
 ---
 
 ## SECTION 5: FEES & DISCOUNTS
 
-### Additional Fees
-| Fee Type | Amount | When Applied |
-|----------|--------|--------------|
-| Electronic Payment | +$5 | Card/electronic payments |
+### Electronic Payment Fee: +$5
+Applied to all electronic payment methods (credit card, ACH)
 
-### Discounts & Flexibility
-| Discount Type | Amount | When Applied |
-|---------------|--------|--------------|
-| Negotiation Discount | $10 | If customer hesitates on booking |
-| Second Truck (close addresses) | $0 | If pickup/delivery are geographically close |
+### Negotiation Discount: $10/hour
+- Use ONLY after value framing (protection, speed, safety, professionalism)
+- Use when customer hesitates on booking
+- Maximum: $10/hour reduction
 
 ---
 
 ## SECTION 6: SERVICE AREAS
 
-### Denver Metropolitan Area
+**PRIMARY SERVICE AREA: Denver Metro**
 
-**Core Denver:**
-Denver, Aurora, Lakewood, Arvada, Westminster, Thornton, Centennial, Highlands Ranch
+**Coverage includes:**
+- Denver
+- Aurora
+- Lakewood
+- Arvada
+- Thornton
+- Westminster
+- Centennial
+- Littleton
+- Englewood
+- Highlands Ranch
+- Parker
+- Castle Rock
+- Boulder (extended area)
 
-**North Metro:**
-Boulder, Longmont, Broomfield, Louisville, Lafayette, Erie, Frederick, Firestone
-
-**South Metro:**
-Littleton, Englewood, Parker, Castle Rock, Lone Tree, Greenwood Village
-
-**East Metro:**
-Commerce City, Brighton, Northglenn, Federal Heights
-
-**West Metro:**
-Golden, Wheat Ridge, Edgewater, Morrison, Evergreen
-
-### Distance Zones
-| Zone | Distance | Additional Fee |
-|------|----------|----------------|
-| Zone 1 | 0-15 miles | No extra charge |
-| Zone 2 | 15-30 miles | $50 |
-| Zone 3 | 30-50 miles | $100 |
-| Zone 4 | 50+ miles | Custom quote |
+**Local considerations:**
+- Snow/ice season planning
+- Apartment building parking and elevator coordination
+- Mountain foothills/steep driveways
+- Tight parking and narrow streets
 
 ---
 
 ## SECTION 7: JACK AI SCRIPTS
 
-### Probing for Heavy Items
+### DISCOVERY SCRIPT (90 seconds)
 
-**Standard Probe:**
-> "Do you happen to know the approximate weight? Or was it something that took a few people to move in originally?"
+**Confirm basics:**
+- "Where are we moving from and to — just city/area is fine?"
+- "What size place — apartment, townhouse, house?"
+- "Any stairs or elevator on either end?"
+- "Do you need the truck or labor only?"
 
-### Explaining the Iron Law
+**Inventory checkpoints:**
+- "Any oversized or heavy items — safe, piano, pool table, or anything that took multiple people to move?"
 
-**When 200lb Item is Identified:**
-> "For items over 200 pounds, we always bring a 3-mover crew with our heavy-duty equipment - it's our safety standard. That means the rate adjusts to $179/hour, but it ensures your item and floors stay protected."
+**Rate + configuration:**
+- "Based on that, the best fit is [X] movers + truck at $[XXX]/hr."
+- If heavy: "If that item is around 200+ pounds, our Iron Law applies: 3 movers minimum at $179/hr for the heavy-item safety setup."
 
-### Handling Uncertainty
+**Close:**
+- "Want me to lock in a quote number and email it to you so you've got it in writing?"
+- If hesitation: value → then $10 discount
 
-**When Customer Doesn't Know Weight:**
-> "No worries - we'll confirm the details and if it turns out to be under 200 pounds, we'll adjust accordingly. Better to be prepared!"
+### OBJECTION HANDLING
 
-### Quote Adjustment Script
+**"Why so expensive?"**
+```
+"Totally fair question. The rate mainly comes from crew size, 
+truck, and making sure we protect your floors and furniture. 
+With the right crew, the job is faster and safer — that usually 
+saves money versus under-crewing and risking damage."
+```
 
-**Full Example:**
-> "I noticed you mentioned a gun safe. Just to make sure we're set up for success - do you know approximately how much it weighs? ... Okay, for items over 200 pounds, we bring a 3-person crew with our heavy-duty equipment. That adjusts the hourly rate to $179, but it means your safe is moved safely and your floors stay protected. Does that work for you?"
+**"Can we do 2 movers with a safe?"**
+```
+"I can't recommend it. For anything around 200 pounds, we follow 
+our Iron Law: 3 movers minimum. That's to protect your home and 
+the item — and to avoid injuries."
+```
+
+**"Competitor offered cheaper"**
+```
+"Cheaper can look good upfront. The difference is: we set the 
+crew correctly, plan access/parking, and keep it clean and 
+documented. I'll send you a quote number so everything is 
+clear — no surprises."
+```
 
 ---
 
 ## SECTION 8: QUICK REFERENCE CARD
 
+### COLORADO RATES (Feb 2026)
+
+**LABOR ONLY:**
+- 2 Movers: $139/hr
+- 3 Movers: $169/hr
+- 4 Movers: $239/hr
+
+**WITH TRUCK:**
+- 2 Movers + Truck: $159/hr ⭐ Most Popular
+- 3 Movers + Truck: $189/hr
+- 3 Movers + 2 Trucks: $209/hr
+- 4 Movers + Truck: $259/hr
+
+**HEAVY ITEMS:**
+- Context-based: $169/hr
+- 200+ lbs (Iron Law): $179/hr (3 movers min)
+
+**FEES:**
+- Electronic payment: +$5
+- Negotiation discount: $10 (after value framing)
+
+### 200LB IRON LAW TRIGGERS:
+✅ Piano (any type)
+✅ Pool table
+✅ Safe (200+ lbs)
+✅ Hot tub
+✅ Commercial gym equipment
+✅ "Super heavy" items
+
+**REQUIREMENTS:**
+- 3 movers minimum
+- Truck included
+- $179/hour rate
+- NO EXCEPTIONS
+
+---
+
+## SECTION 9: QUOTE NUMBER POLICY
+
+**Every customer receives a Quote Number by email.**
+
+**Jack must always say:**
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  HANDLEDLY QUICK REFERENCE - FEBRUARY 2026                      │
-├─────────────────────────────────────────────────────────────────┤
-│  RATES:                                                         │
-│  • Labor 2 movers = $139/hr                                    │
-│  • 2 movers + truck = $159/hr ⭐                                │
-│  • Labor 3 movers = $169/hr                                    │
-│  • 3 movers + truck = $189/hr                                  │
-│  • 3 movers + 2 trucks = $209/hr                               │
-│  • Labor 4 movers = $239/hr                                    │
-│  • 4 movers + truck = $259/hr                                  │
-│  • Heavy items (base) = $169/hr                                │
-│  • Iron Law rate = $179/hr (200+ lb items)                     │
-│  • Minimum: 2 hours                                            │
-├─────────────────────────────────────────────────────────────────┤
-│  200LB IRON LAW:                                                │
-│  Items over 200 lbs = MUST use 3+ movers @ $179/hr             │
-│  Examples: Pianos, safes, pool tables, hot tubs, gym equipment │
-├─────────────────────────────────────────────────────────────────┤
-│  SPECIALTY FEES:                                                │
-│  • Piano (upright): $150                                       │
-│  • Piano (baby grand): $250                                    │
-│  • Piano (grand): $350                                         │
-│  • Gun Safe (<200 lbs): $100                                   │
-│  • Gun Safe (200-500 lbs): $175                                │
-│  • Gun Safe (500+ lbs): $250                                   │
-│  • Pool table (move): $350                                     │
-│  • Pool table (full): $550                                     │
-│  • Hot tub: $400                                               │
-├─────────────────────────────────────────────────────────────────┤
-│  FEES:                                                          │
-│  • Electronic payment: +$5                                     │
-│  • Negotiation discount: $10 (if customer hesitates)           │
-├─────────────────────────────────────────────────────────────────┤
-│  CONTACT:                                                       │
-│  • Phone: (878) 218-7397                                       │
-│  • Denver: (719) 920-3282                                      │
-│  • Email: hello@handledly.com                                  │
-│  • Hours: Mon-Fri 7a-8p, Sat 7a-6p, Sun 8a-5p                 │
-└─────────────────────────────────────────────────────────────────┘
+"Your quote number will be in the email subject — keep it as your reference."
 ```
+
+**Email template:**
+```
+Subject: Your Handledly Quote #HD-XXXXX
+```
+
+**If customer calls back:**
+1. Ask for quote number
+2. Pull details
+3. Confirm move constraints
+4. Re-confirm rates and Iron Law if applicable
+
+---
+
+## SECTION 10: COLORADO-SPECIFIC TONE & LANGUAGE
+
+### Goal: 
+Sound like a real Denver metro moving coordinator: confident, calm, efficient, respectful.
+
+### Local phrasing (natural, not cringe):
+- "Denver metro" / "around the Front Range"
+- "quick run across town"
+- "tight parking / narrow street"
+- "stairs / long carry"
+- "weather can flip fast — we plan for it"
+- "We'll protect floors, door frames, and corners"
+
+### Style rules:
+- Short sentences
+- Repeat critical numbers once: crew + rate + quote number
+- Confirm constraints: parking, stairs, elevator, long carry, heavy items
+
+### Colorado-specific considerations:
+- **Snow/ice season**: "If sidewalks or driveways are icy, we'll move carefully — safety first."
+- **Apartment buildings**: "Parking and elevator timing can affect efficiency — we plan it upfront."
+- **Mountain foothills**: "If access is steep/tight, we'll plan truck positioning and carry distance."
+
+### Trust lines:
+- "We do this every day in Denver metro — we'll keep it smooth."
+- "I'll send a clear quote with your reference number so everything is documented."
 
 ---
 
 ## CHANGE LOG
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 3.0 | February 2026 | Updated to 200lb Iron Law (was 300lb), new pricing structure |
-| 2.0 | January 2026 | Initial production release |
+### v3.0 (February 2026)
+- Updated to **200lb Iron Law** (from 300lb)
+- New pricing structure implemented
+- Added comprehensive scripts and objection handling
+- Enhanced Colorado-specific language and considerations
+- Standardized quote numbering system
+
+### v2.0 (January 2026)
+- Initial production release
+- Basic pricing structure
+- 300lb rule implementation
 
 ---
 
-*This document is the authoritative source for all Handledly pricing and policies.*
-*All systems must be updated when this document changes.*
+## IMPLEMENTATION CHECKLIST
+
+- [ ] Frontend: quoteCalculator.ts updated to 200lb threshold
+- [ ] Frontend: PricingDisplay.tsx updated to 200lb threshold
+- [ ] Frontend: Services.tsx updated with $139/hr starting rate
+- [ ] Backend: AI chat edge function references this document
+- [ ] Backend: Email templates reference correct rates
+- [ ] Knowledge Base: jack-knowledge-base.md fully aligned
+- [ ] Testing: All pricing displays show correct rates
+- [ ] Testing: AI responses use 200lb Iron Law correctly
+- [ ] Testing: Quote calculator applies $179/hr for 200+ lb items
+
+---
+
+**END OF MASTER PRICING & IRON LAW REFERENCE**

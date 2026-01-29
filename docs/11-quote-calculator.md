@@ -455,9 +455,9 @@ const quote = calculateQuote({
 // In send-quote-email edge function
 const laborCost = data.hourlyRate * data.estimatedHours;
 // Display in email:
-// "Labor (4 hrs × $149): $596"
+// "Labor (4 hrs × $159): $636"
 ```
 
 ---
 
-*Last Updated: January 25, 2026*
+*Last Updated: January 29, 2026*
