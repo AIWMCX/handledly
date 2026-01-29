@@ -27,42 +27,17 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Search, Filter, Eye, Phone, Mail, Download, RefreshCw } from 'lucide-react';
+import { Search, Filter, Eye, Phone, Mail, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { usePaginatedLeads } from '@/hooks/usePaginatedQuery';
 import PaginationControls from '@/components/admin/PaginationControls';
-
-// CSV Export utility
-const exportToCSV = (data: any[], filename: string) => {
-  if (!data.length) return;
-  
-  const headers = ['Name', 'Email', 'Phone', 'Move Date', 'Quote', 'Status', 'Lead Source', 'Created At'];
-  const rows = data.map(lead => [
-    lead.full_name,
-    lead.email,
-    lead.phone,
-    lead.move_date || '',
-    lead.estimated_quote || '',
-    lead.status,
-    lead.lead_source || 'website',
-    format(new Date(lead.created_at), 'yyyy-MM-dd HH:mm'),
-  ]);
-  
-  const csvContent = [headers, ...rows]
-    .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-    .join('\n');
-  
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `${filename}_${format(new Date(), 'yyyy-MM-dd')}.csv`;
-  link.click();
-  toast.success('CSV exported successfully');
-};
+import ExportDropdown from '@/components/admin/ExportDropdown';
+import { useDataExport } from '@/hooks/useDataExport';
 
 const Leads = () => {
+  const { exportLeads, isExporting } = useDataExport();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedLead, setSelectedLead] = useState<any>(null);
@@ -158,15 +133,13 @@ const Leads = () => {
           >
             <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
           </Button>
-          <Button
-            variant="outline"
-            onClick={() => exportToCSV(filteredLeads || [], 'leads')}
-            disabled={!filteredLeads?.length}
-            className="gap-2"
-          >
-            <Download className="h-4 w-4" />
-            Export
-          </Button>
+          <ExportDropdown
+            onExportCSV={() => exportLeads('csv', { status: statusFilter })}
+            onExportJSON={() => exportLeads('json', { status: statusFilter })}
+            onExportTXT={() => exportLeads('txt', { status: statusFilter })}
+            isExporting={isExporting}
+            label="Export"
+          />
         </div>
       </div>
 

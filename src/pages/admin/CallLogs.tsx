@@ -31,8 +31,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { usePaginatedCallLogs } from '@/hooks/usePaginatedQuery';
 import PaginationControls from '@/components/admin/PaginationControls';
+import ExportDropdown from '@/components/admin/ExportDropdown';
+import { useDataExport } from '@/hooks/useDataExport';
 
 const CallLogs = () => {
+  const { exportCallLogs, isExporting } = useDataExport();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedLead, setSelectedLead] = useState<any>(null);
@@ -103,6 +106,13 @@ const CallLogs = () => {
               <SelectItem value="calling">In Progress</SelectItem>
             </SelectContent>
           </Select>
+          <ExportDropdown
+            onExportCSV={() => exportCallLogs('csv', { status: statusFilter })}
+            onExportJSON={() => exportCallLogs('json', { status: statusFilter })}
+            onExportTXT={() => exportCallLogs('txt', { status: statusFilter })}
+            isExporting={isExporting}
+            label="Export"
+          />
           <Button
             variant="ghost"
             size="icon"

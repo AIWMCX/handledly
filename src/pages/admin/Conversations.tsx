@@ -26,8 +26,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { usePaginatedConversations } from '@/hooks/usePaginatedQuery';
 import PaginationControls from '@/components/admin/PaginationControls';
+import ExportDropdown from '@/components/admin/ExportDropdown';
+import { useDataExport } from '@/hooks/useDataExport';
 
 const Conversations = () => {
+  const { exportConversations, isExporting } = useDataExport();
   const [search, setSearch] = useState('');
   const [selectedConversation, setSelectedConversation] = useState<any>(null);
 
@@ -97,6 +100,12 @@ const Conversations = () => {
           >
             <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
           </Button>
+          <ExportDropdown
+            onExportCSV={() => exportConversations('csv')}
+            onExportJSON={() => exportConversations('json')}
+            isExporting={isExporting}
+            label="Export"
+          />
         </div>
       </div>
 

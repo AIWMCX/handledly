@@ -16,6 +16,8 @@ import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import ExportDropdown from "@/components/admin/ExportDropdown";
+import { useDataExport } from "@/hooks/useDataExport";
 import {
   DollarSign,
   AlertTriangle,
@@ -90,6 +92,7 @@ interface HoneypotDetection {
 }
 
 export default function CostMonitoring() {
+  const { exportCostData, isExporting } = useDataExport();
   const queryClient = useQueryClient();
   const [selectedPeriod, setSelectedPeriod] = useState<"7" | "14" | "30">("7");
 
@@ -230,16 +233,24 @@ export default function CostMonitoring() {
               Monitor AI costs, circuit breakers, and abuse detection
             </p>
           </div>
-          <Button
-            variant="outline"
-            onClick={() => {
-              queryClient.invalidateQueries({ queryKey: ["circuit-breakers"] });
-              queryClient.invalidateQueries({ queryKey: ["cost-summary"] });
-            }}
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                queryClient.invalidateQueries({ queryKey: ["circuit-breakers"] });
+                queryClient.invalidateQueries({ queryKey: ["cost-summary"] });
+              }}
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </Button>
+            <ExportDropdown
+              onExportCSV={() => exportCostData('csv')}
+              onExportJSON={() => exportCostData('json')}
+              isExporting={isExporting}
+              label="Export"
+            />
+          </div>
         </div>
 
         {/* Summary Cards */}
