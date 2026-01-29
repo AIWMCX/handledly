@@ -123,20 +123,40 @@ function formatToE164(phone: string): string {
   return `+${digits}`;
 }
 
+// Valid US area codes cannot start with 0 or 1, and specific patterns are invalid
+// These patterns often result from truncated international numbers
+const INVALID_AREA_CODE_PATTERNS = [
+  '0', '1',     // Area codes never start with 0 or 1
+  '37', '38',   // Unassigned
+  '44', '49',   // These look like truncated UK (+44) or Germany (+49) numbers
+  '91',         // Looks like truncated India (+91)
+  '86',         // Looks like truncated China (+86)
+];
+
 // Validate US phone number before calling - blocks international numbers
 function isValidUSPhoneForCall(phone: string): boolean {
   const digits = phone.replace(/\D/g, '');
   
   // Must be exactly 10 digits (US local) or 11 starting with 1
+  let areaCode: string;
+  
   if (digits.length === 10) {
-    // Area code cannot start with 0 or 1
-    return digits[0] !== '0' && digits[0] !== '1';
+    areaCode = digits.substring(0, 3);
+  } else if (digits.length === 11 && digits.startsWith('1')) {
+    areaCode = digits.substring(1, 4);
+  } else {
+    return false;
   }
-  if (digits.length === 11 && digits.startsWith('1')) {
-    // Area code (second digit) cannot be 0 or 1
-    return digits[1] !== '0' && digits[1] !== '1';
+  
+  // Check against invalid area code patterns
+  for (const pattern of INVALID_AREA_CODE_PATTERNS) {
+    if (areaCode.startsWith(pattern)) {
+      console.log(`[trigger-confirmation-call] Rejected area code ${areaCode} - matches invalid pattern ${pattern}`);
+      return false;
+    }
   }
-  return false;
+  
+  return true;
 }
 
 // SMS fallback when call fails - ensures customer always gets confirmation

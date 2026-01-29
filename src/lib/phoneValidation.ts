@@ -113,12 +113,59 @@ export function getPhoneDisplayFormat(phone: string): string {
  * Auto-format phone input as user types
  * Returns formatted string for display
  */
+/**
+ * Check if raw input looks like an international number (before stripping)
+ * Returns true if the input appears to be international
+ */
+export function looksLikeInternationalNumber(value: string): boolean {
+  const trimmed = value.trim();
+  
+  // Check for blocked country prefixes first
+  for (const prefix of BLOCKED_COUNTRY_PREFIXES) {
+    if (trimmed.startsWith(prefix)) {
+      return true;
+    }
+  }
+  
+  // Check for + followed by non-1 digit (international)
+  if (trimmed.startsWith('+') && trimmed.length > 1) {
+    const afterPlus = trimmed.charAt(1);
+    if (afterPlus !== '1' && /\d/.test(afterPlus)) {
+      return true;
+    }
+  }
+  
+  // Check for 00 prefix (international dialing)
+  if (trimmed.startsWith('00')) {
+    return true;
+  }
+  
+  return false;
+}
+
+/**
+ * Auto-format phone input as user types
+ * Returns formatted string for display
+ * BLOCKS international numbers before formatting
+ */
 export function formatPhoneInput(value: string): string {
+  // CRITICAL: Check for international prefixes BEFORE stripping non-digits
+  if (looksLikeInternationalNumber(value)) {
+    // Return empty to block international input
+    return '';
+  }
+  
   // Strip non-digits
   const digits = value.replace(/\D/g, '');
   
-  // Limit to 10 digits (ignore country code during input)
-  const limited = digits.slice(0, 10);
+  // If starts with 1, treat as US country code and strip it
+  let normalized = digits;
+  if (digits.startsWith('1') && digits.length > 10) {
+    normalized = digits.slice(1);
+  }
+  
+  // Limit to 10 digits
+  const limited = normalized.slice(0, 10);
   
   // Format progressively
   if (limited.length === 0) return '';

@@ -18,7 +18,7 @@ import { QuoteFormData, ServiceType, PropertyType } from '@/types/conversion';
 import { HoneypotField } from '@/components/forms/HoneypotField';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
-import { formatPhoneInput, validateUSPhone } from '@/lib/phoneValidation';
+import { formatPhoneInput, validateUSPhone, looksLikeInternationalNumber } from '@/lib/phoneValidation';
 
 // Parse date string as local date to avoid timezone offset issues
 const parseLocalDate = (dateString: string): Date | undefined => {
@@ -158,6 +158,14 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
 
   // Handle phone input with formatting and validation
   const handlePhoneChange = (value: string) => {
+    // CRITICAL: Check raw input for international prefixes BEFORE formatting
+    if (looksLikeInternationalNumber(value)) {
+      // Block international input and show immediate error
+      setPhoneError('We currently serve US customers only. Please enter a US phone number.');
+      // Don't update the form - keep previous value
+      return;
+    }
+    
     const formatted = formatPhoneInput(value);
     updateFormData({ phone: formatted });
     
