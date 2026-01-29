@@ -9,6 +9,7 @@ const AUTHORIZED_ADMIN_EMAILS: readonly string[] = [
   'nevulis22@gmail.com', 
   'saych.88@gmail.com',
   'beltovbogdan@gmail.com',
+  'shcherbakou.edu@gmail.com',
 ] as const;
 
 // Check if email is in the authorized whitelist (case-insensitive)
