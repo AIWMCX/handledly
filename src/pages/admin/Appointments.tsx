@@ -19,12 +19,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Calendar, Users, Clock, Truck } from 'lucide-react';
+import { Calendar, Users, Clock, Truck, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+import ExportDropdown from '@/components/admin/ExportDropdown';
+import { useDataExport } from '@/hooks/useDataExport';
 
 const Appointments = () => {
+  const { exportAppointments, isExporting } = useDataExport();
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const queryClient = useQueryClient();
 
@@ -81,18 +84,33 @@ const Appointments = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-bold text-foreground">Appointments</h1>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="scheduled">Scheduled</SelectItem>
-            <SelectItem value="confirmed">Confirmed</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex gap-2">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="scheduled">Scheduled</SelectItem>
+              <SelectItem value="confirmed">Confirmed</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => queryClient.invalidateQueries({ queryKey: ['admin-appointments'] })}
+          >
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+          <ExportDropdown
+            onExportCSV={() => exportAppointments('csv')}
+            onExportJSON={() => exportAppointments('json')}
+            isExporting={isExporting}
+            label="Export"
+          />
+        </div>
       </div>
 
       {/* Quick Stats */}

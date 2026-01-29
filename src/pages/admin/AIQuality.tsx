@@ -31,14 +31,18 @@ import {
   TrendingUp,
   Users,
   Bot,
-  User
+  User,
+  RefreshCw
 } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import ExportDropdown from '@/components/admin/ExportDropdown';
+import { useDataExport } from '@/hooks/useDataExport';
 
 const AIQuality = () => {
+  const { exportAIQualityReviews, isExporting } = useDataExport();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedConversation, setSelectedConversation] = useState<any>(null);
@@ -216,16 +220,31 @@ const AIQuality = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-bold text-foreground">AI Quality Monitoring</h1>
-        <Select value={reviewFilter} onValueChange={setReviewFilter}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Filter" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="unreviewed">Unreviewed</SelectItem>
-            <SelectItem value="all">All Conversations</SelectItem>
-            <SelectItem value="flagged">Reviewed</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex gap-2">
+          <Select value={reviewFilter} onValueChange={setReviewFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="unreviewed">Unreviewed</SelectItem>
+              <SelectItem value="all">All Conversations</SelectItem>
+              <SelectItem value="flagged">Reviewed</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => queryClient.invalidateQueries({ queryKey: ['ai-quality-conversations'] })}
+          >
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+          <ExportDropdown
+            onExportCSV={() => exportAIQualityReviews('csv')}
+            onExportJSON={() => exportAIQualityReviews('json')}
+            isExporting={isExporting}
+            label="Export"
+          />
+        </div>
       </div>
 
       {/* Metrics Cards */}
