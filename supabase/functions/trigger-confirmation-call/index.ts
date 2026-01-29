@@ -198,7 +198,7 @@ async function sendAdminNotification(
     minimumFractionDigits: 0,
   }).format(data.totalQuote);
 
-  const adminEmails = ['aiwmcsrm@gmail.com', 'hello@handled.com'];
+  const adminEmails = ['aiwmcsrm@gmail.com', 'hello@handledly.com'];
 
   const emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

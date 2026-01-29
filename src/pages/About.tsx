@@ -65,10 +65,10 @@ export default function About() {
   return (
     <div className="min-h-screen bg-background">
       <SEO 
-        title="About Handledly Moving Services - Denver's Trusted Moving Company Since 2010"
-        description="Learn about Denver's most trusted movers. 15+ years of experience, 10,000+ successful moves, and a commitment to excellence. Meet the team behind Handledly Moving Services."
+        title="About Handledly Moving Services - Denver's Professional Moving Team"
+        description="Denver's trusted moving team with professional crews and transparent pricing. Licensed, insured, and committed to excellence on every move."
         canonicalUrl="https://handledly.com/about"
-        keywords={['about Handledly Moving Services', 'Denver moving company', 'trusted movers Denver', 'moving company history']}
+        keywords={['about Handledly Moving Services', 'Denver moving company', 'trusted movers Denver', 'professional movers']}
       />
       
       <Header />
@@ -81,7 +81,7 @@ export default function About() {
             {/* Denver Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-6">
               <MapPin className="w-4 h-4 text-accent" />
-              <span className="text-sm font-medium text-accent">Serving Denver Since 2010</span>
+              <span className="text-sm font-medium text-accent">Denver's Professional Moving Team</span>
             </div>
             
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-semibold mb-6">
@@ -142,9 +142,9 @@ export default function About() {
                 <h3 className="font-heading text-xl font-semibold text-primary mb-6">Denver Moving Excellence</h3>
                 <AnimatedStats 
                   stats={[
-                    { value: 15, label: "Years in Denver", suffix: "+" },
-                    { value: 10, label: "Moves Completed", suffix: "K+" },
+                    { value: 4.9, label: "Google Rating", suffix: "/5" },
                     { value: 30, label: "Cities Served", suffix: "+" },
+                    { value: 0, label: "Hidden Fees", prefix: "$" },
                     { value: 97, label: "Satisfaction Rate", suffix: "%" },
                   ]}
                   className="grid grid-cols-2 gap-6"
@@ -161,7 +161,7 @@ export default function About() {
                   </div>
                   <div>
                     <p className="font-semibold text-primary">4.9 Rating</p>
-                    <p className="text-sm text-muted-foreground">500+ Reviews</p>
+                    <p className="text-sm text-muted-foreground">Customer Reviews</p>
                   </div>
                 </div>
               </div>
