@@ -365,39 +365,6 @@ const ExecutiveSummaryPDF = ({ data }: ExecutiveSummaryPDFProps) => {
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Investment Breakdown</Text>
-          <View style={styles.chartContainer}>
-            <PDFBarChart
-              data={investmentBreakdown}
-              width={515}
-              height={150}
-              horizontal
-            />
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Value Comparison</Text>
-          <View style={styles.comparisonBox}>
-            <View style={styles.comparisonRow}>
-              <Text style={styles.comparisonLabel}>WordPress Template</Text>
-              <Text style={styles.comparisonValue}>$500 - $2,000</Text>
-            </View>
-            <View style={styles.comparisonRow}>
-              <Text style={styles.comparisonLabel}>DIY Internal Build</Text>
-              <Text style={styles.comparisonValue}>$15,000+ (time cost)</Text>
-            </View>
-            <View style={styles.comparisonRow}>
-              <Text style={styles.comparisonLabel}>Custom Agency Build</Text>
-              <Text style={styles.comparisonValue}>$25,000 - $50,000</Text>
-            </View>
-            <View style={{ ...styles.comparisonRow, borderBottomWidth: 0, backgroundColor: '#E8F5E9', margin: -8, marginTop: 8, padding: 8, borderRadius: 4 }}>
-              <Text style={{ ...styles.comparisonLabel, fontWeight: 600, color: colors.success }}>Handledly Investment</Text>
-              <Text style={{ ...styles.comparisonValue, color: colors.success }}>$9,000 (Best Value)</Text>
-            </View>
-          </View>
-        </View>
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Confidential - Handledly Executive Summary</Text>
@@ -669,7 +636,7 @@ const ExecutiveSummaryPDF = ({ data }: ExecutiveSummaryPDFProps) => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Completed Deliverables</Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             {[
               'Full React Application',
               'AI Chat Integration',
@@ -684,9 +651,21 @@ const ExecutiveSummaryPDF = ({ data }: ExecutiveSummaryPDFProps) => {
               'SEO Optimization',
               'Mobile Responsive',
             ].map((item, index) => (
-              <View key={index} style={styles.checklistItem}>
-                <View style={styles.checkIcon} />
-                <Text style={styles.checklistText}>{item}</Text>
+              <View key={index} style={{ 
+                flexDirection: 'row', 
+                alignItems: 'center', 
+                width: '50%',
+                marginBottom: 10,
+                paddingRight: 8,
+              }}>
+                <View style={{ 
+                  width: 14, 
+                  height: 14, 
+                  borderRadius: 7, 
+                  backgroundColor: colors.success, 
+                  marginRight: 8,
+                }} />
+                <Text style={{ fontSize: 10, color: colors.dark }}>{item}</Text>
               </View>
             ))}
           </View>
