@@ -5,11 +5,10 @@ import { supabase } from '@/integrations/supabase/client';
 // SECURITY: Strict whitelist of authorized admin emails
 // Only these 3 accounts have access to admin panel, dashboards, and client portal
 const AUTHORIZED_ADMIN_EMAILS: readonly string[] = [
-  'aiwmcsrm@gmail.com',
-  'nevulis22@gmail.com', 
-  'saych.88@gmail.com',
-  'beltovbogdan@gmail.com',
   'shcherbakou.edu@gmail.com',
+  'saych.88@gmail.com',
+  'nevulis22@gmail.com',
+  'beltovbogdan@gmail.com',
 ] as const;
 
 // Check if email is in the authorized whitelist (case-insensitive)
