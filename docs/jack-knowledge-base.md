@@ -93,15 +93,32 @@ Capitol Hill, Cherry Creek, LoDo, Highlands, RiNo, Five Points, Washington Park,
 
 ---
 
-## SECTION 3: PRICING & SERVICES
+## SECTION 3: PRICING & SERVICES (Updated February 2026)
 
-### Hourly Rates by Crew Size
+### Hourly Rates by Service Type
 
+**Labor Only (No Truck):**
 | Crew Size | Hourly Rate | Best For |
 |-----------|-------------|----------|
-| 2 Movers | $149/hour | Studios, 1-bedroom apartments |
-| 3 Movers | $179/hour | 2-3 bedroom homes, heavy items |
-| 4 Movers | $209/hour | Large homes, 4+ bedrooms |
+| 2 Movers Labor | $139/hour | Loading/unloading help |
+| 3 Movers Labor | $169/hour | Larger jobs or 200+ lb items |
+| 4 Movers Labor | $239/hour | Large loading projects |
+
+**Moving with Truck:**
+| Crew Size | Hourly Rate | Best For |
+|-----------|-------------|----------|
+| 2 Movers + Truck | $159/hour | Studios, 1-2 BR (Most Popular) |
+| 3 Movers + Truck | $189/hour | 2-3 BR or heavy items |
+| 3 Movers + 2 Trucks | $209/hour | When more capacity needed |
+| 4 Movers + Truck | $259/hour | 3-4 BR homes |
+
+**Heavy Items:** $169/hour base rate (adjusts to $179/hour for 200+ lb items)
+
+### Important Pricing Notes
+
+- **Electronic Payment Fee**: +$5 for card/electronic payments
+- **Negotiation Flexibility**: $10 discount available if customer hesitates on booking
+- **Close Addresses**: If addresses are close, second truck can be provided without additional charge, or crew can make a second trip
 
 ### Minimum Hours
 
@@ -114,8 +131,9 @@ Capitol Hill, Cherry Creek, LoDo, Highlands, RiNo, Five Points, Washington Park,
 - Moving truck with fuel
 - Basic packing materials (blankets, shrink wrap, tape)
 - Furniture disassembly and reassembly
-- Floor and door protection
-- No hidden fees - the quote is the quote
+- NO hidden fees - the quote is the quote
+- NO stair or elevator fees
+- NO truck/fuel surcharges
 
 ### Service Types
 
@@ -132,25 +150,28 @@ Capitol Hill, Cherry Creek, LoDo, Highlands, RiNo, Five Points, Washington Park,
 **Same-Day Moving**
 - Available based on crew availability
 - Perfect for urgent moves
-- No premium pricing
+- Uses 3 Mover + Truck rate ($189/hour)
 
 **Labor-Only Help**
 - Loading/unloading rental trucks
 - In-home furniture moving
 - Rearranging rooms
+- Rates: $139 (2 movers), $169 (3 movers), $239 (4 movers)
 
 ### Specialty Items - Flat Fee Pricing
 
-| Item | Price | Crew Required |
-|------|-------|---------------|
-| Upright Piano | $150 | 2 movers |
-| Baby Grand Piano | $250 | 3 movers |
-| Grand Piano | $350 | 3-4 movers |
-| Gun Safe (under 300 lbs) | $100 | 2 movers |
-| Gun Safe (300-500 lbs) | $175 | 3 movers |
-| Gun Safe (500+ lbs) | $250 | 3-4 movers |
-| Pool Table (slate) | $300 | 3 movers |
-| Hot Tub | $400 | 4 movers |
+| Item | Price | Crew Required | Weight |
+|------|-------|---------------|--------|
+| Upright Piano | $150 | 3 movers | 400-500 lbs |
+| Baby Grand Piano | $250 | 3 movers | 500-600 lbs |
+| Grand Piano | $350 | 3-4 movers | 600-1200 lbs |
+| Gun Safe (under 200 lbs) | $100 | 2 movers | <200 lbs |
+| Gun Safe (200-500 lbs) | $175 | 3 movers | 200-500 lbs |
+| Gun Safe (500+ lbs) | $250 | 3-4 movers | 500+ lbs |
+| Pool Table (slate) | $300 | 3 movers | 700-1000 lbs |
+| Hot Tub | $400 | 4 movers | 400-800 lbs |
+
+**IMPORTANT**: All items 200+ lbs automatically trigger the Iron Law rate of $179/hour with 3+ movers.
 
 ### Distance Zones
 
@@ -161,61 +182,63 @@ Capitol Hill, Cherry Creek, LoDo, Highlands, RiNo, Five Points, Washington Park,
 | Zone 3 | 30-50 miles | $100 |
 | Zone 4 | 50+ miles | Custom quote |
 
-### Stair Fee
-
-- $50 per flight of stairs (each location)
-- Elevator buildings: No stair fee
-
 ---
 
-## SECTION 4: QUOTE LOGIC & 300LB RULE
+## SECTION 4: QUOTE LOGIC & 200LB IRON LAW (Updated February 2026)
 
-### CRITICAL: The 300-Pound Rule
+### ⚠️ CRITICAL: The 200-Pound IRON LAW
 
-**Any single item weighing over 300 pounds REQUIRES a minimum of 3 movers.**
+**Any single item weighing 200 pounds or more REQUIRES:**
+- Minimum 3 movers
+- Truck included
+- Rate adjustment to **$179/hour**
+- **NO EXCEPTIONS** - this is a non-negotiable safety and liability requirement
 
-This is a non-negotiable safety and liability requirement.
-
-### Items That Trigger 3-Mover Requirement
+### Items That ALWAYS Trigger the Iron Law (3+ Movers @ $179/hr)
 
 | Item | Typical Weight | Required Crew |
 |------|----------------|---------------|
-| Gun Safe (large) | 300-2000 lbs | 3-4 movers |
+| All Pianos (upright) | 400-500 lbs | 3 movers |
+| All Pianos (grand) | 600-1200 lbs | 3-4 movers |
+| All Pool Tables (slate) | 700-1000 lbs | 3 movers |
+| Gun Safe (200+ lbs) | 200-2000 lbs | 3-4 movers |
 | Commercial Safe | 500-5000 lbs | 3-4 movers |
-| Slate Pool Table | 700-1000 lbs | 3 movers |
 | Hot Tub | 400-800 lbs | 4 movers |
-| Grand Piano | 600-1200 lbs | 3-4 movers |
-| Large Armoire | 300-500 lbs | 3 movers |
+| Large Armoire | 200-500 lbs | 3 movers |
+| Commercial Gym Equipment | 200-800 lbs | 3-4 movers |
 
-### How to Handle 300lb Items on a Call
+### How to Handle 200lb Items on a Call
 
 **If customer mentions any of these items AND their quote shows only 2 movers:**
 
-1. **Acknowledge**: "I see you have a [item] on your move."
-2. **Explain**: "For safety and to protect your item, we require a 3-mover crew for anything over 300 pounds."
-3. **Recalculate**: "That would adjust your rate to $179 per hour instead of $149."
-4. **Reassure**: "This ensures we have the right equipment and manpower to handle it safely."
+1. **PROBE**: "Do you happen to know the approximate weight? Or was it something that took a few people to move in originally?"
+2. **EXPLAIN**: "For items over 200 pounds, we always bring a 3-mover crew with our heavy-duty equipment - it's our safety standard."
+3. **RECALCULATE**: "That means the rate adjusts to $179 per hour, but it ensures your item and floors stay protected."
+4. **REASSURE**: "If it turns out to be under 200 pounds, we'll adjust accordingly. Better to be prepared!"
 
 **Example Script:**
 
-> "I noticed your quote includes a gun safe. Just to make sure we're set up for success - do you know approximately how much it weighs? ... Okay, for safes over 300 pounds, we bring a 3-person crew with our heavy-duty equipment. That adjusts the hourly rate to $179, but it means your safe is moved safely and your floors stay protected. Does that work for you?"
+> "I noticed you mentioned a gun safe. Just to make sure we're set up for success - do you know approximately how much it weighs? ... Okay, for items over 200 pounds, we bring a 3-person crew with our heavy-duty equipment. That adjusts the hourly rate to $179, but it means your safe is moved safely and your floors stay protected. Does that work for you?"
 
-### Quote Adjustment Formula
+### Quote Adjustment Formula (Updated February 2026)
 
-**Original Quote (2 movers)**: `$149 × estimated_hours + specialty_fees + distance_fee`
+**Original Quote (2 movers + truck)**: `$159 × estimated_hours + specialty_fees + distance_fee`
 
-**Adjusted Quote (3 movers)**: `$179 × estimated_hours + specialty_fees + distance_fee`
+**Iron Law Adjusted Quote (3 movers + truck)**: `$179 × estimated_hours + specialty_fees + distance_fee`
 
-**Price Difference**: +$30/hour × estimated hours
+**Price Difference**: +$20/hour × estimated hours when upgrading from 2-mover to Iron Law rate
 
 ### Red Flags to Listen For
 
-When customers mention these, probe for weight:
+When customers mention these, ALWAYS probe for weight:
 - "It's a really big safe"
 - "My husband's gun collection"
 - "It took 4 guys to bring it in"
 - "The old movers wouldn't touch it"
 - "It's been in the basement for years"
+- "It's solid wood/marble/slate"
+- "It's a commercial-grade [anything]"
+- "It's antique/vintage [furniture]"
 
 ---
 
@@ -421,10 +444,10 @@ Walk through key points to verify accuracy:
 
 ## SECTION 8: FAQ DATABASE
 
-### Pricing & Payments
+### Pricing & Payments (Updated February 2026)
 
 **Q: Why is the hourly rate different from what I saw online?**
-> "Great question! The rate depends on crew size. Two movers are $149/hour, three are $179, and four are $209. Your quote is based on what you'll need for your specific move."
+> "Great question! The rate depends on the crew size and whether you need a truck. Labor only with 2 movers is $139/hour, 2 movers with truck is $159/hour, and 3 movers with truck is $189/hour. For heavy items over 200 pounds, we use our Iron Law rate of $179/hour with 3 movers - that's for safety."
 
 **Q: Are there any hidden fees?**
 > "Nope, no hidden fees with us. What you see in your quote is what you pay. The only thing that might change is if the move takes longer or shorter than estimated."
