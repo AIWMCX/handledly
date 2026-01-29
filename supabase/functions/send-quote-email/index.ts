@@ -90,16 +90,27 @@ const SPECIALTY_LABELS: Record<string, string> = {
   'motorcycle': 'Motorcycle',
 };
 
-// Retry logic for reliability
-async function sendEmailWithRetry(emailData: any, maxRetries = 3): Promise<any> {
+// Retry logic for reliability with rate limit handling
+async function sendEmailWithRetry(emailData: any, maxRetries = 4): Promise<any> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const result = await resend.emails.send(emailData);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`[send-quote-email] Attempt ${attempt} failed:`, error);
+      
+      // Check if it's a rate limit error (429)
+      const isRateLimit = error?.statusCode === 429 || 
+                          error?.name === 'rate_limit_exceeded' ||
+                          error?.message?.includes('rate limit');
+      
       if (attempt === maxRetries) throw error;
-      await new Promise(r => setTimeout(r, 1000 * attempt)); // Exponential backoff
+      
+      // Wait longer for rate limits (2-8 seconds), shorter for other errors
+      const baseDelay = isRateLimit ? 2000 : 1000;
+      const delay = baseDelay * attempt;
+      console.log(`[send-quote-email] Waiting ${delay}ms before retry...`);
+      await new Promise(r => setTimeout(r, delay));
     }
   }
 }
