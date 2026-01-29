@@ -16,17 +16,18 @@ interface InstantQuotePreviewProps {
   className?: string;
 }
 
+// Updated February 2026 - Aligned with quoteCalculator rates
 const SERVICE_BASE_RATES: Record<ServiceType, number> = {
-  'local-moving': 149,
-  'residential': 149,
+  'local-moving': 159,
+  'residential': 159,
   'long-distance': 199,
-  'same-day': 179,
-  'piano-moving': 249,
-  'pool-table': 299,
-  'safe-moving': 199,
-  'heavy-items': 179,
-  'junk-removal': 99,
-  'moving-help': 129,
+  'same-day': 189,
+  'piano-moving': 179, // Iron Law rate - 200+ lbs
+  'pool-table': 179,   // Iron Law rate - 200+ lbs
+  'safe-moving': 179,  // Iron Law rate - 200+ lbs
+  'heavy-items': 169,  // Base rate, upgrades to $179 for 200+ lbs
+  'junk-removal': 139,
+  'moving-help': 139,
 };
 
 const BEDROOM_HOURS: Record<number, number> = {

@@ -3,7 +3,7 @@
 
 export type ServiceType = 'local-moving' | 'heavy-items';
 export type LocalMovingSubType = 'apartment-condo' | 'house-townhouse' | 'labor-only' | 'same-day-local';
-export type HeavyItemsSubType = 'piano' | 'pool-table' | 'heavy-under-300' | 'heavy-over-300' | 'same-day-heavy';
+export type HeavyItemsSubType = 'piano' | 'pool-table' | 'heavy-under-200' | 'heavy-over-200' | 'same-day-heavy';
 
 export interface QuoteInput {
   serviceType: ServiceType;
@@ -27,23 +27,28 @@ export interface QuoteBreakdown {
   hasTruck: boolean;
 }
 
-// FLAT HOURLY RATES - Professional Pricing
+// FLAT HOURLY RATES - Professional Pricing (Updated February 2026)
 export const HOURLY_RATES = {
   // Labor Only (no truck)
-  'labor-2-movers': 129,
-  'labor-3-movers': 159,
-  'labor-4-movers': 229,
+  'labor-2-movers': 139,
+  'labor-3-movers': 169,
+  'labor-4-movers': 239,
   // Moving (with truck)
-  'moving-2-movers': 149,
-  'moving-3-movers': 179,
-  'moving-3-movers-2-trucks': 199,
-  'moving-4-movers': 249,
-  // Heavy Items
-  'heavy-items': 159,
+  'moving-2-movers': 159,
+  'moving-3-movers': 189,
+  'moving-3-movers-2-trucks': 209,
+  'moving-4-movers': 259,
+  // Heavy Items (by situation)
+  'heavy-items': 169,
+  // Iron Law Rate - 200+ lbs items REQUIRE 3 movers minimum at this rate
+  'iron-law-minimum': 179,
 } as const;
 
 // Electronic payment processing fee
 export const ELECTRONIC_PAYMENT_FEE = 5;
+
+// Negotiation flexibility - $10 discount if customer hesitates
+export const NEGOTIATION_DISCOUNT = 10;
 
 // Specialty item flat fees (for heavy/specialty items)
 const SPECIALTY_RATES: Record<string, number> = {
@@ -70,15 +75,21 @@ export const INCLUDED_WITH_EVERY_MOVE = [
   'Free basic packing supplies',
 ];
 
-// Crew configurations for local moving
+// 200LB IRON LAW - CRITICAL SAFETY REQUIREMENT
+// Any item 200+ lbs requires MINIMUM 3 movers at $179/hr - NO EXCEPTIONS
+export const IRON_LAW_WEIGHT_THRESHOLD = 200;
+export const IRON_LAW_MIN_CREW = 3;
+export const IRON_LAW_RATE = 179;
+
+// Crew configurations for local moving (Updated February 2026)
 export const CREW_CONFIGURATIONS = [
-  { value: 'labor-2-movers', label: 'Labor Only - 2 Movers', rate: 129, hasTruck: false, crew: 2, description: 'Loading/unloading help' },
-  { value: 'moving-2-movers', label: '2 Movers + Truck', rate: 149, hasTruck: true, crew: 2, description: 'Studios & 1-2 BR', popular: true },
-  { value: 'labor-3-movers', label: 'Labor Only - 3 Movers', rate: 159, hasTruck: false, crew: 3, description: 'Larger load/unload jobs' },
-  { value: 'moving-3-movers', label: '3 Movers + Truck', rate: 179, hasTruck: true, crew: 3, description: '2-3 BR apartments & small homes' },
-  { value: 'moving-3-movers-2-trucks', label: '3 Movers + 2 Trucks', rate: 199, hasTruck: true, crew: 3, description: 'When more capacity needed' },
-  { value: 'labor-4-movers', label: 'Labor Only - 4 Movers', rate: 229, hasTruck: false, crew: 4, description: 'Large loading projects' },
-  { value: 'moving-4-movers', label: '4 Movers + Truck', rate: 249, hasTruck: true, crew: 4, description: '3-4 BR homes' },
+  { value: 'labor-2-movers', label: 'Labor Only - 2 Movers', rate: 139, hasTruck: false, crew: 2, description: 'Loading/unloading help' },
+  { value: 'moving-2-movers', label: '2 Movers + Truck', rate: 159, hasTruck: true, crew: 2, description: 'Studios & 1-2 BR', popular: true },
+  { value: 'labor-3-movers', label: 'Labor Only - 3 Movers', rate: 169, hasTruck: false, crew: 3, description: 'Larger jobs or 200+ lb items' },
+  { value: 'moving-3-movers', label: '3 Movers + Truck', rate: 189, hasTruck: true, crew: 3, description: '2-3 BR or heavy items' },
+  { value: 'moving-3-movers-2-trucks', label: '3 Movers + 2 Trucks', rate: 209, hasTruck: true, crew: 3, description: 'When more capacity needed' },
+  { value: 'labor-4-movers', label: 'Labor Only - 4 Movers', rate: 239, hasTruck: false, crew: 4, description: 'Large loading projects' },
+  { value: 'moving-4-movers', label: '4 Movers + Truck', rate: 259, hasTruck: true, crew: 4, description: '3-4 BR homes' },
 ] as const;
 
 // Estimate crew size based on service and property
@@ -180,10 +191,10 @@ export const SERVICE_TYPES = [
     description: 'Pianos, pool tables, safes & oversized items',
     icon: 'weight',
     subTypes: [
-      { value: 'piano', label: 'Piano Moving', description: 'Upright and grand pianos' },
-      { value: 'pool-table', label: 'Pool Table Moving', description: 'Disassembly, move & reassembly' },
-      { value: 'heavy-under-300', label: 'Heavy Items (Under 300 lbs)', description: 'Appliances, large furniture, gym equipment' },
-      { value: 'heavy-over-300', label: 'Heavy Items (300+ lbs)', description: 'Safes, gun safes, hot tubs, commercial equipment' },
+      { value: 'piano', label: 'Piano Moving', description: 'Upright and grand pianos (200+ lbs = 3 movers)' },
+      { value: 'pool-table', label: 'Pool Table Moving', description: 'Disassembly, move & reassembly (3 movers required)' },
+      { value: 'heavy-under-200', label: 'Heavy Items (Under 200 lbs)', description: 'Appliances, large furniture, gym equipment' },
+      { value: 'heavy-over-200', label: 'Heavy Items (200+ lbs)', description: 'Safes, gun safes, hot tubs - IRON LAW: 3 movers @ $179/hr' },
       { value: 'same-day-heavy', label: 'Same-Day Heavy Items', description: 'Emergency heavy item moves' },
     ]
   },

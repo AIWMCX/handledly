@@ -77,15 +77,16 @@ const SERVICE_LABELS: Record<string, string> = {
   'moving-help': 'Moving Help / Labor Only',
 };
 
+// Updated February 2026 - 200lb Iron Law threshold
 const SPECIALTY_LABELS: Record<string, string> = {
-  'piano-upright': 'Upright Piano',
-  'piano-grand': 'Grand Piano',
-  'pool-table-move': 'Pool Table (Move Only)',
-  'pool-table-full': 'Pool Table (Full Service)',
-  'safe-small': 'Safe (Under 300lbs)',
-  'safe-large': 'Safe (300-800lbs)',
-  'safe-gun': 'Gun Safe',
-  'hot-tub': 'Hot Tub',
+  'piano-upright': 'Upright Piano (200+ lbs - 3 movers)',
+  'piano-grand': 'Grand Piano (200+ lbs - 3 movers)',
+  'pool-table-move': 'Pool Table (Move Only - 3 movers)',
+  'pool-table-full': 'Pool Table (Full Service - 3 movers)',
+  'safe-small': 'Safe (Under 200lbs)',
+  'safe-large': 'Safe (200+ lbs - 3 movers @ $179/hr)',
+  'safe-gun': 'Gun Safe (200+ lbs - 3 movers @ $179/hr)',
+  'hot-tub': 'Hot Tub (200+ lbs - 3 movers)',
   'gym-equipment': 'Gym Equipment',
   'motorcycle': 'Motorcycle',
 };
