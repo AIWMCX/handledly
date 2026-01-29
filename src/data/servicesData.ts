@@ -152,7 +152,7 @@ export const servicesData: Record<string, ServiceData> = {
     hasSameDay: true,
     // SEO
     metaTitle: 'Heavy Item Movers Denver - Pianos, Safes, Pool Tables | Handledly Moving Services',
-    metaDescription: 'Specialized heavy item moving in Denver. Safe transport for pianos, pool tables, safes, and 300+ lb items. Licensed and insured professionals. Free quotes!',
+    metaDescription: 'Specialized heavy item moving in Denver. Safe transport for pianos, pool tables, safes, and 200+ lb items. Licensed and insured professionals. Free quotes!',
     keywords: ['heavy item moving Denver', 'heavy furniture movers', 'oversized item moving', 'specialty movers Denver'],
   },
   'piano-moving': {
