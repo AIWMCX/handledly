@@ -1,23 +1,31 @@
 // Shared CORS utility for all edge functions
 // Restricts origins to production domains only
 
-const ALLOWED_ORIGINS = [
+const PRODUCTION_DOMAINS = [
   'https://handledly.com',
   'https://www.handledly.com',
-  'https://id-preview--c4ec72c4-17ec-431f-865b-98773c111e46.lovable.app',
-  'https://c4ec72c4-17ec-431f-865b-98773c111e46.lovableproject.com',
-  // Allow localhost for development
-  'http://localhost:5173',
-  'http://localhost:3000',
 ];
+
+// Dynamic origin validation for Lovable preview/project domains
+function isAllowedOrigin(origin: string): boolean {
+  if (PRODUCTION_DOMAINS.includes(origin)) return true;
+  // Match Lovable preview domains: https://*.lovable.app
+  if (/^https:\/\/[a-z0-9-]+--[a-z0-9-]+\.lovable\.app$/.test(origin)) return true;
+  // Match Lovable project domains: https://*.lovableproject.com
+  if (/^https:\/\/[a-z0-9-]+\.lovableproject\.com$/.test(origin)) return true;
+  return false;
+}
+
+// For backwards compatibility, export as array (used by some edge functions)
+const ALLOWED_ORIGINS = PRODUCTION_DOMAINS;
 
 export function getCorsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get('origin') || '';
   
-  // Check if origin is in allowed list
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) 
+  // Check if origin is allowed (production domains or Lovable preview/project domains)
+  const allowedOrigin = isAllowedOrigin(origin) 
     ? origin 
-    : ALLOWED_ORIGINS[0]; // Default to primary domain
+    : PRODUCTION_DOMAINS[0]; // Default to primary domain
   
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
@@ -33,4 +41,4 @@ export const webhookCorsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-export { ALLOWED_ORIGINS };
+export { ALLOWED_ORIGINS, PRODUCTION_DOMAINS, isAllowedOrigin };

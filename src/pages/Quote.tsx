@@ -340,6 +340,9 @@ const generateQuoteNumber = (): string => {
               <p className="text-center text-xs text-muted-foreground mt-6">
                 No obligation • Free estimate • Same-day response • Denver's trusted movers
               </p>
+              <p className="text-center text-xs text-muted-foreground/70 mt-2 max-w-md mx-auto">
+                *Estimates are based on information provided and may vary depending on actual move requirements. Quote valid for 7 days.
+              </p>
             </div>
           ) : (
             submittedData && (
