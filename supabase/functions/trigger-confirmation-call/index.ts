@@ -123,6 +123,22 @@ function formatToE164(phone: string): string {
   return `+${digits}`;
 }
 
+// Validate US phone number before calling - blocks international numbers
+function isValidUSPhoneForCall(phone: string): boolean {
+  const digits = phone.replace(/\D/g, '');
+  
+  // Must be exactly 10 digits (US local) or 11 starting with 1
+  if (digits.length === 10) {
+    // Area code cannot start with 0 or 1
+    return digits[0] !== '0' && digits[0] !== '1';
+  }
+  if (digits.length === 11 && digits.startsWith('1')) {
+    // Area code (second digit) cannot be 0 or 1
+    return digits[1] !== '0' && digits[1] !== '1';
+  }
+  return false;
+}
+
 // SMS fallback when call fails - ensures customer always gets confirmation
 async function sendSmsFallback(
   data: CallRequest,
@@ -273,6 +289,32 @@ async function sendAdminNotification(
 
 // The actual call triggering logic
 async function executeCall(data: CallRequest): Promise<void> {
+  // CRITICAL: Validate US phone number before making any API calls
+  if (!isValidUSPhoneForCall(data.phone)) {
+    console.warn(`[trigger-confirmation-call] Skipping call - non-US phone number detected: ${data.phone}`);
+    
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    // Update lead status to indicate skipped due to non-US number
+    await supabase
+      .from('leads')
+      .update({
+        confirmation_call_status: 'skipped',
+        call_notes: JSON.stringify({
+          skipped_at: new Date().toISOString(),
+          reason: 'non_us_phone_number',
+          phone: data.phone,
+          message: 'Call skipped - international/non-US phone number not supported',
+        }),
+      })
+      .eq('id', data.leadId);
+    
+    return;
+  }
+
   const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
   const ELEVENLABS_AGENT_ID = Deno.env.get('ELEVENLABS_AGENT_ID');
   const ELEVENLABS_PHONE_NUMBER_ID = Deno.env.get('ELEVENLABS_PHONE_NUMBER_ID');

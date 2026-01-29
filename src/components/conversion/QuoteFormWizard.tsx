@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
-import { Check, ArrowRight, ArrowLeft, Truck, MapPin, User, Sparkles, Clock, Shield, CalendarIcon, Home, BedDouble, Phone, Mail, Navigation, FileText } from 'lucide-react';
+import { Check, ArrowRight, ArrowLeft, Truck, MapPin, User, Sparkles, Clock, Shield, CalendarIcon, Home, BedDouble, Phone, Mail, Navigation, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,6 +18,7 @@ import { QuoteFormData, ServiceType, PropertyType } from '@/types/conversion';
 import { HoneypotField } from '@/components/forms/HoneypotField';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
+import { formatPhoneInput, validateUSPhone } from '@/lib/phoneValidation';
 
 // Parse date string as local date to avoid timezone offset issues
 const parseLocalDate = (dateString: string): Date | undefined => {
@@ -88,6 +89,7 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [stepStartTime, setStepStartTime] = useState(Date.now());
+  const [phoneError, setPhoneError] = useState<string | null>(null);
 
   // UTM tracking for marketing attribution
   const utmParams = useUTMParams();
@@ -144,12 +146,36 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
         return !!formData.serviceType;
       case 2:
         return !!(formData.moveFromAddress && formData.moveDate);
-      case 3:
-        return !!(formData.fullName && formData.phone && formData.email);
+      case 3: {
+        // Validate phone with US-only check
+        const phoneValidation = validateUSPhone(formData.phone);
+        return !!(formData.fullName && phoneValidation.valid && formData.email);
+      }
       default:
         return false;
     }
   };
+
+  // Handle phone input with formatting and validation
+  const handlePhoneChange = (value: string) => {
+    const formatted = formatPhoneInput(value);
+    updateFormData({ phone: formatted });
+    
+    // Validate and update error state
+    if (formatted.length > 0) {
+      const validation = validateUSPhone(formatted);
+      setPhoneError(validation.valid ? null : validation.error || null);
+    } else {
+      setPhoneError(null);
+    }
+  };
+
+  // Check if phone is valid for UI feedback
+  const phoneValidation = useMemo(() => {
+    if (!formData.phone) return { valid: false, showCheck: false };
+    const result = validateUSPhone(formData.phone);
+    return { ...result, showCheck: result.valid };
+  }, [formData.phone]);
 
   // Go to next step
   const nextStep = () => {
@@ -554,14 +580,37 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                     <Label htmlFor="phone" className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground/90">
                       <Phone className="w-4 h-4 text-accent" />
                       Phone Number <span className="text-accent">*</span>
+                      <span className="ml-auto text-xs font-normal text-muted-foreground">🇺🇸 US Only</span>
                     </Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="(303) 555-0123"
-                      value={formData.phone}
-                      onChange={(e) => updateFormData({ phone: e.target.value })}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="(303) 555-0123"
+                        value={formData.phone}
+                        onChange={(e) => handlePhoneChange(e.target.value)}
+                        className={cn(
+                          "pr-10",
+                          phoneError && "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20"
+                        )}
+                      />
+                      {/* Validation indicator */}
+                      {formData.phone && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          {phoneValidation.showCheck ? (
+                            <CheckCircle className="w-4 h-4 text-green-500" />
+                          ) : (
+                            <AlertCircle className="w-4 h-4 text-destructive" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {phoneError && (
+                      <p className="text-xs text-destructive flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {phoneError}
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid gap-2.5">
