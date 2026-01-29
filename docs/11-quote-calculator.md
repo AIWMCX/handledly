@@ -65,25 +65,27 @@ export interface QuoteBreakdown {
 
 | Configuration | Code | Rate | Includes Truck |
 |---------------|------|------|----------------|
-| 2 Movers (Labor Only) | `labor-2-movers` | $129/hr | No |
-| 3 Movers (Labor Only) | `labor-3-movers` | $159/hr | No |
-| 4 Movers (Labor Only) | `labor-4-movers` | $229/hr | No |
-| 2 Movers + Truck | `moving-2-movers` | $149/hr | Yes |
-| 3 Movers + Truck | `moving-3-movers` | $179/hr | Yes |
-| 3 Movers + 2 Trucks | `moving-3-movers-2-trucks` | $199/hr | Yes |
-| 4 Movers + Truck | `moving-4-movers` | $249/hr | Yes |
-| Heavy Items | `heavy-items` | $159/hr | Yes |
+| 2 Movers (Labor Only) | `labor-2-movers` | $139/hr | No |
+| 3 Movers (Labor Only) | `labor-3-movers` | $169/hr | No |
+| 4 Movers (Labor Only) | `labor-4-movers` | $239/hr | No |
+| 2 Movers + Truck | `moving-2-movers` | $159/hr | Yes |
+| 3 Movers + Truck | `moving-3-movers` | $189/hr | Yes |
+| 3 Movers + 2 Trucks | `moving-3-movers-2-trucks` | $209/hr | Yes |
+| 4 Movers + Truck | `moving-4-movers` | $259/hr | Yes |
+| Heavy Items | `heavy-items` | $169/hr | Yes |
+| Iron Law Rate | `iron-law-minimum` | $179/hr | Yes (200+ lb items) |
 
 ```typescript
 export const HOURLY_RATES = {
-  'labor-2-movers': 129,
-  'labor-3-movers': 159,
-  'labor-4-movers': 229,
-  'moving-2-movers': 149,
-  'moving-3-movers': 179,
-  'moving-3-movers-2-trucks': 199,
-  'moving-4-movers': 249,
-  'heavy-items': 159,
+  'labor-2-movers': 139,
+  'labor-3-movers': 169,
+  'labor-4-movers': 239,
+  'moving-2-movers': 159,
+  'moving-3-movers': 189,
+  'moving-3-movers-2-trucks': 209,
+  'moving-4-movers': 259,
+  'heavy-items': 169,
+  'iron-law-minimum': 179,
 } as const;
 ```
 
@@ -95,8 +97,8 @@ export const HOURLY_RATES = {
 | Grand Piano | `piano-grand` | $450 |
 | Pool Table (Move Only) | `pool-table-move` | $350 |
 | Pool Table (Full Service) | `pool-table-full` | $550 |
-| Safe (Under 300lbs) | `safe-small` | $150 |
-| Safe (300-800lbs) | `safe-large` | $300 |
+| Safe (Under 200lbs) | `safe-small` | $150 |
+| Safe (200-800lbs) | `safe-large` | $300 |
 | Gun Safe | `safe-gun` | $400 |
 | Hot Tub | `hot-tub` | $400 |
 | Gym Equipment | `gym-equipment` | $125 |
@@ -308,8 +310,8 @@ export const SERVICE_TYPES = [
     subTypes: [
       { value: 'piano', label: 'Piano Moving', description: '...' },
       { value: 'pool-table', label: 'Pool Table Moving', description: '...' },
-      { value: 'heavy-under-300', label: 'Heavy Items (Under 300 lbs)', description: '...' },
-      { value: 'heavy-over-300', label: 'Heavy Items (300+ lbs)', description: '...' },
+      { value: 'heavy-under-200', label: 'Heavy Items (Under 200 lbs)', description: '...' },
+      { value: 'heavy-over-200', label: 'Heavy Items (200+ lbs)', description: '...' },
       { value: 'same-day-heavy', label: 'Same-Day Heavy Items', description: '...' },
     ]
   },

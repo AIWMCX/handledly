@@ -137,8 +137,8 @@ export function PricingDisplay() {
                   {[
                     'Pianos (Upright & Grand)',
                     'Pool Tables',
-                    'Safes (Under 300 lbs)',
-                    'Safes (300+ lbs)',
+                    'Safes (Under 200 lbs)',
+                    'Safes (200+ lbs)',
                     'Appliances',
                     'Gym Equipment',
                     'Hot Tubs',

@@ -71,15 +71,15 @@ const heavyItemsServices: {
   },
   {
     icon: Dumbbell,
-    title: "Heavy Items (Under 300 lbs)",
+    title: "Heavy Items (Under 200 lbs)",
     description: "Appliances, large furniture, gym equipment, and other substantial items.",
     features: ["Appliances", "Large furniture", "Gym equipment"],
   },
   {
     icon: Shield,
-    title: "Heavy Items (300+ lbs)",
-    description: "Safes, gun safes, commercial equipment. Items that require specialized rigging.",
-    features: ["Safes & gun safes", "Commercial equipment", "Specialized rigging"],
+    title: "Heavy Items (200+ lbs)",
+    description: "Safes, gun safes, commercial equipment. IRON LAW: 3 movers @ $179/hr required.",
+    features: ["Safes & gun safes", "Commercial equipment", "Iron Law applies"],
   },
   {
     icon: Zap,
@@ -174,7 +174,7 @@ export default function Services() {
                 Same-Day Service Available
               </Badge>
               <Badge className="bg-primary/10 text-primary border-primary/30">
-                From $149/hr
+                From $139/hr
               </Badge>
             </div>
           </div>

@@ -54,7 +54,7 @@ interface ChatResponse {
 ### System Prompt Overview
 The AI (Jack) is configured as a Denver moving specialist with:
 - Company info (phone: 878-218-7397)
-- Pricing structure ($129-$249/hour based on crew)
+- Pricing structure ($139-$259/hour based on crew, Iron Law rate $179/hr for 200+ lb items)
 - Quote collection workflow (7 steps)
 - Quote estimation guide by bedroom count
 
