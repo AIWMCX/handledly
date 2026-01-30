@@ -111,8 +111,16 @@ When customer selects "Safe Moving" and submits quote:
 ## Verification Checklist
 
 After implementation:
+- [x] quoteCalculator.ts: Added isIronLawService() function
+- [x] quoteCalculator.ts: estimateCrewSize() returns 3 for Iron Law services
+- [x] quoteCalculator.ts: calculateQuote() uses $179/hr for Iron Law services
+- [x] Quote.tsx: Forces crewConfig='moving-3-movers' for Iron Law services
+- [x] QuoteFormWizard.tsx: Preview shows $179/hr and 3 movers for Iron Law services
+- [x] send-quote-email: Added Iron Law notice banner for heavy item quotes
+
+## Ready for E2E Testing:
 - [ ] Submit Safe Moving quote → Email shows 3 movers @ $179/hr
-- [ ] Submit Piano Moving quote → Email shows 3 movers @ $179/hr
+- [ ] Submit Piano Moving quote → Email shows 3 movers @ $179/hr  
 - [ ] Submit Pool Table quote → Email shows 3 movers @ $179/hr
 - [ ] Preview in wizard shows correct Iron Law rate
 - [ ] Email includes Iron Law safety notice

@@ -131,6 +131,32 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
     ? data.specialtyItems.map(item => SPECIALTY_LABELS[item] || item).join(', ')
     : 'None';
 
+  // IRON LAW: Detect if this service requires 3 movers @ $179/hr
+  const IRON_LAW_SERVICES = ['piano-moving', 'pool-table', 'safe-moving', 'heavy-items', 'piano', 'heavy-over-200'];
+  const isIronLawService = IRON_LAW_SERVICES.includes(data.serviceType);
+
+  // Iron Law Notice HTML (only shown for 200+ lb item services)
+  const ironLawNotice = isIronLawService ? `
+              <!-- Iron Law Safety Notice -->
+              <div style="margin-bottom: 25px; padding: 16px 20px; background: linear-gradient(135deg, #1C1917 0%, #292524 100%); border-radius: 10px; border: 2px solid #D4AF37;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td width="40" style="vertical-align: top;">
+                      <span style="font-size: 28px;">⚠️</span>
+                    </td>
+                    <td style="padding-left: 10px;">
+                      <p style="margin: 0 0 5px; font-size: 14px; font-weight: 700; color: #D4AF37; text-transform: uppercase; letter-spacing: 1px;">
+                        200LB IRON LAW — SAFETY REQUIREMENT
+                      </p>
+                      <p style="margin: 0; font-size: 13px; color: #A8A29E; line-height: 1.5;">
+                        Items 200+ lbs require a <strong style="color: #FAFAF9;">3-mover crew</strong> at our <strong style="color: #FAFAF9;">$179/hr</strong> safety rate. This protects both your belongings and our team. Your quote reflects this requirement.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+  ` : '';
+
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -176,6 +202,8 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                 </p>
               </div>
               ` : ''}
+              
+              ${ironLawNotice}
               
               <!-- Personal Greeting with Appreciation -->
               <p style="margin: 0 0 10px; font-size: 20px; color: #FAFAF9; font-weight: 600;">
