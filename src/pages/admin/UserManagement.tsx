@@ -9,14 +9,23 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, ShieldOff, UserPlus, Search, Loader2, Users, ShieldCheck, Clock } from 'lucide-react';
+import { Shield, ShieldOff, UserPlus, Search, Loader2, Users, ShieldCheck, Clock, UserCheck, UserX } from 'lucide-react';
 import { format } from 'date-fns';
 
-interface UserRole {
-  id: string;
+// Authorized admin emails whitelist - must match AuthContext.tsx
+const AUTHORIZED_ADMIN_EMAILS = [
+  'shcherbakou.edu@gmail.com',
+  'saych.88@gmail.com',
+  'nevulis22@gmail.com',
+  'beltovbogdan@gmail.com',
+] as const;
+
+interface AdminUser {
+  role_id: string;
   user_id: string;
-  role: 'admin' | 'user';
-  created_at: string;
+  email: string;
+  role: string;
+  role_created_at: string;
 }
 
 const UserManagement = () => {
@@ -25,20 +34,14 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [newAdminEmail, setNewAdminEmail] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch all admin users
+  // Fetch all admin users with emails using the new security definer function
   const { data: adminUsers, isLoading: isLoadingUsers } = useQuery({
-    queryKey: ['admin-users'],
+    queryKey: ['admin-users-with-email'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('*')
-        .eq('role', 'admin')
-        .order('created_at', { ascending: false });
-
+      const { data, error } = await supabase.rpc('get_admin_users_with_email');
       if (error) throw error;
-      return data as UserRole[];
+      return data as AdminUser[];
     },
   });
 
@@ -65,7 +68,7 @@ const UserManagement = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-users-with-email'] });
       setNewAdminEmail('');
       setIsAddDialogOpen(false);
       toast({
@@ -94,7 +97,7 @@ const UserManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-users-with-email'] });
       toast({
         title: 'Admin Removed',
         description: 'Admin access has been revoked.',
@@ -121,14 +124,22 @@ const UserManagement = () => {
     addAdminMutation.mutate(newAdminEmail.trim().toLowerCase());
   };
 
+  // Filter users by email
   const filteredUsers = adminUsers?.filter(user => 
-    user.user_id.toLowerCase().includes(searchTerm.toLowerCase())
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
+
+  // Get emails that are whitelisted but don't have accounts/roles yet
+  const activeAdminEmails = adminUsers?.map(u => u.email.toLowerCase()) || [];
+  const pendingWhitelistEmails = AUTHORIZED_ADMIN_EMAILS.filter(
+    email => !activeAdminEmails.includes(email.toLowerCase())
+  );
 
   const stats = {
     totalAdmins: adminUsers?.length || 0,
+    pendingSignups: pendingWhitelistEmails.length,
     recentlyAdded: adminUsers?.filter(u => {
-      const addedDate = new Date(u.created_at);
+      const addedDate = new Date(u.role_created_at);
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
       return addedDate > weekAgo;
@@ -144,15 +155,25 @@ const UserManagement = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Admins</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Active Admins</CardTitle>
+            <UserCheck className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalAdmins}</div>
-            <p className="text-xs text-muted-foreground">Active admin users</p>
+            <p className="text-xs text-muted-foreground">With database role</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Pending Signup</CardTitle>
+            <UserX className="h-4 w-4 text-amber-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-amber-600">{stats.pendingSignups}</div>
+            <p className="text-xs text-muted-foreground">Whitelisted, no account</p>
           </CardContent>
         </Card>
         <Card>
@@ -172,10 +193,34 @@ const UserManagement = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">Secure</div>
-            <p className="text-xs text-muted-foreground">Role-based access active</p>
+            <p className="text-xs text-muted-foreground">Dual-layer auth</p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Pending Signups Alert */}
+      {pendingWhitelistEmails.length > 0 && (
+        <Card className="border-amber-200 bg-amber-50/50 dark:border-amber-800 dark:bg-amber-950/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium flex items-center gap-2 text-amber-700 dark:text-amber-400">
+              <UserX className="h-4 w-4" />
+              Pending Admin Signups
+            </CardTitle>
+            <CardDescription className="text-amber-600 dark:text-amber-500">
+              These emails are whitelisted but haven't created accounts yet
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {pendingWhitelistEmails.map(email => (
+                <Badge key={email} variant="outline" className="bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700">
+                  {email}
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Main Content */}
       <Card>
@@ -232,7 +277,7 @@ const UserManagement = () => {
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by user ID..."
+                placeholder="Search by email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9"
@@ -258,61 +303,78 @@ const UserManagement = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>User ID</TableHead>
+                    <TableHead>Email</TableHead>
                     <TableHead>Role</TableHead>
+                    <TableHead>Whitelisted</TableHead>
                     <TableHead>Added On</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-mono text-sm">
-                        {user.user_id.slice(0, 8)}...{user.user_id.slice(-4)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="default" className="bg-primary/10 text-primary hover:bg-primary/20">
-                          <Shield className="h-3 w-3 mr-1" />
-                          {user.role}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {format(new Date(user.created_at), 'MMM d, yyyy')}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                            >
-                              <ShieldOff className="h-4 w-4 mr-1" />
-                              Remove
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Remove Admin Access?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This will revoke admin privileges for this user. They will no longer
-                                be able to access the admin panel.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => removeAdminMutation.mutate(user.user_id)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  {filteredUsers.map((user) => {
+                    const isWhitelisted = AUTHORIZED_ADMIN_EMAILS.includes(user.email.toLowerCase() as typeof AUTHORIZED_ADMIN_EMAILS[number]);
+                    return (
+                      <TableRow key={user.role_id}>
+                        <TableCell className="font-medium">
+                          {user.email}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="default" className="bg-primary/10 text-primary hover:bg-primary/20">
+                            <Shield className="h-3 w-3 mr-1" />
+                            {user.role}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {isWhitelisted ? (
+                            <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700">
+                              <ShieldCheck className="h-3 w-3 mr-1" />
+                              Yes
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="bg-red-100 text-red-700 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700">
+                              <ShieldOff className="h-3 w-3 mr-1" />
+                              No
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {format(new Date(user.role_created_at), 'MMM d, yyyy')}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
                               >
-                                Remove Access
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                                <ShieldOff className="h-4 w-4 mr-1" />
+                                Remove
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Remove Admin Access?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will revoke admin privileges for <strong>{user.email}</strong>. They will no longer
+                                  be able to access the admin panel.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => removeAdminMutation.mutate(user.user_id)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Remove Access
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
