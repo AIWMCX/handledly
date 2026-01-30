@@ -1,47 +1,120 @@
-# Plan Completed ✅
 
-## Master Pricing & 200lb Iron Law Update
 
-All pricing and Iron Law updates have been successfully implemented across the codebase.
+# Fix: Automatic Iron Law Enforcement for Heavy Item Quotes
 
-### Files Updated
+## Problem Summary
 
-| File | Status |
-|------|--------|
-| `docs/MASTER-PRICING-PROMPT.md` | ✅ Created (Single Source of Truth) |
-| `src/lib/quoteCalculator.ts` | ✅ Updated (300→200 in SPECIALTY_ITEMS) |
-| `src/pages/Services.tsx` | ✅ Updated (300→200, $149→$139) |
-| `src/components/PricingDisplay.tsx` | ✅ Updated (300→200 in safes labels) |
-| `src/data/servicesData.ts` | ✅ Updated (300→200 in meta description) |
-| `docs/jack-knowledge-base.md` | ✅ Updated (10+ locations, version 3.0) |
-| `docs/11-quote-calculator.md` | ✅ Updated (all rates and weight thresholds) |
-| `docs/07-edge-functions.md` | ✅ Updated (pricing range reference) |
+When a customer submits a quote for **Safe Moving**, **Piano Moving**, **Pool Table Moving**, or any **Heavy Items** service, the system currently calculates the quote using:
+- **2 movers** (should be 3)
+- **$169/hour** (should be $179/hour)
 
-### Verification Complete
-
-- ✅ No "300lb" weight threshold references remain in source code
-- ✅ No "$149" pricing references remain in source code  
-- ✅ All documentation aligned with February 2026 pricing
-- ✅ Master document created at `docs/MASTER-PRICING-PROMPT.md`
-
-### New Pricing Structure (February 2026)
-
-| Service | Rate |
-|---------|------|
-| Labor Only - 2 Movers | $139/hr |
-| 2 Movers + Truck | $159/hr |
-| Labor Only - 3 Movers | $169/hr |
-| Heavy Items (base) | $169/hr |
-| Iron Law (200+ lbs) | $179/hr |
-| 3 Movers + Truck | $189/hr |
-| 3 Movers + 2 Trucks | $209/hr |
-| Labor Only - 4 Movers | $239/hr |
-| 4 Movers + Truck | $259/hr |
-
-### 200lb Iron Law
-
-Any item 200+ lbs requires:
+This violates the **200lb Iron Law** which mandates:
 - Minimum 3 movers
+- Rate of $179/hour
 - Truck included
-- Rate: $179/hour
-- NO EXCEPTIONS
+
+The AI agent (Jack) correctly identified and adjusted this during the call, but the **initial quote email was wrong**.
+
+---
+
+## Technical Changes Required
+
+### 1. Update Quote Calculator (`src/lib/quoteCalculator.ts`)
+
+Modify `estimateCrewSize()` and `getHourlyRate()` to automatically enforce Iron Law for heavy item services:
+
+```text
+Current behavior (WRONG):
+- heavy-items → 2 movers @ $169/hr
+
+Fixed behavior (CORRECT):
+- piano-moving → 3 movers @ $179/hr (Iron Law)
+- pool-table → 3 movers @ $179/hr (Iron Law)
+- safe-moving → 3 movers @ $179/hr (Iron Law)
+- heavy-items → 3 movers @ $179/hr (Iron Law)
+```
+
+Add a new function to detect Iron Law services and a `subType` input to enforce based on service type.
+
+### 2. Update Quote Page (`src/pages/Quote.tsx`)
+
+Modify `mapToCalcServiceType()` and `mapCrewConfig()` to pass sub-type information and auto-apply Iron Law crew configuration:
+
+```text
+When serviceType is:
+- piano-moving
+- pool-table
+- safe-moving
+- heavy-items
+
+Force:
+- crewConfig = 'moving-3-movers'
+- Pass subType to calculator for $179/hr rate
+```
+
+### 3. Update Quote Form Wizard (`src/components/conversion/QuoteFormWizard.tsx`)
+
+Fix the estimate preview rates in `estimatedQuote` useMemo (lines 265-288):
+
+```text
+Current (wrong):
+- 'safe-moving': 199
+- 'piano-moving': 249
+- 'pool-table': 299
+
+Should be (Iron Law rate):
+- 'safe-moving': 179
+- 'piano-moving': 179
+- 'pool-table': 179
+- 'heavy-items': 179
+
+And force crewSize = 3 for these services in the preview
+```
+
+### 4. Add Iron Law Notice to Email Template
+
+In `supabase/functions/send-quote-email/index.ts`, add a visual indicator when Iron Law applies:
+
+```text
+If serviceType is piano/pool-table/safe/heavy-items:
+Add banner: "⚠️ IRON LAW: 200+ lb items require 3-mover crew @ $179/hr for safety"
+```
+
+---
+
+## Implementation Steps
+
+| Step | File | Change |
+|------|------|--------|
+| 1 | `quoteCalculator.ts` | Add `isIronLawService()` function |
+| 2 | `quoteCalculator.ts` | Update `estimateCrewSize()` to return 3 for Iron Law services |
+| 3 | `quoteCalculator.ts` | Update `calculateQuote()` to use $179/hr for Iron Law services |
+| 4 | `Quote.tsx` | Force `crewConfig = 'moving-3-movers'` for Iron Law services |
+| 5 | `QuoteFormWizard.tsx` | Fix preview rates and crew size for Iron Law services |
+| 6 | `send-quote-email/index.ts` | Add Iron Law notice banner |
+
+---
+
+## Expected Result After Fix
+
+When customer selects "Safe Moving" and submits quote:
+
+| Before (Wrong) | After (Correct) |
+|----------------|-----------------|
+| 2 Movers + Truck | **3 Movers + Truck** |
+| $169/hour | **$179/hour** |
+| No Iron Law notice | **Iron Law badge in email** |
+| Jack has to manually adjust | **Quote is correct from start** |
+
+---
+
+## Verification Checklist
+
+After implementation:
+- [ ] Submit Safe Moving quote → Email shows 3 movers @ $179/hr
+- [ ] Submit Piano Moving quote → Email shows 3 movers @ $179/hr
+- [ ] Submit Pool Table quote → Email shows 3 movers @ $179/hr
+- [ ] Preview in wizard shows correct Iron Law rate
+- [ ] Email includes Iron Law safety notice
+- [ ] Jack confirmation call receives correct pre-adjusted data
+
