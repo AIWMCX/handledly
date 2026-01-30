@@ -828,6 +828,16 @@ export type Database = {
         Returns: boolean
       }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      get_admin_users_with_email: {
+        Args: never
+        Returns: {
+          email: string
+          role: string
+          role_created_at: string
+          role_id: string
+          user_id: string
+        }[]
+      }
       get_client_identifier: { Args: never; Returns: string }
       get_cost_summary: {
         Args: { p_days?: number }
