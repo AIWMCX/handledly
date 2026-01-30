@@ -1,23 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// Secure CORS - restrict to production domains
-const ALLOWED_ORIGINS = [
-  'https://handledly.com',
-  'https://www.handledly.com',
-  'https://id-preview--c4ec72c4-17ec-431f-865b-98773c111e46.lovable.app',
-  'http://localhost:5173',
-  'http://localhost:3000',
-];
-
-function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get('origin') || '';
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  return {
-    'Access-Control-Allow-Origin': allowedOrigin,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  };
-}
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 // Rate limiting configuration
 const RATE_LIMIT_MAX = 5; // 5 SMS per minute
