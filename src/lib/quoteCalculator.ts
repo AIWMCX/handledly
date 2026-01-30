@@ -7,7 +7,7 @@ export type HeavyItemsSubType = 'piano' | 'pool-table' | 'heavy-under-200' | 'he
 
 export interface QuoteInput {
   serviceType: ServiceType;
-  subType?: LocalMovingSubType | HeavyItemsSubType;
+  subType?: LocalMovingSubType | HeavyItemsSubType | string; // Allow string for Iron Law detection
   bedrooms?: number;
   estimatedHours?: number;
   crewConfig?: string;
@@ -25,6 +25,7 @@ export interface QuoteBreakdown {
   total: number;
   inclusions: string[];
   hasTruck: boolean;
+  isIronLaw?: boolean; // True when 200lb Iron Law applies (3 movers @ $179/hr)
 }
 
 // FLAT HOURLY RATES - Professional Pricing (Updated February 2026)
@@ -92,15 +93,43 @@ export const CREW_CONFIGURATIONS = [
   { value: 'moving-4-movers', label: '4 Movers + Truck', rate: 259, hasTruck: true, crew: 4, description: '3-4 BR homes' },
 ] as const;
 
+// IRON LAW SERVICES - require 3 movers @ $179/hr for safety
+// These services involve 200+ lb items that mandate Iron Law enforcement
+export const IRON_LAW_SERVICES = [
+  'piano-moving',
+  'pool-table', 
+  'safe-moving',
+  'heavy-items',
+  'piano',           // subType from heavy-items
+  'heavy-over-200',  // subType for 200+ lb items
+] as const;
+
+// Check if a service requires Iron Law enforcement
+export function isIronLawService(serviceType: string, subType?: string): boolean {
+  // Check main service type
+  if (IRON_LAW_SERVICES.includes(serviceType as any)) {
+    return true;
+  }
+  // Check subType if provided
+  if (subType && IRON_LAW_SERVICES.includes(subType as any)) {
+    return true;
+  }
+  return false;
+}
+
 // Estimate crew size based on service and property
+// IRON LAW: 200+ lb items (piano, pool table, safe, heavy-items) = 3 movers minimum
 function estimateCrewSize(input: QuoteInput): number {
+  // IRON LAW ENFORCEMENT: Heavy item services get 3 movers automatically
+  if (isIronLawService(input.serviceType as string, input.subType)) {
+    return IRON_LAW_MIN_CREW; // 3 movers
+  }
+  
   const bedrooms = input.bedrooms || 0;
   
   switch (input.serviceType) {
     case 'local-moving':
       return bedrooms <= 2 ? 2 : bedrooms <= 3 ? 3 : 4;
-    case 'heavy-items':
-      return 2;
     default:
       return 2;
   }
@@ -137,9 +166,20 @@ function getHourlyRate(crewConfig: string | undefined, crewSize: number): number
 export function calculateQuote(input: QuoteInput): QuoteBreakdown {
   const crewSize = estimateCrewSize(input);
   const estimatedHours = Math.ceil(estimateHours(input));
-  const hourlyRate = input.serviceType === 'heavy-items' 
-    ? HOURLY_RATES['heavy-items']
-    : getHourlyRate(input.crewConfig, crewSize);
+  
+  // IRON LAW: 200+ lb services (piano, pool table, safe, heavy-items) use $179/hr rate
+  const isIronLaw = isIronLawService(input.serviceType as string, input.subType);
+  
+  let hourlyRate: number;
+  if (isIronLaw) {
+    // IRON LAW RATE: $179/hr for all heavy item services
+    hourlyRate = IRON_LAW_RATE;
+  } else if (input.serviceType === 'heavy-items') {
+    // Fallback for generic heavy-items (shouldn't hit this due to isIronLawService check)
+    hourlyRate = HOURLY_RATES['heavy-items'];
+  } else {
+    hourlyRate = getHourlyRate(input.crewConfig, crewSize);
+  }
   
   // Base labor cost
   const laborCost = hourlyRate * estimatedHours;
@@ -168,6 +208,7 @@ export function calculateQuote(input: QuoteInput): QuoteBreakdown {
     total,
     inclusions: INCLUDED_WITH_EVERY_MOVE,
     hasTruck,
+    isIronLaw, // Include Iron Law flag for downstream use
   };
 }
 

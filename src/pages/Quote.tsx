@@ -11,6 +11,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   calculateQuote,
+  isIronLawService,
+  IRON_LAW_MIN_CREW,
   type ServiceType as CalcServiceType,
 } from "@/lib/quoteCalculator";
 import { CheckCircle, Shield, Clock, Star, MapPin } from "lucide-react";
@@ -37,7 +39,12 @@ const mapToCalcServiceType = (wizardType: ServiceType): CalcServiceType => {
 };
 
 // Map crew size to crew configuration string
-const mapCrewConfig = (crewSize: number): string => {
+// IRON LAW: Force 3 movers for heavy item services
+const mapCrewConfig = (crewSize: number, serviceType: ServiceType): string => {
+  // IRON LAW ENFORCEMENT: Piano, pool table, safe, heavy-items get 3 movers
+  if (isIronLawService(serviceType)) {
+    return 'moving-3-movers';
+  }
   if (crewSize <= 2) return 'moving-2-movers';
   if (crewSize === 3) return 'moving-3-movers';
   return 'moving-4-movers';
@@ -91,11 +98,14 @@ const generateQuoteNumber = (): string => {
     
     // Map wizard data to calculator input
     const calcServiceType = mapToCalcServiceType(data.serviceType);
-    const crewConfig = mapCrewConfig(data.crewSize);
+    // IRON LAW: Force 3-mover config for heavy item services
+    const crewConfig = mapCrewConfig(data.crewSize, data.serviceType);
     
     // Calculate quote using existing quoteCalculator
+    // Pass the original wizard serviceType as subType for Iron Law detection
     const quote = calculateQuote({
       serviceType: calcServiceType,
+      subType: data.serviceType, // Pass for Iron Law service detection
       bedrooms: data.bedrooms,
       crewConfig: crewConfig,
       estimatedHours: data.estimatedHours,

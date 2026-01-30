@@ -261,30 +261,38 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
     }
   };
 
-  // Estimate preview
+  // Estimate preview - Updated Feb 2026 with Iron Law rates
+  // Iron Law: piano-moving, pool-table, safe-moving, heavy-items = 3 movers @ $179/hr
   const estimatedQuote = useMemo(() => {
+    // IRON LAW SERVICES get $179/hr rate (200+ lb items)
+    const IRON_LAW_RATE = 179;
+    const IRON_LAW_SERVICES = ['piano-moving', 'pool-table', 'safe-moving', 'heavy-items'];
+    const isIronLaw = IRON_LAW_SERVICES.includes(formData.serviceType);
+    
     const baseRates: Record<ServiceType, number> = {
-      'local-moving': 149,
-      'residential': 149,
-      'long-distance': 199,
-      'same-day': 179,
-      'piano-moving': 249,
-      'pool-table': 299,
-      'safe-moving': 199,
-      'heavy-items': 179,
-      'junk-removal': 99,
-      'moving-help': 129,
+      'local-moving': 159,      // 2 movers + truck
+      'residential': 159,       // 2 movers + truck
+      'long-distance': 189,     // 3 movers + truck
+      'same-day': 179,          // 3 movers (urgency)
+      'piano-moving': IRON_LAW_RATE,   // IRON LAW: 3 movers @ $179/hr
+      'pool-table': IRON_LAW_RATE,     // IRON LAW: 3 movers @ $179/hr
+      'safe-moving': IRON_LAW_RATE,    // IRON LAW: 3 movers @ $179/hr
+      'heavy-items': IRON_LAW_RATE,    // IRON LAW: 3 movers @ $179/hr
+      'junk-removal': 139,      // Labor only rate
+      'moving-help': 139,       // Labor only rate
     };
 
-    const baseRate = baseRates[formData.serviceType] || 149;
+    const baseRate = baseRates[formData.serviceType] || 159;
     const hours = formData.estimatedHours;
-    const crewMultiplier = formData.crewSize / 2;
-    const stairsFee = formData.hasStairs ? 50 : 0;
+    
+    // IRON LAW: Force 3 movers for heavy item services
+    const effectiveCrewSize = isIronLaw ? 3 : formData.crewSize;
+    const crewMultiplier = effectiveCrewSize / 2;
+    
+    const low = Math.round(baseRate * hours * crewMultiplier * 0.9);
+    const high = Math.round(baseRate * hours * crewMultiplier * 1.1);
 
-    const low = Math.round(baseRate * hours * crewMultiplier * 0.9 + stairsFee);
-    const high = Math.round(baseRate * hours * crewMultiplier * 1.1 + stairsFee);
-
-    return { low, high };
+    return { low, high, isIronLaw, crewSize: effectiveCrewSize };
   }, [formData]);
 
   return (
