@@ -191,7 +191,7 @@ serve(async (req) => {
       }
       console.log('[handle-call-status] HMAC signature validated successfully');
     } else {
-      console.warn('[handle-call-status] ELEVENLABS_WEBHOOK_SECRET not configured - skipping HMAC validation');
+      console.warn('[handle-call-status] ELEVENLABS_WEBHOOKS_SECRET not configured - skipping HMAC validation');
     }
 
     // Parse the webhook payload
