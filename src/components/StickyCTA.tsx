@@ -38,9 +38,9 @@ export function StickyCTA() {
           {/* Left: Message with urgency */}
           <div className="hidden sm:flex items-center gap-3">
             {/* Online indicator */}
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-green-400 font-medium text-xs uppercase tracking-wide">Online Now</span>
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-success/20 border border-success/30">
+              <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+              <span className="text-success font-medium text-xs uppercase tracking-wide">Online Now</span>
             </div>
             <span className="text-white font-medium text-sm">
               Ready to move? Get your free quote now

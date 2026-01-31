@@ -57,7 +57,7 @@ export const SatisfactionPrompt = ({ conversationId, onSubmit, onSkip }: Satisfa
               className={cn(
                 "h-6 w-6 transition-colors",
                 (hoveredRating || rating) >= star
-                  ? "fill-yellow-400 text-yellow-400"
+                  ? "fill-accent text-accent"
                   : "text-muted-foreground"
               )}
             />

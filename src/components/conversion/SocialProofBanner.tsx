@@ -35,9 +35,9 @@ export function SocialProofBanner({
       case 'booking':
         return <Sparkles className="w-5 h-5 text-accent" />;
       case 'viewing':
-        return <Users className="w-5 h-5 text-blue-500" />;
+        return <Users className="w-5 h-5 text-primary" />;
       case 'recent':
-        return <Clock className="w-5 h-5 text-green-500" />;
+        return <Clock className="w-5 h-5 text-success" />;
       default:
         return <MapPin className="w-5 h-5 text-accent" />;
     }
@@ -48,9 +48,9 @@ export function SocialProofBanner({
       case 'booking':
         return 'bg-accent/10 border-accent/30';
       case 'viewing':
-        return 'bg-blue-500/10 border-blue-500/30';
+        return 'bg-primary/10 border-primary/30';
       case 'recent':
-        return 'bg-green-500/10 border-green-500/30';
+        return 'bg-success/10 border-success/30';
       default:
         return 'bg-background border-border';
     }

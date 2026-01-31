@@ -349,7 +349,7 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                   className={cn(
                     'w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300',
                     completedSteps.includes(step.id)
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-success text-success-foreground'
                       : step.id === currentStep
                       ? 'bg-accent text-accent-foreground ring-4 ring-accent/30'
                       : 'bg-muted text-muted-foreground'
@@ -624,12 +624,12 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                       />
                       {/* Validation indicator */}
                       {formData.phone && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                          {phoneValidation.showCheck ? (
-                            <CheckCircle className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <AlertCircle className="w-4 h-4 text-destructive" />
-                          )}
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        {phoneValidation.showCheck ? (
+                          <CheckCircle className="w-4 h-4 text-success" />
+                        ) : (
+                          <AlertCircle className="w-4 h-4 text-destructive" />
+                        )}
                         </div>
                       )}
                     </div>
