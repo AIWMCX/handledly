@@ -1,160 +1,209 @@
 
 
-# Pre-Launch Page Audit Report
-## Handledly Moving Services - Ready for February 1, 2026 Launch
+# ElevenLabs Voice Agent Knowledge Base - Production Document
+## Complete Jack AI Training Document for February 2026 Launch
 
 ---
 
-## Executive Summary
+## Overview
 
-After a comprehensive review of all pages and routes, the platform is **95% launch-ready**. I identified **3 critical issues** that must be fixed and **5 minor improvements** that would polish the experience.
-
----
-
-## Critical Issues (P0 - Must Fix Before Launch)
-
-### Issue 1: Incorrect Email on Contact Page
-- **Location**: `src/pages/Contact.tsx` (lines 37-39)
-- **Problem**: Email shows `hello@handled.com` instead of `hello@handledly.com`
-- **Impact**: Customers cannot reach you via email link
-- **Fix**: Update to `hello@handledly.com` in two places (primary and href)
-
-### Issue 2: Wrong Domain in Service Page SEO
-- **Location**: `src/components/services/ServicePageTemplate.tsx` (line 34)
-- **Problem**: Canonical URL uses `https://handledmoving.com/` instead of `https://handledly.com/`
-- **Impact**: SEO penalty for incorrect canonical URLs, search engines may not index pages properly
-- **Fix**: Update to `https://handledly.com/services/${data.slug}`
-
-### Issue 3: NotFound Page is Too Basic
-- **Location**: `src/pages/NotFound.tsx`
-- **Problem**: Plain unstyled 404 page doesn't match brand quality
-- **Impact**: Poor user experience if someone hits a broken link
-- **Fix**: Enhance with branding, CTA buttons, and helpful navigation
+This plan creates a **single, comprehensive ElevenLabs Knowledge Base document** optimized for pasting directly into the ElevenLabs dashboard. It consolidates all existing documentation into one authoritative voice agent training file.
 
 ---
 
-## Minor Improvements (P1 - Nice to Have)
+## Document Structure
 
-### 1. Piano Moving Shows "Closed" Status
-- **Location**: Services page and `servicesData.ts` line 166
-- **Status**: Intentional per memory - Piano Moving marked `closed: true`
-- **Action**: Confirm this is still intentional before launch
+The new knowledge base will be created as: `docs/ELEVENLABS-JACK-KNOWLEDGE-BASE.md`
 
-### 2. Junk Removal Shows "Closed" Status
-- **Location**: Services page and `servicesData.ts` line 299
-- **Status**: Intentional per memory - marked `closed: true`
-- **Action**: Confirm this is still intentional before launch
+### Section 1: Agent Identity & Persona
+- Name: Jack
+- Company: Handledly Moving Services
+- Location: Denver Metro Area, Colorado
+- Role: AI Moving Coordinator & Quote Specialist
+- Personality traits and communication style
+- Voice characteristics for natural speech
 
-### 3. Social Media Links are Placeholder
-- **Location**: `src/components/layout/Footer.tsx` (lines 91-99)
-- **Problem**: Facebook, Instagram, LinkedIn links point to `#`
-- **Action**: Either add real URLs or hide until ready
+### Section 2: Core Mission & Golden Rules
+- 4-step qualification process
+- Non-negotiable safety standards
+- Documentation requirements
+- The "No Surprises" principle
 
-### 4. Missing SEO Component on Legal Pages
-- **Location**: `src/pages/PrivacyPolicy.tsx` and `src/pages/TermsOfService.tsx`
-- **Problem**: No `<SEO>` component means missing meta descriptions
-- **Fix**: Add SEO component for complete meta coverage
+### Section 3: Official Pricing Structure (February 2026)
+**Labor Only (No Truck):**
+- 2 Movers: $139/hour
+- 3 Movers: $169/hour
+- 4 Movers: $239/hour
 
-### 5. Scroll-to-Top Button Position Conflict
-- **Location**: `src/components/ScrollToTop.tsx`
-- **Problem**: May overlap with MobileStickyCTA on mobile
-- **Action**: Verify positioning doesn't conflict with other sticky elements
+**Moving With Truck:**
+- 2 Movers + Truck: $159/hour (Most Popular)
+- 3 Movers + Truck: $189/hour
+- 3 Movers + 2 Trucks: $209/hour
+- 4 Movers + Truck: $259/hour
+
+**Heavy Items:**
+- Context-Based Rate: $169/hour
+- Iron Law Rate: $179/hour (200+ lb items)
+
+**Fees:**
+- Electronic Payment: +$5
+- Negotiation Discount: $10 (after value framing only)
+
+### Section 4: The 200lb Iron Law (Non-Negotiable)
+- Trigger conditions
+- Mandatory requirements (3 movers, truck, $179/hr)
+- Items that ALWAYS trigger (pianos, pool tables, safes, hot tubs)
+- Probing scripts
+- Explanation scripts
+- De-escalation scripts
+
+### Section 5: Specialty Item Flat Fees
+Complete pricing table for:
+- Pianos (upright, baby grand, grand)
+- Gun safes (weight categories)
+- Pool tables (move-only vs full service)
+- Hot tubs, gym equipment, motorcycles
+
+### Section 6: What's Included & Not Included
+- Standard inclusions with every move
+- Available add-ons
+- Out-of-scope services
+
+### Section 7: Denver Metro Service Area
+- Primary coverage cities
+- Extended coverage areas
+- Local terminology and phrasing
+
+### Section 8: Discovery Flow (90-Second Script)
+Phase-by-phase conversation structure:
+1. Confirm basics (location, size, access)
+2. Inventory checkpoints (heavy items probe)
+3. Rate configuration (apply Iron Law if needed)
+4. Close (quote number, email confirmation)
+
+### Section 9: Objection Handling Scripts
+Pre-written responses for:
+- "Too expensive"
+- "Can we use fewer movers?"
+- "Competitor is cheaper"
+- "Need to think about it"
+- "Can I help to save money?"
+
+### Section 10: Quote Number System
+- Format: HD-XXXXX
+- Email confirmation process
+- Callback handling procedure
+
+### Section 11: Colorado-Specific Situations
+**Weather:**
+- Winter move scripts (Nov-March)
+- Day-of snow handling
+- Spring/fall unpredictability
+
+**Building Types:**
+- Capitol Hill/Congress Park (tight parking)
+- Downtown/LoDo (high-rises, elevator reservations)
+- Modern complexes (HOA rules, permits)
+
+**Geographic Challenges:**
+- Foothills & mountain properties (Golden, Morrison, Conifer, Evergreen)
+- Boulder (extended coverage)
+- Suburban challenges (Highlands Ranch, Castle Rock, Parker)
+- Older neighborhoods (Arvada, Wheat Ridge, Lakewood)
+
+**Access & Parking:**
+- Street parking only
+- Alley access
+- Long carry (100+ feet)
+
+### Section 12: Trust-Building Language
+- Experience statements
+- Documentation promises
+- Transparency assurances
+- Protection guarantees
+
+### Section 13: Edge Cases & Special Situations
+- Long carry scenarios
+- Multiple stops
+- Packing services inquiry
+- Storage needs
+- Long-distance/out-of-area requests
+
+### Section 14: What Jack Should NEVER Do
+- Never underquote to win
+- Never recommend 2 movers for 200+ lb items
+- Never promise guaranteed time
+- Never skip heavy item probe
+- Never forget quote number
+- Never be pushy
+- Never make up information
+
+### Section 15: Call Completion Protocol
+- 6-point Minimum Confirmation Checklist
+- Natural closure signals
+- Continuation topics for engaged customers
+- Avoiding "conversation killers"
+
+### Section 16: Phone Number Policy
+- US-only (+1) phone numbers accepted
+- Polite rejection script for non-US numbers
+- Service area explanation
+
+### Section 17: Full Example Conversations
+- Standard apartment move
+- Heavy item (piano) move
+- Mountain property move
+- Objection handling example
+
+### Section 18: Quick Reference Card
+- All rates at a glance
+- Iron Law triggers
+- Key scripts
+- Colorado terminology
 
 ---
 
-## Page-by-Page Review
+## Technical Implementation
 
-### Public Pages (Customer-Facing)
+**File Location:** `docs/ELEVENLABS-JACK-KNOWLEDGE-BASE.md`
 
-| Page | Route | Status | Notes |
-|------|-------|--------|-------|
-| Home | `/` | ✅ Ready | Hero, pricing, trust badges complete |
-| Services | `/services` | ✅ Ready | All categories displayed correctly |
-| Local Moving | `/services/local-moving` | ✅ Ready | Full content, CTA active |
-| Residential Movers | `/services/residential-movers` | ✅ Ready | - |
-| Long Distance Moving | `/services/long-distance-moving` | ✅ Ready | - |
-| Moving Help Labor | `/services/moving-help-labor` | ✅ Ready | - |
-| Heavy Items Moving | `/services/heavy-items-moving` | ✅ Ready | Iron Law enforced |
-| Piano Moving | `/services/piano-moving` | ⚠️ Closed | Shows "Service Unavailable" alert |
-| Pool Table Moving | `/services/pool-table-moving` | ✅ Ready | - |
-| Safe Moving | `/services/safe-moving` | ✅ Ready | - |
-| Same-Day Moving | `/services/same-day-moving` | ✅ Ready | - |
-| Junk Removal | `/services/junk-removal` | ⚠️ Closed | Shows "Service Unavailable" alert |
-| Quote | `/quote` | ✅ Ready | Form wizard, calculator aligned |
-| About | `/about` | ✅ Ready | Values, credentials, Denver areas |
-| Contact | `/contact` | ❌ Fix Email | Wrong email: `hello@handled.com` |
-| Privacy Policy | `/privacy` | ✅ Ready | SMS consent, January 2026 |
-| Terms of Service | `/terms` | ✅ Ready | SMS terms, January 2026 |
-| 404 Not Found | `/*` | ⚠️ Basic | Functional but unstyled |
+**Format:** Plain text with clear section headers optimized for ElevenLabs document processing
 
-### Admin/Protected Pages
+**Size:** Approximately 15-20KB (comprehensive but not excessive)
 
-| Page | Route | Status | Notes |
-|------|-------|--------|-------|
-| Auth | `/auth` | ✅ Ready | Login/signup with validation |
-| Client Portal | `/client-portal` | ✅ Ready | Whitelist protected, action items |
-| Admin Overview | `/admin` | ✅ Ready | Stats, charts, launch mode |
-| Admin Leads | `/admin/leads` | ✅ Ready | Pagination hooks ready |
-| Admin Conversations | `/admin/conversations` | ✅ Ready | - |
-| Admin Calls | `/admin/calls` | ✅ Ready | - |
-| Admin AI Quality | `/admin/ai-quality` | ✅ Ready | - |
-| Admin Cost Monitoring | `/admin/cost-monitoring` | ✅ Ready | Circuit breakers active |
-| Admin Appointments | `/admin/appointments` | ✅ Ready | - |
-| Admin Users | `/admin/users` | ✅ Ready | - |
-| Admin Settings | `/admin/settings` | ✅ Ready | Test mode toggle |
+**Version:** 3.0 - February 2026 Launch
 
 ---
 
-## Implementation Plan
+## Key Differentiators from Existing Docs
 
-### Step 1: Fix Contact Page Email (2 minutes)
-Update `src/pages/Contact.tsx`:
-- Line 37: Change `"hello@handled.com"` to `"hello@handledly.com"`
-- Line 39: Change `"mailto:hello@handled.com"` to `"mailto:hello@handledly.com"`
+1. **Single Document**: Consolidates jack-knowledge-base.md, COLORADO-SCRIPTS.md, JACK-QUICK-REFERENCE.md, and MASTER-PRICING-PROMPT.md into one file
 
-### Step 2: Fix Service Page Canonical URL (1 minute)
-Update `src/components/services/ServicePageTemplate.tsx`:
-- Line 34: Change `https://handledmoving.com/` to `https://handledly.com/`
+2. **Voice-Optimized**: Written for spoken delivery with natural sentence flow
 
-### Step 3: Enhance 404 Page (5 minutes)
-Update `src/pages/NotFound.tsx`:
-- Add Header/Footer components
-- Add branded styling with gradient background
-- Include CTA buttons (Home, Contact, Quote)
-- Match the SaaS visual aesthetic
+3. **ElevenLabs Format**: Structured for their knowledge base document parser
 
-### Step 4: Add SEO to Legal Pages (3 minutes)
-Add `<SEO>` component to Privacy Policy and Terms of Service pages for complete meta coverage.
+4. **Call Completion Protocol**: Includes the 6-point confirmation checklist requirement
 
-### Step 5: Optional - Social Links (2 minutes)
-Either:
-- Add real social media URLs to Footer
-- Or hide icons until accounts are created
+5. **Phone Validation**: Includes US-only phone number policy
 
 ---
 
-## Files to Modify
+## Files to Create
 
-1. `src/pages/Contact.tsx` - Fix email (lines 37, 39)
-2. `src/components/services/ServicePageTemplate.tsx` - Fix canonical URL (line 34)
-3. `src/pages/NotFound.tsx` - Enhance with branding
-4. `src/pages/PrivacyPolicy.tsx` - Add SEO component
-5. `src/pages/TermsOfService.tsx` - Add SEO component
+| File | Purpose |
+|------|---------|
+| `docs/ELEVENLABS-JACK-KNOWLEDGE-BASE.md` | Complete voice agent knowledge base for ElevenLabs dashboard |
 
 ---
 
-## Verification Checklist
+## Post-Implementation
 
-After fixes:
-- [ ] Navigate to Contact page and verify email link
-- [ ] View page source on any service page and verify canonical URL
-- [ ] Test 404 page by visiting `/nonexistent-page`
-- [ ] View Privacy/Terms page source for meta tags
-- [ ] Run through quote flow end-to-end
-
----
-
-## Conclusion
-
-The platform is **professionally ready for launch** with only 3 small text/URL corrections needed. All major functionality is working, branding is consistent, and the user experience is polished. The fixes take approximately 15 minutes total.
+After creating this document:
+1. Copy the content to ElevenLabs dashboard
+2. Create as a new Knowledge Base document
+3. Link to Jack agent
+4. Test with sample conversations
+5. Verify Iron Law triggering
+6. Confirm quote number generation flow
 
