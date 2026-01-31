@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, FileText, MessageCircle, PhoneCall } from 'lucide-react';
@@ -35,13 +35,13 @@ const ACTION_CONFIG: Record<MobileCTAAction, { label: string; icon: typeof Phone
   },
 };
 
-export function MobileStickyCTA({
+export const MobileStickyCTA = forwardRef<HTMLDivElement, MobileStickyCTAProps>(function MobileStickyCTA({
   phoneNumber = '(720) 605-3767',
   primaryAction = 'call',
   secondaryAction = 'quote',
   showAfterScroll = 300,
   className,
-}: MobileStickyCTAProps) {
+}, ref) {
   const isMobile = useIsMobile();
   const { hasPassedThreshold } = useScrollProgress();
   const location = useLocation();
@@ -130,6 +130,6 @@ export function MobileStickyCTA({
       )}
     </AnimatePresence>
   );
-}
+});
 
 export default MobileStickyCTA;
