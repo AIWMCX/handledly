@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
 // Core pages - loaded immediately
 import Index from "./pages/Index";
@@ -65,6 +66,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <ScrollToTop />
           <BrowserRouter>
             <Suspense fallback={<PageLoader />}>
               <Routes>
