@@ -66,8 +66,8 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <ScrollToTop />
           <BrowserRouter>
+            <ScrollToTop />
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
