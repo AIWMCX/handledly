@@ -72,9 +72,9 @@ export function QuoteConfirmation({
         {/* Email Status */}
         <div className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border shadow-card">
           <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-            emailSent ? 'bg-green-500/20' : 'bg-secondary'
+            emailSent ? 'bg-success/20' : 'bg-secondary'
           }`}>
-            <Mail className={`w-5 h-5 ${emailSent ? 'text-green-600' : 'text-muted-foreground'}`} />
+            <Mail className={`w-5 h-5 ${emailSent ? 'text-success' : 'text-muted-foreground'}`} />
           </div>
           <div className="text-left flex-1">
             <p className="text-sm font-medium text-foreground">
@@ -82,7 +82,7 @@ export function QuoteConfirmation({
             </p>
             <p className="text-xs text-muted-foreground">{email}</p>
           </div>
-          {emailSent && <Check className="w-5 h-5 text-green-600" />}
+          {emailSent && <Check className="w-5 h-5 text-success" />}
         </div>
 
         {/* Call Status with Countdown */}
