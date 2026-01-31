@@ -34,9 +34,9 @@ const contactInfo = [
   {
     icon: Mail,
     title: "Email",
-    primary: "hello@handled.com",
+    primary: "hello@handledly.com",
     secondary: "We respond within 2 hours",
-    href: "mailto:hello@handled.com",
+    href: "mailto:hello@handledly.com",
   },
   {
     icon: MapPin,

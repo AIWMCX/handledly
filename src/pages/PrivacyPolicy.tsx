@@ -1,9 +1,15 @@
 import { Header } from "@/components/layout/Header";
 import { Footer, Container, Section } from "@/components/layout";
+import { SEO } from "@/components/SEO";
 
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Privacy Policy | Handledly Moving Services"
+        description="Read our privacy policy to understand how Handledly Moving Services collects, uses, and protects your personal information. Your privacy matters to us."
+        canonicalUrl="https://handledly.com/privacy"
+      />
       <Header />
       
       {/* Hero Section */}

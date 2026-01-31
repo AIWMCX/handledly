@@ -1,10 +1,16 @@
 import { Header } from "@/components/layout/Header";
 import { Footer, Container, Section } from "@/components/layout";
 import { Link } from "react-router-dom";
+import { SEO } from "@/components/SEO";
 
 const TermsOfService = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Terms of Service | Handledly Moving Services"
+        description="Review the terms and conditions for using Handledly Moving Services. Includes SMS messaging terms, service agreements, and user obligations."
+        canonicalUrl="https://handledly.com/terms"
+      />
       <Header />
       
       {/* Hero Section */}
