@@ -175,7 +175,7 @@ export function InstantQuotePreview({
 
       {/* Value indicators */}
       <div className="flex items-center justify-between text-xs pt-4 border-t border-accent/20">
-        <div className="flex items-center gap-1 text-green-600">
+        <div className="flex items-center gap-1 text-accent">
           <TrendingDown className="w-3 h-3" />
           <span>No hidden fees</span>
         </div>
