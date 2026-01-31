@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Users, Clock, MapPin, Sparkles } from 'lucide-react';
 import { useSocialProof } from '@/hooks/useSocialProof';
@@ -10,11 +10,11 @@ interface SocialProofBannerProps {
   className?: string;
 }
 
-export function SocialProofBanner({
+export const SocialProofBanner = forwardRef<HTMLDivElement, SocialProofBannerProps>(function SocialProofBanner({
   enabled = true,
   position = 'bottom-left',
   className,
-}: SocialProofBannerProps) {
+}, ref) {
   const { currentNotification, liveViewers, dismissNotification, pauseNotifications } = useSocialProof({
     enabled,
     intervalMin: 60, // Less aggressive - 60-90 seconds
@@ -130,6 +130,6 @@ export function SocialProofBanner({
       )}
     </AnimatePresence>
   );
-}
+});
 
 export default SocialProofBanner;
