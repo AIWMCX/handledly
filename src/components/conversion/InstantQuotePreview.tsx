@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Calculator, Shield, TrendingDown, TrendingUp, Info } from 'lucide-react';
+import { Calculator, Shield, TrendingDown, Info } from 'lucide-react';
 import { ServiceType, QuotePreview, QuoteBreakdown } from '@/types/conversion';
 import { ConversionEvents } from '@/lib/analytics';
 import { cn } from '@/lib/utils';
+import { calculateQuote, isIronLawService } from '@/lib/quoteCalculator';
 
 interface InstantQuotePreviewProps {
   serviceType: ServiceType;
@@ -16,20 +17,7 @@ interface InstantQuotePreviewProps {
   className?: string;
 }
 
-// Updated February 2026 - Aligned with quoteCalculator rates
-const SERVICE_BASE_RATES: Record<ServiceType, number> = {
-  'local-moving': 159,
-  'residential': 159,
-  'long-distance': 199,
-  'same-day': 189,
-  'piano-moving': 179, // Iron Law rate - 200+ lbs
-  'pool-table': 179,   // Iron Law rate - 200+ lbs
-  'safe-moving': 179,  // Iron Law rate - 200+ lbs
-  'heavy-items': 169,  // Base rate, upgrades to $179 for 200+ lbs
-  'junk-removal': 139,
-  'moving-help': 139,
-};
-
+// Bedroom to hours mapping (fallback if estimatedHours not provided)
 const BEDROOM_HOURS: Record<number, number> = {
   1: 2,
   2: 3,
@@ -50,33 +38,48 @@ export function InstantQuotePreview({
   className,
 }: InstantQuotePreviewProps) {
   const quote = useMemo((): QuotePreview => {
-    const baseRate = SERVICE_BASE_RATES[serviceType] || 149;
     const hours = estimatedHours || BEDROOM_HOURS[bedrooms] || 3;
-    const crewMultiplier = crewSize / 2;
     
-    // Calculate fees
-    const crewCost = baseRate * hours * crewMultiplier;
-    const travelFee = 50;
-    const stairsFee = hasStairs ? 75 : 0;
-    const distanceFee = distance ? Math.min(distance * 2, 200) : 0;
+    // Map service type to calculator format
+    const mapToCalcServiceType = (type: ServiceType): 'local-moving' | 'heavy-items' => {
+      if (['piano-moving', 'pool-table', 'safe-moving', 'heavy-items'].includes(type)) {
+        return 'heavy-items';
+      }
+      return 'local-moving';
+    };
     
-    const subtotal = crewCost + travelFee + stairsFee + distanceFee;
+    // Get crew config based on crew size
+    const getCrewConfig = (size: number, type: ServiceType): string | undefined => {
+      if (isIronLawService(type)) return undefined;
+      if (size <= 2) return 'moving-2-movers';
+      if (size === 3) return 'moving-3-movers';
+      return 'moving-4-movers';
+    };
+
+    // Use centralized calculator - matches email/database exactly
+    const calcResult = calculateQuote({
+      serviceType: mapToCalcServiceType(serviceType),
+      subType: serviceType,
+      bedrooms,
+      crewConfig: getCrewConfig(crewSize, serviceType),
+      estimatedHours: hours,
+    });
     
     // Range is ±10%
-    const low = Math.round(subtotal * 0.9);
-    const high = Math.round(subtotal * 1.1);
+    const low = Math.round(calcResult.total * 0.9);
+    const high = Math.round(calcResult.total * 1.1);
 
     const breakdown: QuoteBreakdown = {
-      baseRate,
-      estimatedHours: hours,
-      crewCost: Math.round(crewCost),
-      travelFee,
-      specialtyFees: stairsFee + distanceFee,
-      total: Math.round(subtotal),
+      baseRate: calcResult.hourlyRate,
+      estimatedHours: calcResult.estimatedHours,
+      crewCost: calcResult.laborCost,
+      travelFee: 0, // No hidden fees in our pricing model
+      specialtyFees: calcResult.specialtyFee,
+      total: calcResult.total,
     };
 
     // Track quote preview
-    ConversionEvents.quotePreviewed(serviceType, Math.round(subtotal));
+    ConversionEvents.quotePreviewed(serviceType, calcResult.total);
 
     return {
       estimatedLow: low,
@@ -85,7 +88,7 @@ export function InstantQuotePreview({
       breakdown,
       validUntil: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
     };
-  }, [serviceType, bedrooms, hasStairs, crewSize, estimatedHours, distance]);
+  }, [serviceType, bedrooms, crewSize, estimatedHours]);
 
   return (
     <motion.div

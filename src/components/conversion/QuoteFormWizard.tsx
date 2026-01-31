@@ -19,6 +19,7 @@ import { HoneypotField } from '@/components/forms/HoneypotField';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import { formatPhoneInput, validateUSPhone, looksLikeInternationalNumber } from '@/lib/phoneValidation';
+import { calculateQuote, isIronLawService, HOURLY_RATES, IRON_LAW_RATE, IRON_LAW_MIN_CREW } from '@/lib/quoteCalculator';
 
 // Parse date string as local date to avoid timezone offset issues
 const parseLocalDate = (dateString: string): Date | undefined => {
@@ -261,39 +262,50 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
     }
   };
 
-  // Estimate preview - Updated Feb 2026 with Iron Law rates
-  // Iron Law: piano-moving, pool-table, safe-moving, heavy-items = 3 movers @ $179/hr
+  // Estimate preview - Uses centralized quoteCalculator for consistency
+  // This ensures preview matches email/database quote exactly
   const estimatedQuote = useMemo(() => {
-    // IRON LAW SERVICES get $179/hr rate (200+ lb items)
-    const IRON_LAW_RATE = 179;
-    const IRON_LAW_SERVICES = ['piano-moving', 'pool-table', 'safe-moving', 'heavy-items'];
-    const isIronLaw = IRON_LAW_SERVICES.includes(formData.serviceType);
+    // Map wizard service types to quoteCalculator types
+    const mapToCalcServiceType = (type: ServiceType): 'local-moving' | 'heavy-items' => {
+      if (['piano-moving', 'pool-table', 'safe-moving', 'heavy-items'].includes(type)) {
+        return 'heavy-items';
+      }
+      return 'local-moving';
+    };
     
-    const baseRates: Record<ServiceType, number> = {
-      'local-moving': 159,      // 2 movers + truck
-      'residential': 159,       // 2 movers + truck
-      'long-distance': 189,     // 3 movers + truck
-      'same-day': 179,          // 3 movers (urgency)
-      'piano-moving': IRON_LAW_RATE,   // IRON LAW: 3 movers @ $179/hr
-      'pool-table': IRON_LAW_RATE,     // IRON LAW: 3 movers @ $179/hr
-      'safe-moving': IRON_LAW_RATE,    // IRON LAW: 3 movers @ $179/hr
-      'heavy-items': IRON_LAW_RATE,    // IRON LAW: 3 movers @ $179/hr
-      'junk-removal': 139,      // Labor only rate
-      'moving-help': 139,       // Labor only rate
+    // Map crew size to crew config
+    const getCrewConfig = (crewSize: number, serviceType: ServiceType): string | undefined => {
+      // Iron Law services don't need crew config - calculator handles it
+      if (isIronLawService(serviceType)) {
+        return undefined;
+      }
+      // For local moving, map based on crew size
+      if (crewSize <= 2) return 'moving-2-movers';
+      if (crewSize === 3) return 'moving-3-movers';
+      return 'moving-4-movers';
     };
 
-    const baseRate = baseRates[formData.serviceType] || 159;
-    const hours = formData.estimatedHours;
+    // Use the centralized calculator - this is the source of truth
+    const quote = calculateQuote({
+      serviceType: mapToCalcServiceType(formData.serviceType),
+      subType: formData.serviceType, // Pass original type for Iron Law detection
+      bedrooms: formData.bedrooms,
+      crewConfig: getCrewConfig(formData.crewSize, formData.serviceType),
+      estimatedHours: formData.estimatedHours,
+    });
     
-    // IRON LAW: Force 3 movers for heavy item services
-    const effectiveCrewSize = isIronLaw ? 3 : formData.crewSize;
-    const crewMultiplier = effectiveCrewSize / 2;
-    
-    const low = Math.round(baseRate * hours * crewMultiplier * 0.9);
-    const high = Math.round(baseRate * hours * crewMultiplier * 1.1);
+    // Show ±10% range like before
+    const low = Math.round(quote.total * 0.9);
+    const high = Math.round(quote.total * 1.1);
 
-    return { low, high, isIronLaw, crewSize: effectiveCrewSize };
-  }, [formData]);
+    return { 
+      low, 
+      high, 
+      isIronLaw: quote.isIronLaw || false, 
+      crewSize: quote.crewSize,
+      exact: quote.total 
+    };
+  }, [formData.serviceType, formData.bedrooms, formData.crewSize, formData.estimatedHours]);
 
   return (
     <div 
