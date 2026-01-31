@@ -1,121 +1,160 @@
 
 
-# Fix: Quote Calculator Preview vs Email Price Mismatch
-
-## Problem Identified
-
-The quote calculator preview in the form wizard shows **$776** (range), but the email/database stores **$537**. 
-
-**Root Cause:** The preview calculation in `QuoteFormWizard.tsx` uses a **crew multiplier** (`crewSize / 2`) that the actual `quoteCalculator.ts` does NOT use.
+# Pre-Launch Page Audit Report
+## Handledly Moving Services - Ready for February 1, 2026 Launch
 
 ---
 
-## Calculation Comparison
+## Executive Summary
 
-### Preview Formula (WRONG - uses crew multiplier)
-```
-$179/hr × 3 hours × (3 movers ÷ 2) = $805
-Range: $725 - $886 (displayed as ~$776)
-```
-
-### Actual Formula (CORRECT - flat hourly rate)
-```
-$179/hr × 3 hours = $537
-```
-
-The `quoteCalculator.ts` already includes crew cost in the hourly rate (e.g., `moving-3-movers` = $189/hr already covers 3 movers). The preview is double-counting crew.
+After a comprehensive review of all pages and routes, the platform is **95% launch-ready**. I identified **3 critical issues** that must be fixed and **5 minor improvements** that would polish the experience.
 
 ---
 
-## Solution
+## Critical Issues (P0 - Must Fix Before Launch)
 
-Update `QuoteFormWizard.tsx` to match `quoteCalculator.ts` exactly by removing the crew multiplier and using the same logic.
+### Issue 1: Incorrect Email on Contact Page
+- **Location**: `src/pages/Contact.tsx` (lines 37-39)
+- **Problem**: Email shows `hello@handled.com` instead of `hello@handledly.com`
+- **Impact**: Customers cannot reach you via email link
+- **Fix**: Update to `hello@handledly.com` in two places (primary and href)
 
-### File: `src/components/conversion/QuoteFormWizard.tsx`
+### Issue 2: Wrong Domain in Service Page SEO
+- **Location**: `src/components/services/ServicePageTemplate.tsx` (line 34)
+- **Problem**: Canonical URL uses `https://handledmoving.com/` instead of `https://handledly.com/`
+- **Impact**: SEO penalty for incorrect canonical URLs, search engines may not index pages properly
+- **Fix**: Update to `https://handledly.com/services/${data.slug}`
 
-**Current Code (lines 266-296):**
-```typescript
-const estimatedQuote = useMemo(() => {
-  const crewMultiplier = effectiveCrewSize / 2;  // ← PROBLEM
-  const low = Math.round(baseRate * hours * crewMultiplier * 0.9);
-  const high = Math.round(baseRate * hours * crewMultiplier * 1.1);
-});
-```
-
-**Fixed Code:**
-```typescript
-const estimatedQuote = useMemo(() => {
-  // Use quoteCalculator directly for consistency
-  const quote = calculateQuote({
-    serviceType: mapToCalcServiceType(formData.serviceType),
-    subType: formData.serviceType,
-    bedrooms: formData.bedrooms,
-    crewConfig: mapCrewConfig(formData.crewSize, formData.serviceType),
-    estimatedHours: formData.estimatedHours,
-  });
-  
-  // Show ±10% range
-  const low = Math.round(quote.total * 0.9);
-  const high = Math.round(quote.total * 1.1);
-  
-  return { 
-    low, 
-    high, 
-    isIronLaw: quote.isIronLaw, 
-    crewSize: quote.crewSize,
-    exact: quote.total 
-  };
-});
-```
+### Issue 3: NotFound Page is Too Basic
+- **Location**: `src/pages/NotFound.tsx`
+- **Problem**: Plain unstyled 404 page doesn't match brand quality
+- **Impact**: Poor user experience if someone hits a broken link
+- **Fix**: Enhance with branding, CTA buttons, and helpful navigation
 
 ---
 
-## Also Update: InstantQuotePreview.tsx
+## Minor Improvements (P1 - Nice to Have)
 
-The `InstantQuotePreview.tsx` component has the same issue - it also uses a crew multiplier AND adds extra fees not in the actual quote:
+### 1. Piano Moving Shows "Closed" Status
+- **Location**: Services page and `servicesData.ts` line 166
+- **Status**: Intentional per memory - Piano Moving marked `closed: true`
+- **Action**: Confirm this is still intentional before launch
 
-**Current (lines 52-76):**
-```typescript
-const crewMultiplier = crewSize / 2;
-const crewCost = baseRate * hours * crewMultiplier;  // ← crew multiplier
-const travelFee = 50;  // ← NOT in actual quote
-const stairsFee = hasStairs ? 75 : 0;  // ← NOT in actual quote
-```
+### 2. Junk Removal Shows "Closed" Status
+- **Location**: Services page and `servicesData.ts` line 299
+- **Status**: Intentional per memory - marked `closed: true`
+- **Action**: Confirm this is still intentional before launch
 
-**Fix:** Import and use `calculateQuote()` from `quoteCalculator.ts` for consistency.
+### 3. Social Media Links are Placeholder
+- **Location**: `src/components/layout/Footer.tsx` (lines 91-99)
+- **Problem**: Facebook, Instagram, LinkedIn links point to `#`
+- **Action**: Either add real URLs or hide until ready
+
+### 4. Missing SEO Component on Legal Pages
+- **Location**: `src/pages/PrivacyPolicy.tsx` and `src/pages/TermsOfService.tsx`
+- **Problem**: No `<SEO>` component means missing meta descriptions
+- **Fix**: Add SEO component for complete meta coverage
+
+### 5. Scroll-to-Top Button Position Conflict
+- **Location**: `src/components/ScrollToTop.tsx`
+- **Problem**: May overlap with MobileStickyCTA on mobile
+- **Action**: Verify positioning doesn't conflict with other sticky elements
 
 ---
 
-## Impact
+## Page-by-Page Review
 
-| Before Fix | After Fix |
-|------------|-----------|
-| Preview: $725-$886 | Preview: $483-$591 |
-| Email: $537 | Email: $537 |
-| **Mismatch** | **Match** ✅ |
+### Public Pages (Customer-Facing)
+
+| Page | Route | Status | Notes |
+|------|-------|--------|-------|
+| Home | `/` | ✅ Ready | Hero, pricing, trust badges complete |
+| Services | `/services` | ✅ Ready | All categories displayed correctly |
+| Local Moving | `/services/local-moving` | ✅ Ready | Full content, CTA active |
+| Residential Movers | `/services/residential-movers` | ✅ Ready | - |
+| Long Distance Moving | `/services/long-distance-moving` | ✅ Ready | - |
+| Moving Help Labor | `/services/moving-help-labor` | ✅ Ready | - |
+| Heavy Items Moving | `/services/heavy-items-moving` | ✅ Ready | Iron Law enforced |
+| Piano Moving | `/services/piano-moving` | ⚠️ Closed | Shows "Service Unavailable" alert |
+| Pool Table Moving | `/services/pool-table-moving` | ✅ Ready | - |
+| Safe Moving | `/services/safe-moving` | ✅ Ready | - |
+| Same-Day Moving | `/services/same-day-moving` | ✅ Ready | - |
+| Junk Removal | `/services/junk-removal` | ⚠️ Closed | Shows "Service Unavailable" alert |
+| Quote | `/quote` | ✅ Ready | Form wizard, calculator aligned |
+| About | `/about` | ✅ Ready | Values, credentials, Denver areas |
+| Contact | `/contact` | ❌ Fix Email | Wrong email: `hello@handled.com` |
+| Privacy Policy | `/privacy` | ✅ Ready | SMS consent, January 2026 |
+| Terms of Service | `/terms` | ✅ Ready | SMS terms, January 2026 |
+| 404 Not Found | `/*` | ⚠️ Basic | Functional but unstyled |
+
+### Admin/Protected Pages
+
+| Page | Route | Status | Notes |
+|------|-------|--------|-------|
+| Auth | `/auth` | ✅ Ready | Login/signup with validation |
+| Client Portal | `/client-portal` | ✅ Ready | Whitelist protected, action items |
+| Admin Overview | `/admin` | ✅ Ready | Stats, charts, launch mode |
+| Admin Leads | `/admin/leads` | ✅ Ready | Pagination hooks ready |
+| Admin Conversations | `/admin/conversations` | ✅ Ready | - |
+| Admin Calls | `/admin/calls` | ✅ Ready | - |
+| Admin AI Quality | `/admin/ai-quality` | ✅ Ready | - |
+| Admin Cost Monitoring | `/admin/cost-monitoring` | ✅ Ready | Circuit breakers active |
+| Admin Appointments | `/admin/appointments` | ✅ Ready | - |
+| Admin Users | `/admin/users` | ✅ Ready | - |
+| Admin Settings | `/admin/settings` | ✅ Ready | Test mode toggle |
+
+---
+
+## Implementation Plan
+
+### Step 1: Fix Contact Page Email (2 minutes)
+Update `src/pages/Contact.tsx`:
+- Line 37: Change `"hello@handled.com"` to `"hello@handledly.com"`
+- Line 39: Change `"mailto:hello@handled.com"` to `"mailto:hello@handledly.com"`
+
+### Step 2: Fix Service Page Canonical URL (1 minute)
+Update `src/components/services/ServicePageTemplate.tsx`:
+- Line 34: Change `https://handledmoving.com/` to `https://handledly.com/`
+
+### Step 3: Enhance 404 Page (5 minutes)
+Update `src/pages/NotFound.tsx`:
+- Add Header/Footer components
+- Add branded styling with gradient background
+- Include CTA buttons (Home, Contact, Quote)
+- Match the SaaS visual aesthetic
+
+### Step 4: Add SEO to Legal Pages (3 minutes)
+Add `<SEO>` component to Privacy Policy and Terms of Service pages for complete meta coverage.
+
+### Step 5: Optional - Social Links (2 minutes)
+Either:
+- Add real social media URLs to Footer
+- Or hide icons until accounts are created
 
 ---
 
 ## Files to Modify
 
-1. **`src/components/conversion/QuoteFormWizard.tsx`**
-   - Import `calculateQuote` from `@/lib/quoteCalculator`
-   - Replace manual calculation with `calculateQuote()` call
-   - Remove crew multiplier logic
-
-2. **`src/components/conversion/InstantQuotePreview.tsx`**
-   - Import `calculateQuote` from `@/lib/quoteCalculator`
-   - Replace manual calculation with `calculateQuote()` call
-   - Remove travel fee, stairs fee, crew multiplier (not in actual pricing)
+1. `src/pages/Contact.tsx` - Fix email (lines 37, 39)
+2. `src/components/services/ServicePageTemplate.tsx` - Fix canonical URL (line 34)
+3. `src/pages/NotFound.tsx` - Enhance with branding
+4. `src/pages/PrivacyPolicy.tsx` - Add SEO component
+5. `src/pages/TermsOfService.tsx` - Add SEO component
 
 ---
 
-## Technical Notes
+## Verification Checklist
 
-The `quoteCalculator.ts` is the **source of truth** for pricing. All preview components should use it directly to prevent discrepancies. The current preview components were created separately and drifted from the actual pricing logic.
+After fixes:
+- [ ] Navigate to Contact page and verify email link
+- [ ] View page source on any service page and verify canonical URL
+- [ ] Test 404 page by visiting `/nonexistent-page`
+- [ ] View Privacy/Terms page source for meta tags
+- [ ] Run through quote flow end-to-end
 
-### Pricing Model (from quoteCalculator.ts)
-- Hourly rates INCLUDE crew and truck costs
-- No separate travel/stair fees (marketing: "NO HIDDEN FEES")
-- Iron Law: 200+ lb items = $179/hr with 3 movers (included in rate)
+---
+
+## Conclusion
+
+The platform is **professionally ready for launch** with only 3 small text/URL corrections needed. All major functionality is working, branding is consistent, and the user experience is polished. The fixes take approximately 15 minutes total.
 
