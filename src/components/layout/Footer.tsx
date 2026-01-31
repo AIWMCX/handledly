@@ -86,18 +86,20 @@ export function Footer() {
               Denver's trusted partner for stress-free moves. Flat-rate pricing with no hidden fees.
             </p>
             
-            {/* Social Links */}
+            {/* Social Links - Hidden until accounts are created */}
+            {/* 
             <div className="flex gap-4">
-              <a href="#" className="text-white/70 hover:text-accent transition-colors p-2 rounded-lg hover:bg-white/10" aria-label="Facebook">
+              <a href="https://facebook.com/handledly" className="text-white/70 hover:text-accent transition-colors p-2 rounded-lg hover:bg-white/10" aria-label="Facebook">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="text-white/70 hover:text-accent transition-colors p-2 rounded-lg hover:bg-white/10" aria-label="Instagram">
+              <a href="https://instagram.com/handledly" className="text-white/70 hover:text-accent transition-colors p-2 rounded-lg hover:bg-white/10" aria-label="Instagram">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="#" className="text-white/70 hover:text-accent transition-colors p-2 rounded-lg hover:bg-white/10" aria-label="LinkedIn">
+              <a href="https://linkedin.com/company/handledly" className="text-white/70 hover:text-accent transition-colors p-2 rounded-lg hover:bg-white/10" aria-label="LinkedIn">
                 <Linkedin className="w-5 h-5" />
               </a>
             </div>
+            */}
 
             {/* License & Insurance Badges */}
             <div className="space-y-3 pt-4 border-t border-white/20">

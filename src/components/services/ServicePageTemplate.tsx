@@ -31,7 +31,7 @@ export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
       <SEO 
         title={data.metaTitle}
         description={data.metaDescription}
-        canonicalUrl={`https://handledmoving.com/services/${data.slug}`}
+        canonicalUrl={`https://handledly.com/services/${data.slug}`}
         keywords={data.keywords}
       />
       
