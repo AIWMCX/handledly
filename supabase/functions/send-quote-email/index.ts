@@ -133,7 +133,7 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                         200LB IRON LAW — SAFETY REQUIREMENT
                       </p>
                       <p style="margin: 0; font-size: 13px; color: #A8A29E; line-height: 1.5;">
-                        Items 200+ lbs require a <strong style="color: #FAFAF9;">3-mover crew</strong> at our <strong style="color: #FAFAF9;">$179/hr</strong> safety rate. This protects both your belongings and our team. Your quote reflects this requirement.
+                        Items 200+ lbs require a <strong style="color: #FAFAF9;">3-mover crew</strong> at our <strong style="color: #FAFAF9;">$189/hr</strong> safety rate with truck. This protects both your belongings and our team. Your quote reflects this requirement.
                       </p>
                     </td>
                   </tr>
