@@ -28,9 +28,12 @@ Effective: February 1, 2026
 - **4 Movers + Truck**: $259/hour
 
 ### HEAVY ITEMS:
-- **Base Rate**: $169/hour (by situation)
-- **Iron Law Rate**: $189/hour (200+ lb items, 3 movers + truck)
-- **3 Movers Labor Only**: $179/hour (for 200+ lb items without truck)
+- **Context-Based Rate**: $169/hour (heavy but manageable with 2-3 movers)
+- **Iron Law Rate (WITH TRUCK)**: $189/hour (200+ lb items, 3 movers + truck) ← DEFAULT
+- **Iron Law Rate (LABOR-ONLY)**: $179/hour (200+ lb items, 3 movers, no truck) ← RARE
+
+**⚠️ CRITICAL: Jack should DEFAULT to $189/hour (with truck) for Iron Law items.**
+**Only quote $179/hour if customer explicitly needs labor-only (has own truck).**
 
 ### FEES:
 - **Electronic Payment**: +$5
@@ -46,8 +49,13 @@ Effective: February 1, 2026
 
 **REQUIREMENTS (NO EXCEPTIONS)**:
 1. Minimum 3 movers
-2. Truck included
-3. Rate: $189/hour (or $179/hour for labor-only)
+2. Truck included (unless customer specifically needs labor-only)
+3. **Rate: $189/hour WITH TRUCK (default)** or **$179/hour LABOR-ONLY (rare)**
+
+**⚠️ JACK MUST USE CORRECT RATE:**
+- If customer needs truck (most cases): Quote **$189/hour**
+- If customer only needs labor (rare): Quote **$179/hour**
+- **DEFAULT ASSUMPTION:** Customer needs truck → **$189/hour**
 
 ### ITEMS THAT ALWAYS TRIGGER IRON LAW:
 - All pianos (upright, baby grand, grand)

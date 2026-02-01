@@ -78,10 +78,14 @@ export const INCLUDED_WITH_EVERY_MOVE = [
 ];
 
 // 200LB IRON LAW - CRITICAL SAFETY REQUIREMENT
-// Any item 200+ lbs requires MINIMUM 3 movers at $179/hr - NO EXCEPTIONS
+// Any item 200+ lbs requires MINIMUM 3 movers - NO EXCEPTIONS
+// RATE DISTINCTION:
+//   - $189/hr = Iron Law WITH TRUCK (default, most common)
+//   - $179/hr = Iron Law LABOR-ONLY (rare, customer has own truck)
 export const IRON_LAW_WEIGHT_THRESHOLD = 200;
 export const IRON_LAW_MIN_CREW = 3;
-export const IRON_LAW_RATE = 189; // 3 movers + truck for 200+ lb items
+export const IRON_LAW_RATE = 189; // WITH TRUCK (default for most customers)
+export const IRON_LAW_LABOR_ONLY_RATE = 179; // LABOR-ONLY (rare)
 
 // Crew configurations for local moving (Updated February 2026)
 export const CREW_CONFIGURATIONS = [
@@ -234,10 +238,10 @@ export const SERVICE_TYPES = [
     description: 'Pianos, pool tables, safes & oversized items',
     icon: 'weight',
     subTypes: [
-      { value: 'piano', label: 'Piano Moving', description: 'Upright and grand pianos (200+ lbs = 3 movers @ $189/hr)' },
-      { value: 'pool-table', label: 'Pool Table Moving', description: 'Disassembly, move & reassembly (2-3 movers @ $169/hr)' },
+      { value: 'piano', label: 'Piano Moving', description: 'Upright and grand pianos (200+ lbs = 3 movers @ $189/hr with truck)' },
+      { value: 'pool-table', label: 'Pool Table Moving', description: 'Disassembly, move & reassembly (2-3 movers @ $169/hr - NOT Iron Law)' },
       { value: 'heavy-under-200', label: 'Heavy Items (Under 200 lbs)', description: 'Appliances, large furniture, gym equipment' },
-      { value: 'heavy-over-200', label: 'Heavy Items (200+ lbs)', description: 'Safes, gun safes, hot tubs - IRON LAW: 3 movers @ $179/hr' },
+      { value: 'heavy-over-200', label: 'Heavy Items (200+ lbs)', description: 'Safes, gun safes, hot tubs - IRON LAW: 3 movers @ $189/hr with truck' },
       { value: 'same-day-heavy', label: 'Same-Day Heavy Items', description: 'Emergency heavy item moves' },
     ]
   },

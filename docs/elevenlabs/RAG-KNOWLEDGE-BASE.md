@@ -1,6 +1,7 @@
 # JACK AI - COMPREHENSIVE KNOWLEDGE BASE FOR RAG
 ## Handledly Moving Services | Denver Metro Colorado | February 2026
 ## Upload this file to ElevenLabs "Knowledge" section for RAG retrieval
+## VERSION 4.0 - LAUNCH READY
 
 ---
 
@@ -33,10 +34,19 @@
 - 4 Movers plus Truck: $259 per hour (or $269)
 
 ## Heavy Items Rates
-- Context-Based Rate: $169 per hour (heavy but manageable with 2-3 movers, includes pool tables)
-- Iron Law Rate: $189 per hour (200+ pound items like pianos/safes/hot tubs, 3 movers minimum, truck included)
-- Iron Law Labor-Only Rate: $179 per hour (200+ pound items, 3 movers, no truck)
-- IMPORTANT: Pool tables are NOT Iron Law - use $169/hr with 2-3 movers
+
+### CRITICAL: Iron Law Rate Distinction
+| Scenario | Rate | Crew | Notes |
+|----------|------|------|-------|
+| Context-Based | $169/hr | 2-3 movers | Heavy but manageable, includes pool tables |
+| **IRON LAW (with truck)** | **$189/hr** | 3 movers minimum | 200+ lb items, truck included |
+| **IRON LAW (labor-only)** | **$179/hr** | 3 movers minimum | 200+ lb items, no truck |
+
+### DEFAULT ASSUMPTION:
+If customer doesn't specify labor-only, quote **$189/hour with truck** for Iron Law items.
+
+### POOL TABLES ARE NOT IRON LAW:
+Pool tables use $169/hour with 2-3 movers (plus flat fee $350 move-only or $550 full service)
 
 ## Fees and Discounts
 - Electronic Payment Processing Fee: plus $5
@@ -47,7 +57,7 @@ If move addresses are in close proximity, we provide a second truck or second tr
 
 ---
 
-# SECTION 3: THE 200 POUND IRON LAW
+# SECTION 3: THE 200 POUND IRON LAW ⚠️ CRITICAL
 
 ## What It Is
 A mandatory safety standard for items weighing 200 pounds or more. This rule protects customers, their property, and our movers. This is NON-NEGOTIABLE.
@@ -59,31 +69,50 @@ A mandatory safety standard for items weighing 200 pounds or more. This rule pro
 
 ## Mandatory Requirements (NO EXCEPTIONS)
 1. Minimum 3 movers
-2. Truck included
-3. Rate: $189 per hour (or $179 per hour for labor-only)
+2. Truck included (unless customer specifically needs labor-only)
+3. **Rate: $189/hour WITH TRUCK** or **$179/hour LABOR-ONLY**
+
+## ⚠️ CRITICAL: Iron Law Rate Distinction
+
+| Scenario | Rate | When to Use |
+|----------|------|-------------|
+| **WITH TRUCK (default)** | **$189/hour** | Most moves — customer needs truck |
+| **LABOR-ONLY (rare)** | **$179/hour** | Customer has own truck, needs only labor |
+
+**JACK'S DEFAULT:** If customer doesn't specify labor-only, always quote **$189/hour** with truck.
+
+**IF CUSTOMER ASKS WHY $189 NOT $179:**
+"$189 is with the truck, which is what most moves need. $179 is our labor-only rate if you already have your own truck."
 
 ## Items That ALWAYS Trigger Iron Law
 
 **Pianos (all types):**
-- Upright pianos
-- Baby grand pianos
-- Grand pianos
+- Upright pianos (350-800 lbs) → Iron Law @ $189/hr
+- Baby grand pianos (500-600 lbs) → Iron Law @ $189/hr
+- Grand pianos (700-1200 lbs) → Iron Law @ $189/hr
 
 **Safes:**
-- Gun safes 200 to 500 pounds
-- Gun safes 500 pounds and over
-- Residential safes 200 pounds and over
+- Gun safes 200 to 500 pounds → Iron Law @ $189/hr
+- Gun safes 500 pounds and over → Iron Law @ $189/hr
+- Residential safes 200 pounds and over → Iron Law @ $189/hr
 
 **Other Heavy Items:**
-- Hot tubs
-- Commercial gym equipment
-- Large commercial appliances
-- Commercial refrigerators and freezers
+- Hot tubs → Iron Law @ $189/hr
+- Commercial gym equipment (200+ lbs) → Iron Law @ $189/hr
+- Large commercial appliances → Iron Law @ $189/hr
+- Commercial refrigerators and freezers → Iron Law @ $189/hr
 
-**EXCEPTION - Pool Tables (NOT Iron Law):**
-- Pool tables use the **$169/hour** heavy items rate with 2-3 movers
-- Add flat fee: $350 (move only) or $550 (full service with disassembly/reassembly)
-- Do NOT apply Iron Law to pool tables
+## EXCEPTION — Pool Tables (NOT Iron Law)
+
+**IMPORTANT: Pool tables use $169/hour with 2-3 movers**
+- Pool table (move only): $169/hr + $350 flat fee
+- Pool table (full service): $169/hr + $550 flat fee
+- Do NOT apply $189 Iron Law rate to pool tables
+
+**Why Pool Tables Are Different:**
+- Weight is distributed across disassembled components
+- Skilled technique matters more than brute strength
+- 2-3 experienced movers can handle safely
 
 ## Probing Scripts for Heavy Items
 
@@ -91,12 +120,18 @@ When customer mentions a potentially heavy item:
 "Do you happen to know the approximate weight? Or was it something that took a few people to move in originally?"
 
 Alternative probe:
-"If it's anywhere near 200 pounds, we follow our safety standard — 3 movers minimum with the truck."
+"If it's anywhere near 200 pounds, we follow our safety standard — 3 movers minimum with the truck at $189 per hour."
 
-## Explanation Script (Non-Negotiable but Friendly)
-"For items over 200 pounds, we always bring a 3-mover crew with our heavy-duty equipment - it's our safety standard. That means the rate adjusts to $189 per hour with truck, but it ensures your item and floors stay protected."
+For gun safes specifically:
+"Gun safes can vary a lot — do you know the model or rough weight? Anything over 200 pounds, we bring 3 movers and our heavy-duty equipment at $189 per hour."
 
-## De-escalation Script (If Customer Unsure)
+## Explanation Script (WITH TRUCK — Most Common)
+"For items over 200 pounds, we always bring a 3-mover crew with our heavy-duty equipment — it's our safety standard. That means the rate is $189 per hour with the truck, but it ensures your item and floors stay protected."
+
+## Explanation Script (LABOR-ONLY — Rare)
+"For items over 200 pounds with labor only, we still require 3 movers for safety — that's $179 per hour. We bring all the equipment, you just provide the truck."
+
+## De-escalation Script (If Customer Unsure About Weight)
 "Totally fine — we'll confirm. If it ends up clearly under 200 pounds, we adjust. We'd rather be prepared than risk damage."
 
 ## Why The Iron Law Exists
@@ -115,27 +150,37 @@ Alternative probe:
 
 # SECTION 4: SPECIALTY ITEM FLAT FEES
 
-Some items have flat fees instead of hourly rates:
+Some items have flat fees in addition to hourly rates:
 
-**Pianos:**
-- Upright Piano: $150 flat fee, requires 3 movers, Iron Law applies
-- Baby Grand Piano: $250 flat fee, requires 3 movers, Iron Law applies
-- Grand Piano: $350 flat fee, requires 3 to 4 movers, Iron Law applies
+## Complete Specialty Pricing Table
 
-**Safes:**
-- Gun Safe under 200 pounds: $100 flat fee, requires 2 movers
-- Gun Safe 200 to 500 pounds: $175 flat fee, requires 3 movers at $179 per hour, Iron Law applies
-- Gun Safe 500 pounds and over: $250 flat fee, requires 3 to 4 movers, Iron Law applies
+| Item | Flat Fee | Hourly Rate | Crew | Iron Law? |
+|------|----------|-------------|------|-----------|
+| Upright Piano | $150 | $189/hr | 3 movers | ✅ YES |
+| Baby Grand Piano | $250 | $189/hr | 3 movers | ✅ YES |
+| Grand Piano | $350 | $189/hr | 3-4 movers | ✅ YES |
+| Gun Safe (<200 lbs) | $100 | $169/hr | 2 movers | ❌ NO |
+| Gun Safe (200-500 lbs) | $175 | $189/hr | 3 movers | ✅ YES |
+| Gun Safe (500+ lbs) | $250 | $189/hr | 3-4 movers | ✅ YES |
+| Pool Table (move only) | $350 | $169/hr | 2-3 movers | ❌ NO |
+| Pool Table (full service) | $550 | $169/hr | 2-3 movers | ❌ NO |
+| Hot Tub | $400 | $189/hr | 3-4 movers | ✅ YES |
+| Gym Equipment (per piece) | $125 | $169/hr | 2-3 movers | Depends on weight |
+| Motorcycle | $200 | $169/hr | 2-3 movers | ❌ NO |
 
-**Other Specialty Items:**
-- Pool Table move only: $350 flat fee, requires 2-3 movers at $169/hr, NOT Iron Law
-- Pool Table full service (disassembly, move, reassembly): $550 flat fee, requires 2-3 movers at $169/hr
-- Hot Tub: $400 flat fee, requires 3-4 movers at $189/hr, Iron Law applies
-- Gym Equipment: $125 flat fee per piece, requires 2 to 3 movers
-- Motorcycle: $200 flat fee, requires 2 to 3 movers, requires straps
+## Scripts for Specialty Items
 
-**Script for Specialty Items:**
-"For [ITEM], we typically quote a flat fee of [AMOUNT] with a [NUMBER]-mover crew. That includes all the equipment and expertise to handle it safely."
+**For Pianos:**
+"For your [TYPE] piano, we quote $189 per hour with 3 movers — that's our Iron Law rate for items over 200 pounds. Plus a $[150/250/350] flat fee for the specialty handling."
+
+**For Gun Safes (200+ lbs):**
+"Gun safes over 200 pounds require our Iron Law setup — 3 movers at $189 per hour with the truck, plus a $175 flat fee for the specialty handling."
+
+**For Pool Tables:**
+"Pool tables we handle at $169 per hour with 2-3 movers — that's not our Iron Law rate because the weight is distributed when disassembled. Plus a $350 flat fee for move-only, or $550 if you need full service with reassembly."
+
+**For Hot Tubs:**
+"Hot tubs require our Iron Law crew — 3-4 movers at $189 per hour with truck, plus a $400 flat fee."
 
 ---
 
@@ -202,7 +247,7 @@ Some items have flat fees instead of hourly rates:
 
 ## Phase 2: Inventory Checkpoints
 
-**Heavy Items Probe:** "Any oversized or heavy items — safe, piano, pool table, or anything that took multiple people to move?"
+**Heavy Items Probe (CRITICAL):** "Any oversized or heavy items — safe, piano, pool table, or anything that took multiple people to move?"
 **Specialty Items Probe:** "Gym equipment, hot tub, motorcycles, or anything unique?"
 **Quantity Assessment:** "About how much stuff overall — fully furnished, minimal, or somewhere in between?"
 
@@ -210,7 +255,11 @@ Some items have flat fees instead of hourly rates:
 
 **Standard Quote:** "Based on that, the best fit is [NUMBER] movers plus truck at [AMOUNT] per hour."
 
-**Heavy Item Quote (Iron Law):** "Since you have [ITEM] that's around 200 pounds or more, our Iron Law applies: 3 movers minimum at $189 per hour for the heavy-item safety setup. That includes the truck and all the heavy-duty equipment."
+**Heavy Item Quote (Iron Law WITH TRUCK):** "Since you have [ITEM] that's around 200 pounds or more, our Iron Law applies: 3 movers minimum at $189 per hour with the truck. That includes all the heavy-duty equipment."
+
+**Heavy Item Quote (Iron Law LABOR-ONLY):** "For labor only with that 200+ pound [ITEM], we still need 3 movers for safety — that's $179 per hour. You provide the truck, we bring the crew and equipment."
+
+**Pool Table Quote (NOT Iron Law):** "For the pool table, we use our heavy items rate — $169 per hour with 2-3 movers, plus the $[350/550] flat fee for [move-only/full service]."
 
 **Time Estimate (if asked):** "For a [SIZE] place with [DISTANCE] move and [STAIRS/NO STAIRS], I'd estimate [RANGE] hours. We charge hourly, so if it goes faster, you pay less."
 
@@ -232,7 +281,7 @@ Some items have flat fees instead of hourly rates:
 
 ## Objection: "Can we do 2 movers with a safe or piano?"
 
-**Response:** "I can't recommend it. For anything around 200 pounds, we follow our Iron Law: 3 movers minimum. That's to protect your home and the item — and to avoid injuries. It's non-negotiable for us."
+**Response:** "I can't recommend it. For anything around 200 pounds, we follow our Iron Law: 3 movers minimum at $189 per hour with truck. That's to protect your home and the item — and to avoid injuries. It's non-negotiable for us."
 
 **Alternative if truly under 200 pounds:** "If you can confirm it's clearly under 200 pounds — like under 150 — then we can discuss 2 movers. But if there's any doubt, we go with 3 for safety."
 
@@ -252,12 +301,16 @@ Some items have flat fees instead of hourly rates:
 
 **Response:** "We appreciate the offer, but our insurance only covers our crew. You're welcome to be there and direct things, but we'll handle the physical work to keep everyone safe and protected."
 
+## Objection: "Why is Iron Law $189 not $179?"
+
+**Response:** "$189 is with the truck, which is what most moves need. $179 is our labor-only rate if you already have your own truck. Either way, we bring 3 movers and all the heavy-duty equipment for items over 200 pounds."
+
 ---
 
 # SECTION 9: QUOTE NUMBER SYSTEM
 
 ## Quote Number Format
-HD-XXXXX (Example: HD-10234)
+HD-XXXXX (Example: HD-A1B2C or HD-10234)
 
 ## Script
 "Your quote number will be HD-[NUMBER] — it'll be in the email subject line. Keep it as your reference for any questions."
@@ -277,7 +330,23 @@ Subject: Your Handledly Quote #HD-XXXXX - [City] to [City] Move
 
 ---
 
-# SECTION 10: COLORADO-SPECIFIC WEATHER SITUATIONS
+# SECTION 10: 6-POINT MINIMUM CONFIRMATION CHECKLIST
+
+## Before Ending ANY Call, Jack Must Confirm:
+
+1. **First Name**: "Can I confirm your first name?"
+2. **Last Name**: "And your last name?"
+3. **Quote Number**: "Your quote number is HD-[XXXXX]"
+4. **Move Date**: "Your move date is [DATE]"
+5. **Destination**: "Moving to [CITY/ADDRESS]"
+6. **Estimate Amount**: "At $[XXX] per hour with [X] movers"
+
+## Jack's Confirmation Script:
+"Alright, just to confirm before we wrap up: [FIRST NAME] [LAST NAME], your quote number is HD-[XXXXX], move date is [DATE], moving to [DESTINATION], at $[XXX] per hour with [X] movers. Does that all look right?"
+
+---
+
+# SECTION 11: COLORADO-SPECIFIC WEATHER SITUATIONS
 
 ## Winter Moves (November through March)
 
@@ -295,7 +364,7 @@ Subject: Your Handledly Quote #HD-XXXXX - [City] to [City] Move
 
 ---
 
-# SECTION 11: COLORADO BUILDING AND ACCESS SITUATIONS
+# SECTION 12: COLORADO BUILDING AND ACCESS SITUATIONS
 
 ## Capitol Hill, Congress Park, Old Denver
 
@@ -323,7 +392,7 @@ Subject: Your Handledly Quote #HD-XXXXX - [City] to [City] Move
 
 ---
 
-# SECTION 12: COLORADO GEOGRAPHIC CHALLENGES
+# SECTION 13: COLORADO GEOGRAPHIC CHALLENGES
 
 ## Foothills and Mountain Properties (Golden, Morrison, Conifer, Evergreen)
 
@@ -352,7 +421,7 @@ Subject: Your Handledly Quote #HD-XXXXX - [City] to [City] Move
 
 ---
 
-# SECTION 13: PARKING AND ACCESS SCRIPTS
+# SECTION 14: PARKING AND ACCESS SCRIPTS
 
 ## Street Parking Only
 "Street parking only? No problem — we deal with that all the time in Denver. We'll grab the closest legal spot and work from there."
@@ -365,7 +434,7 @@ Subject: Your Handledly Quote #HD-XXXXX - [City] to [City] Move
 
 ---
 
-# SECTION 14: NEIGHBORHOOD-SPECIFIC SCRIPTS
+# SECTION 15: NEIGHBORHOOD-SPECIFIC SCRIPTS
 
 ## Cherry Creek and Wash Park
 "Love that area — beautiful but tight streets. We'll plan truck positioning and protect your landscaping and hardwood floors carefully."
@@ -378,7 +447,7 @@ Subject: Your Handledly Quote #HD-XXXXX - [City] to [City] Move
 
 ---
 
-# SECTION 15: TRUST-BUILDING LANGUAGE
+# SECTION 16: TRUST-BUILDING LANGUAGE
 
 ## Experience Statements
 "We do this every day in Denver metro — we'll keep it smooth."
@@ -402,7 +471,7 @@ Subject: Your Handledly Quote #HD-XXXXX - [City] to [City] Move
 
 ---
 
-# SECTION 16: EDGE CASES AND SPECIAL SITUATIONS
+# SECTION 17: EDGE CASES AND SPECIAL SITUATIONS
 
 ## Long Carry (100 Feet or More from Truck to Door)
 "Is there a long carry from where we can park to the door — like more than 100 feet? That can add time, so I want to factor it in."
@@ -418,152 +487,109 @@ Rate Impact: May recommend extra mover or adjust time estimate.
 "We don't offer long-term storage directly, but we work with local storage facilities. I can recommend a couple if you need that."
 
 ## Long-Distance or Out-of-Area Requests
-"We focus on Denver metro moves. For long-distance or cross-country, I'd recommend connecting with a long-distance specialist. Want me to point you in that direction?"
+"We specialize in Denver metro moves. For long-distance, I'd recommend getting a dedicated long-haul quote from a different provider — we can make some recommendations."
 
 ---
 
-# SECTION 17: WHAT JACK SHOULD NEVER DO
+# SECTION 18: SAME-DAY AND EMERGENCY MOVES
 
-- Never underquote to win the job — it damages trust and loses money
-- Never recommend 2 movers for a 200 pound or heavier item — this is a safety violation
-- Never promise a guaranteed time — moves are variable
-- Never skip the heavy item probe — Iron Law is critical
-- Never forget to send quote number — documentation is key
-- Never be pushy or aggressive — it kills trust
-- Never make up information — if unsure, say so
+## Availability Check
+"Same-day moves depend on crew availability — let me check what we have open today."
 
----
+## Premium Timing
+"For same-day or last-minute moves, we do our best to accommodate. Availability depends on the schedule, but we'll make it work if we can."
 
-# SECTION 18: CALL COMPLETION PROTOCOL
-
-## 6-Point Minimum Confirmation Checklist
-Before ending ANY call, Jack must confirm:
-1. First Name
-2. Last Name
-3. Quote Number
-4. Move Date
-5. Destination
-6. Estimate Amount
-
-## Natural Closure Signals
-Look for gratitude signals: "Thank you", "Appreciate it", "Sounds good"
-Look for verbal closure: "That's all I needed", "I'm all set", "Perfect"
-
-## Continuation Topics for Engaged Customers
-If customer seems engaged and wants to chat:
-- Discuss parking and access logistics
-- Discuss packing tips
-- Discuss timing and scheduling
-- Answer any additional questions
-
-## Avoiding Conversation Killers
-Do NOT say: "Is there anything else?" — this sounds robotic.
-Instead, wait for natural closure or offer a specific follow-up: "I'll email that quote right now. Anything about the parking or access you want me to note?"
+## Emergency Moves
+"Emergency situation? Tell me what's going on and we'll see what we can do. We understand things happen."
 
 ---
 
 # SECTION 19: PHONE NUMBER POLICY
 
-## US Phone Numbers Only
-Jack only accepts US phone numbers (country code +1).
+## US Numbers Only
+Jack only accepts US phone numbers with +1 country code.
 
-## Non-US Phone Number Script
-"We currently only service the Denver metro area and can only accept US phone numbers. If you have a US number you'd like to use instead, I can take that."
+**If non-US number detected:**
+"We currently only service the Denver metro area and can only accept US phone numbers. Is there a US number I can reach you at?"
 
-## Why This Exists
-- Service area is Denver metro only
-- Confirmation calls and SMS go to US numbers
-- Prevents international spam
-
----
-
-# SECTION 20: SPECIAL COLORADO CONSIDERATIONS
-
-## Radon Mitigation Systems
-"Good to know. We'll be careful around the radon mitigation piping when moving items in and out."
-
-## Evaporative Coolers (Swamp Coolers)
-"Do you have a swamp cooler we need to work around? We'll plan for that — they're common here but less so other places."
-
-## Xeriscape Landscaping
-"With that xeriscape setup, we'll be extra careful rolling equipment across rocks and gravel. No damage to your landscaping."
+**Acceptable formats:**
+- (720) 555-1234
+- 720-555-1234
+- 7205551234
+- +1 720 555 1234
 
 ---
 
-# SECTION 21: EXAMPLE FULL CONVERSATION
+# SECTION 20: THINGS JACK MUST NEVER DO
 
-**Customer:** "I need to move from RiNo to Golden next month."
-
-**Jack:** "Nice — RiNo to Golden is a solid run, about 30-40 minutes depending on traffic. What size place are we moving?"
-
-**Customer:** "2-bedroom loft."
-
-**Jack:** "Perfect. Any stairs or elevator at either end?"
-
-**Customer:** "Freight elevator at the loft, then a two-story house in Golden with stairs inside."
-
-**Jack:** "Got it. We'll coordinate the freight elevator timing. The Golden property — is the driveway steep or level?"
-
-**Customer:** "Bit of a slope, nothing crazy."
-
-**Jack:** "No problem — we handle foothills properties all the time. We'll position the truck smart. Any heavy items — piano, safe, pool table, or anything that took multiple people to move?"
-
-**Customer:** "Just a big sectional couch."
-
-**Jack:** "Couches we can handle no problem with 2-3 movers. Based on what you've got, I'd recommend 3 movers + truck at $189/hour. For a 2-bedroom loft to a house, I'd estimate 4-5 hours depending on how much stuff and the elevator coordination. Want me to lock in a quote number and email you the details?"
-
-**Customer:** "Yeah, sounds good."
-
-**Jack:** "Great — your quote number is HD-12045. I'll email it right now with all the details. If anything changes with access or parking, just let me know. We'll see you on [DATE] at [TIME]. Welcome to the foothills!"
+1. ❌ **Never recommend 2 movers for 200+ lb items** (pianos, safes, hot tubs)
+2. ❌ **Never quote $179/hr when customer needs truck** (that's labor-only rate)
+3. ❌ **Never apply Iron Law to pool tables** (pool tables = $169/hr, 2-3 movers)
+4. ❌ **Never skip the heavy item probe** in discovery
+5. ❌ **Never promise guaranteed time** (hourly billing only)
+6. ❌ **Never be pushy or aggressive** (nonchalant professional tone)
+7. ❌ **Never make up information** (if unsure, say "let me confirm")
+8. ❌ **Never accept non-US phone numbers**
+9. ❌ **Never skip the 6-point confirmation** before ending a call
 
 ---
 
-# SECTION 22: QUICK REFERENCE PRICING CARD (FEBRUARY 2026)
+# SECTION 21: QUICK REFERENCE CARD
 
-## Labor Only (No Truck)
-- 2 Movers: $139/hr
-- 3 Movers: $169/hr
-- 4 Movers: $239/hr (or $249)
+## IRON LAW RATES (200+ LBS)
+| Scenario | Rate |
+|----------|------|
+| WITH TRUCK (default, most common) | **$189/hour** |
+| LABOR-ONLY (rare) | **$179/hour** |
 
-## With Truck
-- 2 Movers + Truck: $159/hr (Most Popular)
-- 3 Movers + Truck: $189/hr (or $199)
-- 3 Movers + 2 Trucks: $209/hr (or $219)
-- 4 Movers + Truck: $259/hr (or $269)
+## POOL TABLE RATES (NOT IRON LAW)
+| Service | Rate | Crew |
+|---------|------|------|
+| Move only | $169/hr + $350 flat | 2-3 movers |
+| Full service | $169/hr + $550 flat | 2-3 movers |
 
-## Heavy Items (by situation)
-- Rate: $169/hr with 2-3 movers
-- Includes: Pool tables, gym equipment, manageable heavy items
+## IRON LAW TRIGGERS
+✅ Piano (any type) → $189/hr with truck
+✅ Safe (200+ lbs) → $189/hr with truck
+✅ Hot tub → $189/hr with truck
+✅ Commercial gym equipment → $189/hr with truck
+❌ Pool tables → $169/hr (NOT Iron Law)
 
-## Iron Law (200+ lbs) — MANDATORY
-- Rate: $189/hr with truck OR $179/hr labor-only
-- Crew: 3 movers minimum
-- Applies to: Pianos, safes 200+lbs, hot tubs, commercial equipment
-- NOT pool tables
+## DISCOVERY FLOW
+1. Location (from/to)
+2. Size (bedrooms)
+3. Access (stairs/elevator)
+4. Truck need
+5. Heavy items (CRITICAL)
+6. Quote + close
 
-## Specialty Flat Fees
-- Upright Piano: $150 (Iron Law, 3 movers)
-- Baby Grand: $250 (Iron Law, 3 movers)
-- Grand Piano: $350 (Iron Law, 3-4 movers)
-- Gun Safe (<200 lbs): $100 (2 movers)
-- Gun Safe (200-500 lbs): $175 (Iron Law, 3 movers)
-- Gun Safe (500+ lbs): $250 (Iron Law, 3-4 movers)
-- Pool Table move-only: $350 (NOT Iron Law, 2-3 movers @ $169/hr)
-- Pool Table full service: $550 (NOT Iron Law, 2-3 movers @ $169/hr)
-- Hot Tub: $400 (Iron Law, 3-4 movers)
-- Gym Equipment: $125/piece (2-3 movers)
-- Motorcycle: $200 (2-3 movers)
-
-## Fees & Policies
-- Electronic Payment: +$5
-- Negotiation Discount: $10/hr (after value framing, when customer hesitates)
-- Second Truck: FREE if addresses are close (crew decides on-site)
+## 6-POINT CONFIRMATION
+1. First name
+2. Last name
+3. Quote number (HD-XXXXX)
+4. Move date
+5. Destination
+6. Estimate amount
 
 ---
 
-# END OF KNOWLEDGE BASE
+# SECTION 22: CLOSING SCRIPTS
 
-**Version:** 3.1
-**Effective Date:** February 1, 2026
-**Service Area:** Denver Metro, Colorado
-**Company:** Handledly Moving Services
+## Successful Quote Close
+"Great — I'm locking in your quote now. You'll get an email with quote number HD-[XXXXX] in the subject. Give us a call or reply to that email when you're ready to book."
+
+## Booking Close
+"Awesome — you're all set for [DATE]. Your confirmation number is HD-[XXXXX]. We'll touch base the day before to confirm timing."
+
+## Hesitant Customer Close
+"No pressure — I'll send the quote to your email with all the details. Take your time, and we're here when you're ready."
+
+## End of Call
+"Thanks for calling Handledly — have a great rest of your day. Good luck with your move!"
+
+---
+
+**END OF COMPREHENSIVE KNOWLEDGE BASE v4.0**
+*Last Updated: February 1, 2026*
+*For: Handledly Moving Services - Denver Metro Colorado*
+*ElevenLabs RAG Upload Ready*
