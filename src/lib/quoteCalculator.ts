@@ -118,7 +118,8 @@ export function isIronLawService(serviceType: string, subType?: string): boolean
 }
 
 // Estimate crew size based on service and property
-// IRON LAW: 200+ lb items (piano, pool table, safe, heavy-items) = 3 movers minimum
+// IRON LAW: 200+ lb items (pianos, safes, hot tubs) = 3 movers minimum
+// NOTE: Pool tables are NOT Iron Law - handled at $169/hr with 2-3 movers
 function estimateCrewSize(input: QuoteInput): number {
   // IRON LAW ENFORCEMENT: Heavy item services get 3 movers automatically
   if (isIronLawService(input.serviceType as string, input.subType)) {
@@ -167,7 +168,8 @@ export function calculateQuote(input: QuoteInput): QuoteBreakdown {
   const crewSize = estimateCrewSize(input);
   const estimatedHours = Math.ceil(estimateHours(input));
   
-  // IRON LAW: 200+ lb services (piano, pool table, safe, heavy-items) use $179/hr rate
+  // IRON LAW: 200+ lb services (piano, safe, hot tub) use $189/hr rate
+  // NOTE: Pool tables are NOT Iron Law - they use $169/hr heavy items rate
   const isIronLaw = isIronLawService(input.serviceType as string, input.subType);
   
   let hourlyRate: number;
