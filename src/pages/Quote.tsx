@@ -327,7 +327,7 @@ const generateQuoteNumber = (): string => {
               <div className="flex flex-wrap items-center justify-center gap-4 mb-8 p-4 rounded-xl bg-primary/5 border border-primary/10">
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-primary" />
-                  <span className="text-sm text-primary font-medium">USDOT Licensed</span>
+                  <span className="text-sm text-primary font-medium">Licensed & Insured</span>
                 </div>
                 <div className="w-px h-4 bg-border hidden sm:block" />
                 <div className="flex items-center gap-2">
