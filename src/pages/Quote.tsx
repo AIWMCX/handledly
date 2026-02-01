@@ -71,11 +71,10 @@ export default function Quote() {
     quoteNumber: string;
   } | null>(null);
 
-// Generate quote number: HM-YYYY-XXXX (XXXX = random 4 chars for uniqueness)
+// Generate quote number: HD-XXXXX format (per branding spec)
 const generateQuoteNumber = (): string => {
-  const year = new Date().getFullYear();
-  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-  return `HM-${year}-${random}`;
+  const random = Math.random().toString(36).substring(2, 7).toUpperCase();
+  return `HD-${random}`;
 };
 
   const handleWizardSubmit = async (data: QuoteFormData) => {
