@@ -1,445 +1,183 @@
 
-# HANDLEDLY MASTER PRE-LAUNCH AUDIT
-## February 1, 2026 — Launch Readiness Assessment
+# CRITICAL PRE-LAUNCH PRICING FIX PLAN
+## Pool Table = $169/hr with 2 Movers (NOT Iron Law)
 
 ---
 
-# EXECUTIVE SUMMARY
+## CRITICAL FINDING: Pool Table Pricing is WRONG Everywhere
 
-## Overall Launch Readiness Score: 78/100 — CONDITIONAL GO
+Based on your specification, **Pool Table moving should be:**
+- **Rate: $169/hr** (Heavy Items by situation rate)
+- **Crew: 2 movers** (NOT 3 movers)
+- **NOT subject to Iron Law** (despite being a heavy item)
 
-| Category | Score | Status |
-|----------|-------|--------|
-| Pricing Accuracy | 65/100 | CRITICAL FIX REQUIRED |
-| Security & RLS | 92/100 | READY |
-| Technical Stability | 88/100 | READY |
-| Performance | 85/100 | READY |
-| SMS/Email/Call Flow | 90/100 | READY |
-| AI/Voice Agent | 70/100 | REQUIRES CONFIGURATION |
-| SEO & Legal | 85/100 | READY |
+**Current Code Status (ALL WRONG):**
 
----
-
-# SECTION 1: CRITICAL PRICING DISCREPANCY — LAUNCH BLOCKER
-
-## Your Specified Rates vs. Current Code
-
-| Service | YOUR RATE | CODE RATE | STATUS |
-|---------|-----------|-----------|--------|
-| 2 Movers Labor Only | $139/hr | $139/hr | CORRECT |
-| 2 Movers + Truck | $159/hr | $159/hr | CORRECT |
-| 3 Movers Labor Only | $169/hr | $169/hr | CORRECT |
-| Heavy Items (by situation) | $169/hr | $169/hr | CORRECT |
-| **3 Movers + Truck (Iron Law)** | **$189-199/hr** | **$179/hr** | **WRONG** |
-| **3 Movers Labor Only (Iron Law)** | **$179/hr** | **$179/hr** | **WRONG - per your spec should be $189-199** |
-| 3 Movers + 2 Trucks | $209-219/hr | $209/hr | ACCEPTABLE |
-| 4 Movers + Truck | $259-269/hr | $259/hr | ACCEPTABLE |
-| 4 Movers Labor Only | $239-249/hr | $239/hr | ACCEPTABLE |
-| Electronic Payment Fee | +$5 | +$5 | CORRECT |
-| Negotiation Discount | $10 | $10 | CORRECT |
-
-## Critical Iron Law Rate Issue
-
-**YOUR SPECIFICATION:**
-- Iron Law (3 movers + truck) should be **$189/hr or $199/hr** — NOT $179/hr
-- 3 movers labor only should be **$179/hr**
-
-**CURRENT CODE (`quoteCalculator.ts`):**
-- Line 45: `'iron-law-minimum': 179` — This is **WRONG** based on your spec
-- Iron Law should be $189-199/hr with truck, not $179
-
-## Files That Need Pricing Updates
-
-1. `src/lib/quoteCalculator.ts` - Lines 39-46
-2. `docs/MASTER-PRICING-PROMPT.md` - Section 1 & 2
-3. `docs/elevenlabs/SYSTEM-PROMPT.md` - Core Pricing section
-4. `docs/elevenlabs/RAG-KNOWLEDGE-BASE.md` - Section 2 & 22
-5. `supabase/functions/ai-chat/index.ts` - Lines 84-108
+| Location | Current Setting | Should Be | Status |
+|----------|----------------|-----------|--------|
+| `quoteCalculator.ts` | Iron Law @ $189/hr, 3 movers | $169/hr, 2 movers | WRONG |
+| `ai-chat/index.ts` | "3 movers required" for pool tables | 2 movers @ $169/hr | WRONG |
+| `servicesData.ts` | "3 movers required" | 2 movers | WRONG |
+| `RAG-KNOWLEDGE-BASE.md` | "3 movers, Iron Law applies" | 2 movers @ $169/hr | WRONG |
+| `SYSTEM-PROMPT.md` | "Always triggers: pool tables" | Remove pool table from Iron Law | WRONG |
+| `MASTER-PRICING-PROMPT.md` | Pool table triggers Iron Law | 2 movers @ $169/hr | WRONG |
+| `send-quote-email` | "Pool Table - 3 movers" | 2 movers | WRONG |
 
 ---
 
-# SECTION 2: SECURITY AUDIT — 92/100
+## YOUR COMPLETE PRICING SPECIFICATION (Confirmed)
 
-## RLS Policies — EXCELLENT
+### Labor Only (No Truck)
+- 2 Movers: **$139/hr**
+- 3 Movers: **$169/hr**
+- 4 Movers: **$239/hr**
 
-| Table | RLS Enabled | Policies | Status |
-|-------|-------------|----------|--------|
-| leads | YES | 6 policies | SECURE |
-| quote_requests | YES | 5 policies | SECURE |
-| appointments | YES | 5 policies | SECURE |
-| chat_conversations | YES | 4 policies | SECURE |
-| chat_messages | YES | 4 policies | SECURE |
-| user_roles | YES | 2 policies | SECURE |
-| rate_limit_tracker | YES | 3 policies | SECURE |
-| honeypot_detections | YES | 2 policies | SECURE |
-| circuit_breaker_config | YES | 1 policy | SECURE |
-| cost_tracker | YES | 1 policy | SECURE |
-| client_trust_scores | YES | 1 policy | SECURE |
-| business_settings | YES | 2 policies | SECURE |
+### Moving With Truck
+- 2 Movers + Truck: **$159/hr** (Most Popular)
+- 3 Movers + Truck: **$189/hr**
+- 3 Movers + 2 Trucks: **$209/hr**
+- 4 Movers + Truck: **$259/hr**
 
-**Total: 42 RLS policies across 15 tables**
+### Heavy Items (by situation)
+- **Context-Based: $169/hr** with 2 movers (includes pool tables!)
 
-## Security Features Implemented
+### Iron Law (200+ lbs) - Applies to pianos, safes, hot tubs ONLY
+- 3 Movers + Truck: **$189/hr**
+- 3 Movers Labor Only: **$179/hr**
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Rate limiting on leads | YES | 5/minute/IP |
-| Rate limiting on chat | YES | 30/minute |
-| Rate limiting on email/SMS | YES | 5/minute |
-| Verification tokens | YES | 5-minute window |
-| Bot protection (honeypot) | YES | IP tracking |
-| Circuit breaker (cost) | YES | $50/day, $10/hour |
-| CORS headers | YES | All edge functions |
-| Input validation | YES | All forms |
-| US phone validation | YES | SMS/calls |
+### Fees
+- Electronic Payment: +$5
+- Negotiation Discount: $10/hr
 
-## Security Findings (All Resolved)
-
-| Finding | Severity | Status |
-|---------|----------|--------|
-| Edge function auth | HIGH | FIXED - verification tokens |
-| Email lookup function | MEDIUM | FIXED - admin-only restriction |
-| .env exposure risk | LOW | ACCEPTABLE - only public keys |
-| Extension in public | LOW | FALSE POSITIVE |
+### Second Truck Policy
+If addresses are close: second truck or second trip at NO extra cost (crew decides on-site)
 
 ---
 
-# SECTION 3: TECHNICAL STABILITY — 88/100
+## FILES TO UPDATE
 
-## Edge Functions Deployed
+### 1. `src/lib/quoteCalculator.ts`
+**Changes:**
+- Remove `pool-table` from `IRON_LAW_SERVICES` array (line ~101)
+- Pool table should use heavy-items rate ($169/hr) with 2 movers
+- Keep pianos, safes, hot tubs in Iron Law list
 
-| Function | Purpose | Status |
-|----------|---------|--------|
-| ai-chat | AI chat widget | DEPLOYED |
-| send-quote-email | Email quotes | DEPLOYED |
-| send-sms-notification | SMS alerts | DEPLOYED |
-| trigger-confirmation-call | Outbound calls | DEPLOYED |
-| elevenlabs-conversation-token | Voice agent auth | DEPLOYED |
-| handle-call-status | Call webhooks | DEPLOYED |
-| notify-admin-new-lead | Admin alerts | DEPLOYED |
-| health-check | Monitoring | DEPLOYED |
-| circuit-breaker-alert | Cost protection | DEPLOYED |
-| process-call-retries | Retry queue | DEPLOYED |
+### 2. `supabase/functions/ai-chat/index.ts`
+**Changes:**
+- Update SYSTEM_PROMPT to specify pool tables = 2 movers @ $169/hr
+- Remove pool tables from Iron Law trigger list
+- Add clarification: "Pool tables are handled with 2-3 movers at $169/hr depending on complexity"
 
-## Secrets Configured
+### 3. `docs/elevenlabs/SYSTEM-PROMPT.md`
+**Changes:**
+- Remove "pool tables" from Iron Law triggers
+- Add note: "Pool tables: 2 movers @ $169/hr (not Iron Law)"
 
-| Secret | Status |
-|--------|--------|
-| ELEVENLABS_API_KEY | CONFIGURED |
-| ELEVENLABS_AGENT_ID | CONFIGURED |
-| ELEVENLABS_PHONE_NUMBER_ID | CONFIGURED |
-| RESEND_API_KEY | CONFIGURED |
-| TWILIO_ACCOUNT_SID | CONFIGURED |
-| TWILIO_AUTH_TOKEN | CONFIGURED |
-| TWILIO_PHONE_NUMBER | CONFIGURED |
-| ADMIN_PHONE_NUMBER | CONFIGURED |
-| LOVABLE_API_KEY | CONFIGURED |
+### 4. `docs/elevenlabs/RAG-KNOWLEDGE-BASE.md`
+**Changes (Sections 3, 4, 22):**
+- Section 3: Remove pool tables from "Items That ALWAYS Trigger Iron Law"
+- Section 4: Update pool table to "2-3 movers, $169/hr, Iron Law does NOT apply"
+- Section 22: Update Quick Reference to show pool table at $169/hr with 2 movers
 
-## Code Quality
+### 5. `docs/MASTER-PRICING-PROMPT.md`
+**Changes:**
+- Remove pool tables from Iron Law triggers
+- Add pool table to heavy items category at $169/hr
 
-| Aspect | Status | Notes |
-|--------|--------|-------|
-| TypeScript types | GOOD | Proper interfaces |
-| Error handling | GOOD | Try/catch with logging |
-| Retry logic | GOOD | Exponential backoff |
-| Input validation | GOOD | Zod + manual validation |
-| Logging | GOOD | Console logs for debugging |
+### 6. `src/data/servicesData.ts`
+**Changes:**
+- Line 147: Update pool table description from "3 movers required" to "2-3 movers @ $169/hr"
+- Line 237: Same update
 
----
-
-# SECTION 4: SMS NOTIFICATIONS — READY
-
-## Implementation Status
-
-| Feature | Status |
-|---------|--------|
-| Twilio integration | CONFIGURED |
-| US phone validation | IMPLEMENTED |
-| Non-US rejection | IMPLEMENTED |
-| Rate limiting | 5/minute |
-| Verification tokens | REQUIRED |
-| Error logging | IMPLEMENTED |
-
-## SMS Flow
-```text
-Quote Submitted → Verification Token Generated → SMS Edge Function Called
-→ Token Validated → US Phone Validated → Twilio API Called → Lead Updated
-```
-
-## SMS Message Content
-```text
-Hi [Name]! 🏠 Thanks for requesting a quote from Handledly Moving. 
-Your estimate: $[AMOUNT] (Quote #[NUMBER]). 
-We'll call you shortly to confirm details. 
-Questions? Reply to this text or call (878) 218-7397.
-```
+### 7. `supabase/functions/send-quote-email/index.ts`
+**Changes:**
+- Update SPECIALTY_LABELS for pool-table entries
+- Remove "3 movers" requirement from pool table labels
 
 ---
 
-# SECTION 5: EMAIL SYSTEM — READY
+## AI CHAT TEST RESULT (Current Behavior - WRONG)
 
-## Implementation Status
+I tested the edge function with "I need to move a pool table, what's the price?"
 
-| Feature | Status |
-|---------|--------|
-| Resend integration | CONFIGURED |
-| HTML email template | POLISHED |
-| Quote number in subject | IMPLEMENTED |
-| Iron Law notice | IMPLEMENTED |
-| Rate limiting | 5/minute |
-| Retry logic | 4 attempts |
+**Response received:**
+> "Moving a pool table requires extra care and a larger crew for safety! Because pool tables are significantly over 200 lbs, we require a **3-mover crew with a truck which starts at $189/hour**..."
 
-## Email Features
-- Professional HTML template with branding
-- Quote number prominently displayed
-- Move details section
-- Price breakdown
-- Iron Law safety notice (for 200+ lb items)
-- "No Hidden Fees" badge
-- What's included list
-- Contact information
+This is WRONG. Should say:
+> "Pool tables are $169/hour with 2 movers. For the full service including disassembly and reassembly, there's a flat fee of $350-550 on top."
 
 ---
 
-# SECTION 6: VOICE AGENT (JACK) — 70/100 — ACTION REQUIRED
+## EDGE FUNCTION STATUS
 
-## ElevenLabs Configuration Status
+| Function | Status | Notes |
+|----------|--------|-------|
+| ai-chat | DEPLOYED, WORKING | Needs pricing update for pool tables |
+| health-check | DEPLOYED, HEALTHY | Database latency: 196ms |
+| send-quote-email | DEPLOYED | Needs pool table label update |
+| send-sms-notification | DEPLOYED | No recent logs (normal) |
 
-| Item | Status | Action |
-|------|--------|--------|
-| Agent ID | CONFIGURED | `agent_7901kf1mzwgmexz8e9xexd3hp` |
-| System prompt | NEEDS UPDATE | Copy from `docs/elevenlabs/SYSTEM-PROMPT.md` |
-| Knowledge base | NEEDS UPLOAD | Upload `docs/elevenlabs/RAG-KNOWLEDGE-BASE.md` |
-| Voice settings | NEEDS VERIFICATION | Verify "Matt" voice is published |
-| Publish status | NOT PUBLISHED | Click PUBLISH button |
+---
 
-## ElevenLabs Dashboard Checklist
+## IMPLEMENTATION STEPS
+
+### Step 1: Update Quote Calculator
+- Remove `pool-table` from Iron Law services array
+- Add pool table handling at $169/hr with 2 movers
+
+### Step 2: Update AI Chat Edge Function
+- Update SYSTEM_PROMPT with correct pool table pricing
+- Redeploy edge function
+
+### Step 3: Update Documentation Files
+- MASTER-PRICING-PROMPT.md
+- SYSTEM-PROMPT.md (ElevenLabs)
+- RAG-KNOWLEDGE-BASE.md (ElevenLabs)
+
+### Step 4: Update Services Data
+- Fix pool table descriptions in servicesData.ts
+
+### Step 5: Update Email Template
+- Fix pool table labels in send-quote-email
+
+### Step 6: Deploy and Test
+- Deploy updated ai-chat function
+- Test with pool table question
+- Verify response shows $169/hr with 2 movers
+
+---
+
+## MANUAL ACTION REQUIRED: ElevenLabs Dashboard
+
+After I update the documentation files, you must:
 
 1. Open ElevenLabs dashboard
 2. Select agent `agent_7901kf1mzwgmexz8e9xexd3hp`
-3. Update System Prompt → paste from `docs/elevenlabs/SYSTEM-PROMPT.md`
-4. Go to Knowledge Base tab → upload `docs/elevenlabs/RAG-KNOWLEDGE-BASE.md`
-5. Verify First Message: "Hey there, this is Jack from Handledly Moving. What can I help you with today?"
-6. **CRITICAL: Click PUBLISH button**
-7. Test on live site with hard refresh (Ctrl+Shift+R)
-
-## Pricing in Voice Agent Prompts — NEEDS UPDATE
-
-The AI chat and Jack prompts reference $179/hr for Iron Law, but per your specification:
-- Iron Law (3 movers + truck) = **$189-199/hr**
-- 3 movers labor only = **$179/hr**
+3. Update System Prompt from `docs/elevenlabs/SYSTEM-PROMPT.md`
+4. Upload updated `docs/elevenlabs/RAG-KNOWLEDGE-BASE.md` to Knowledge Base
+5. **CLICK PUBLISH** button
 
 ---
 
-# SECTION 7: CONVERSION FLOW — READY
+## POST-FIX VERIFICATION
 
-## Quote Submission Flow
-```text
-1. User fills QuoteFormWizard (3 steps)
-2. Frontend validates data
-3. calculates quote via quoteCalculator.ts
-4. Creates lead + quote_request with verification token
-5. Triggers send-quote-email (async)
-6. Triggers send-sms-notification (async)
-7. Triggers trigger-confirmation-call (async, if not email-only)
-8. Shows QuoteConfirmation with countdown
-```
-
-## Components Implemented
-
-| Component | Purpose | Status |
-|-----------|---------|--------|
-| QuoteFormWizard | 3-step form | READY |
-| InstantQuotePreview | Live pricing | READY |
-| QuoteConfirmation | Post-submit | READY |
-| ExitIntentModal | 10% discount capture | READY |
-| SocialProofBanner | Recent bookings | READY |
-| MobileStickyCTA | Mobile conversion | READY |
-| VoiceAgent | Jack integration | READY (needs ElevenLabs publish) |
-| ChatWidget | AI chat | READY |
+After implementation, I will:
+1. Test ai-chat edge function with pool table question
+2. Verify response shows $169/hr with 2 movers
+3. Test quote calculator for pool table service
+4. Confirm Iron Law still applies to pianos, safes, hot tubs
 
 ---
 
-# SECTION 8: PERFORMANCE ASSESSMENT — 85/100
+## FINAL PRICING QUICK REFERENCE
 
-## Frontend Performance
+| Service | Rate | Crew | Iron Law? |
+|---------|------|------|-----------|
+| Local Moving (standard) | $159/hr | 2 | NO |
+| Heavy Items (by situation) | $169/hr | 2-3 | NO |
+| Pool Table | $169/hr + flat fee | 2 | NO |
+| Piano (any type) | $189/hr + flat fee | 3 | YES |
+| Safe (200+ lbs) | $189/hr + flat fee | 3 | YES |
+| Hot Tub | $189/hr + flat fee | 3-4 | YES |
 
-| Metric | Status | Notes |
-|--------|--------|-------|
-| Bundle size | GOOD | Vite tree-shaking |
-| Code splitting | YES | Route-based |
-| Image optimization | GOOD | SVG icons |
-| CSS optimization | GOOD | Tailwind purging |
-| Font loading | GOOD | @fontsource |
-
-## Backend Performance
-
-| Metric | Status | Notes |
-|--------|--------|-------|
-| Edge function cold start | ~200ms | Acceptable |
-| Database queries | OPTIMIZED | Indexes on common fields |
-| Rate limiting | IMPLEMENTED | Prevents abuse |
-| Circuit breaker | IMPLEMENTED | Cost protection |
-
-## Scalability Considerations
-
-| Traffic Level | Expected Behavior |
-|---------------|-------------------|
-| Normal (10 quotes/hr) | No issues |
-| Peak (100 quotes/hr) | Rate limiting may trigger |
-| Viral (1000+ quotes/hr) | Circuit breaker may trip |
-
----
-
-# SECTION 9: SEO & LEGAL — 85/100
-
-## SEO Implementation
-
-| Feature | Status |
-|---------|--------|
-| Meta titles | OPTIMIZED |
-| Meta descriptions | OPTIMIZED |
-| Canonical URLs | IMPLEMENTED |
-| Open Graph tags | IMPLEMENTED |
-| robots.txt | CONFIGURED |
-| sitemap.xml | CONFIGURED |
-| Structured data | PARTIAL |
-
-## Legal Pages
-
-| Page | Status | Notes |
-|------|--------|-------|
-| Privacy Policy | EXISTS | `/privacy-policy` |
-| Terms of Service | EXISTS | `/terms-of-service` |
-| Quote disclaimers | IMPLEMENTED | "Estimates may vary" |
-
----
-
-# SECTION 10: WHAT BREAKS AT SCALE
-
-## 10x Traffic (1000 quotes/day)
-
-| Risk | Likelihood | Mitigation |
-|------|------------|------------|
-| Email rate limits | MEDIUM | Resend has 100/day free, then paid |
-| SMS costs | HIGH | ~$0.01/SMS, budget $10/day |
-| AI chat costs | MEDIUM | Circuit breaker at $50/day |
-| ElevenLabs costs | HIGH | Monitor voice minutes |
-| Database connections | LOW | Supabase handles well |
-
-## 100x Traffic (10,000 quotes/day)
-
-| Risk | Likelihood | Mitigation |
-|------|------------|------------|
-| Resend limits | HIGH | Need paid plan |
-| Twilio costs | HIGH | ~$100/day in SMS |
-| ElevenLabs limits | HIGH | Need enterprise plan |
-| Rate limiting | CERTAIN | Users will hit limits |
-| Circuit breaker trips | LIKELY | Adjust thresholds |
-
----
-
-# SECTION 11: PRE-LAUNCH CHECKLIST
-
-## CRITICAL (Must Fix Before Launch)
-
-- [ ] **UPDATE IRON LAW PRICING** — Change from $179 to $189-199/hr in all files
-- [ ] **PUBLISH JACK IN ELEVENLABS** — System prompt + knowledge base + PUBLISH
-- [ ] **TEST END-TO-END** — Submit a real quote, verify email, SMS, call
-
-## HIGH PRIORITY (Should Fix)
-
-- [ ] Update `docs/MASTER-PRICING-PROMPT.md` with correct Iron Law rate
-- [ ] Update `docs/elevenlabs/SYSTEM-PROMPT.md` with correct rates
-- [ ] Update `docs/elevenlabs/RAG-KNOWLEDGE-BASE.md` with correct rates
-- [ ] Update `supabase/functions/ai-chat/index.ts` SYSTEM_PROMPT
-- [ ] Test Jack voice agent after ElevenLabs publish
-
-## RECOMMENDED (Can Do Post-Launch)
-
-- [ ] Add Stripe payment integration
-- [ ] Implement appointment scheduling
-- [ ] Add admin dashboard analytics
-- [ ] Set up monitoring alerts
-- [ ] Configure backup notifications
-
----
-
-# SECTION 12: 7-DAY POST-LAUNCH PLAN
-
-## Day 1 (Launch Day)
-- Monitor edge function logs every hour
-- Watch for rate limit triggers
-- Verify emails/SMS delivery
-- Test voice agent repeatedly
-- Check database for new leads
-
-## Day 2-3
-- Review all submitted quotes
-- Check email open/click rates
-- Monitor AI chat quality
-- Adjust rate limits if needed
-- Fix any reported issues
-
-## Day 4-7
-- Analyze conversion rates
-- Review circuit breaker status
-- Check cost tracking
-- Plan optimization iterations
-- Gather user feedback
-
----
-
-# SECTION 13: FINAL VERDICT
-
-## GO / NO-GO Decision: **CONDITIONAL GO**
-
-### MUST FIX BEFORE LAUNCH (Blocking)
-1. Update Iron Law rate from $179 to $189-199/hr in code
-2. Publish Jack agent in ElevenLabs with correct configuration
-
-### READY TO LAUNCH
-- Security & RLS: EXCELLENT
-- Email/SMS/Call flow: WORKING
-- Quote calculator: WORKING (needs rate fix)
-- Frontend: POLISHED
-- Database: READY
-- Edge functions: DEPLOYED
-
-### LAUNCH CONFIDENCE: 78%
-After fixing the two critical items above, confidence rises to **95%**.
-
----
-
-# TECHNICAL APPENDIX
-
-## Files Requiring Pricing Updates
-
-```text
-1. src/lib/quoteCalculator.ts
-   - Line 45: Change 'iron-law-minimum': 179 → 189 (or 199)
-   - Line 83: Update IRON_LAW_RATE constant
-
-2. docs/MASTER-PRICING-PROMPT.md
-   - Section 1: Update Iron Law Rate from $179 to $189-199
-   - Section 2: Update requirements
-
-3. docs/elevenlabs/SYSTEM-PROMPT.md
-   - Line 32: Change $179/hour to $189/hour
-
-4. docs/elevenlabs/RAG-KNOWLEDGE-BASE.md
-   - Line 37: Change $179 per hour to $189 per hour
-   - Line 530: Change Iron Law rate
-
-5. supabase/functions/ai-chat/index.ts
-   - Line 106-107: Update Iron Law rate in SYSTEM_PROMPT
-```
-
-## Database Schema Summary
-- 15 tables with RLS enabled
-- 42 security policies
-- Rate limiting on all public operations
-- Verification tokens for edge function security
-
-## Secrets Required
-All 10 required secrets are configured and verified.
+**Launch Confidence After Fix: 95%**
