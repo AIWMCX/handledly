@@ -42,7 +42,8 @@ export const HOURLY_RATES = {
   // Heavy Items (by situation)
   'heavy-items': 169,
   // Iron Law Rate - 200+ lbs items REQUIRE 3 movers minimum at this rate
-  'iron-law-minimum': 179,
+  // NOTE: Iron Law (3 movers + truck) = $189/hr, 3 movers labor only = $179/hr
+  'iron-law-minimum': 189,
 } as const;
 
 // Electronic payment processing fee
@@ -80,7 +81,7 @@ export const INCLUDED_WITH_EVERY_MOVE = [
 // Any item 200+ lbs requires MINIMUM 3 movers at $179/hr - NO EXCEPTIONS
 export const IRON_LAW_WEIGHT_THRESHOLD = 200;
 export const IRON_LAW_MIN_CREW = 3;
-export const IRON_LAW_RATE = 179;
+export const IRON_LAW_RATE = 189; // 3 movers + truck for 200+ lb items
 
 // Crew configurations for local moving (Updated February 2026)
 export const CREW_CONFIGURATIONS = [
