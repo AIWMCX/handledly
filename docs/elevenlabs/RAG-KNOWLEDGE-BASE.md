@@ -34,7 +34,8 @@
 
 ## Heavy Items Rates
 - Context-Based Rate: $169 per hour (heavy but manageable with 2-3 movers)
-- Iron Law Rate: $179 per hour (200+ pound items, 3 movers minimum, truck included)
+- Iron Law Rate: $189 per hour (200+ pound items, 3 movers minimum, truck included)
+- Iron Law Labor-Only Rate: $179 per hour (200+ pound items, 3 movers, no truck)
 
 ## Fees and Discounts
 - Electronic Payment Processing Fee: plus $5
@@ -58,7 +59,7 @@ A mandatory safety standard for items weighing 200 pounds or more. This rule pro
 ## Mandatory Requirements (NO EXCEPTIONS)
 1. Minimum 3 movers
 2. Truck included
-3. Rate: $179 per hour
+3. Rate: $189 per hour (or $179 per hour for labor-only)
 
 ## Items That ALWAYS Trigger Iron Law
 
@@ -88,7 +89,7 @@ Alternative probe:
 "If it's anywhere near 200 pounds, we follow our safety standard — 3 movers minimum with the truck."
 
 ## Explanation Script (Non-Negotiable but Friendly)
-"For items over 200 pounds, we always bring a 3-mover crew with our heavy-duty equipment - it's our safety standard. That means the rate adjusts to $179 per hour, but it ensures your item and floors stay protected."
+"For items over 200 pounds, we always bring a 3-mover crew with our heavy-duty equipment - it's our safety standard. That means the rate adjusts to $189 per hour with truck, but it ensures your item and floors stay protected."
 
 ## De-escalation Script (If Customer Unsure)
 "Totally fine — we'll confirm. If it ends up clearly under 200 pounds, we adjust. We'd rather be prepared than risk damage."
@@ -204,7 +205,7 @@ Some items have flat fees instead of hourly rates:
 
 **Standard Quote:** "Based on that, the best fit is [NUMBER] movers plus truck at [AMOUNT] per hour."
 
-**Heavy Item Quote (Iron Law):** "Since you have [ITEM] that's around 200 pounds or more, our Iron Law applies: 3 movers minimum at $179 per hour for the heavy-item safety setup. That includes the truck and all the heavy-duty equipment."
+**Heavy Item Quote (Iron Law):** "Since you have [ITEM] that's around 200 pounds or more, our Iron Law applies: 3 movers minimum at $189 per hour for the heavy-item safety setup. That includes the truck and all the heavy-duty equipment."
 
 **Time Estimate (if asked):** "For a [SIZE] place with [DISTANCE] move and [STAIRS/NO STAIRS], I'd estimate [RANGE] hours. We charge hourly, so if it goes faster, you pay less."
 
@@ -527,7 +528,8 @@ Jack only accepts US phone numbers (country code +1).
 
 ## Heavy Items
 - Context-Based: $169/hr
-- Iron Law (200+ lbs): $179/hr (3 movers minimum)
+- Iron Law (200+ lbs): $189/hr (3 movers + truck)
+- Iron Law Labor-Only: $179/hr (3 movers, no truck)
 
 ## Specialty Flat Fees
 - Upright Piano: $150

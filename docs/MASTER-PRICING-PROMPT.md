@@ -29,7 +29,8 @@ Effective: February 1, 2026
 
 ### HEAVY ITEMS:
 - **Base Rate**: $169/hour (by situation)
-- **Iron Law Rate**: $179/hour (200+ lb items)
+- **Iron Law Rate**: $189/hour (200+ lb items, 3 movers + truck)
+- **3 Movers Labor Only**: $179/hour (for 200+ lb items without truck)
 
 ### FEES:
 - **Electronic Payment**: +$5
@@ -46,7 +47,7 @@ Effective: February 1, 2026
 **REQUIREMENTS (NO EXCEPTIONS)**:
 1. Minimum 3 movers
 2. Truck included
-3. Rate: $179/hour
+3. Rate: $189/hour (or $179/hour for labor-only)
 
 ### ITEMS THAT ALWAYS TRIGGER IRON LAW:
 - All pianos (upright, baby grand, grand)
@@ -67,7 +68,7 @@ something that took a few people to move in originally?"
 ```
 "For items over 200 pounds, we always bring a 3-mover crew 
 with our heavy-duty equipment - it's our safety standard. 
-That means the rate adjusts to $179/hour, but it ensures 
+That means the rate adjusts to $189/hour with truck, but it ensures 
 your item and floors stay protected."
 ```
 
@@ -220,7 +221,8 @@ clear — no surprises."
 
 **HEAVY ITEMS:**
 - Context-based: $169/hr
-- 200+ lbs (Iron Law): $179/hr (3 movers min)
+- 200+ lbs (Iron Law): $189/hr (3 movers + truck)
+- 200+ lbs Labor Only: $179/hr (3 movers, no truck)
 
 **FEES:**
 - Electronic payment: +$5
@@ -237,7 +239,7 @@ clear — no surprises."
 **REQUIREMENTS:**
 - 3 movers minimum
 - Truck included
-- $179/hour rate
+- $189/hour rate (or $179/hr labor-only)
 - NO EXCEPTIONS
 
 ---
