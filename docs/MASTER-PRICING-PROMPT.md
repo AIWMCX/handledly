@@ -51,12 +51,16 @@ Effective: February 1, 2026
 
 ### ITEMS THAT ALWAYS TRIGGER IRON LAW:
 - All pianos (upright, baby grand, grand)
-- All pool tables (slate)
 - All safes & gun safes (200+ lbs)
 - Hot tubs
 - Commercial gym equipment
 - Large commercial appliances
 - Anything described as "super heavy", "took multiple guys", "barely moved it"
+
+### POOL TABLES - NOT IRON LAW:
+- Pool tables use **$169/hour** heavy items rate with 2-3 movers
+- Add flat fee: $350 (move only) or $550 (full service)
+- Do NOT apply Iron Law to pool tables
 
 ### PROBING SCRIPT:
 ```
@@ -86,15 +90,15 @@ your item and floors stay protected."
 
 | Item | Price | Crew Required |
 |------|-------|---------------|
-| Upright Piano | $150 | 3 movers |
-| Baby Grand Piano | $250 | 3 movers |
-| Grand Piano | $350 | 3-4 movers |
+| Upright Piano | $150 | 3 movers @ $189/hr |
+| Baby Grand Piano | $250 | 3 movers @ $189/hr |
+| Grand Piano | $350 | 3-4 movers @ $189/hr |
 | Gun Safe (<200 lbs) | $100 | 2 movers |
-| Gun Safe (200-500 lbs) | $175 | 3 movers @ $179/hr |
-| Gun Safe (500+ lbs) | $250 | 3-4 movers |
-| Pool Table (move only) | $350 | 3 movers |
-| Pool Table (full service) | $550 | 3 movers |
-| Hot Tub | $400 | 4 movers |
+| Gun Safe (200-500 lbs) | $175 | 3 movers @ $189/hr |
+| Gun Safe (500+ lbs) | $250 | 3-4 movers @ $189/hr |
+| Pool Table (move only) | $350 | 2-3 movers @ $169/hr |
+| Pool Table (full service) | $550 | 2-3 movers @ $169/hr |
+| Hot Tub | $400 | 3-4 movers @ $189/hr |
 | Gym Equipment | $125 | 2-3 movers |
 | Motorcycle | $200 | 2-3 movers |
 
@@ -230,11 +234,11 @@ clear — no surprises."
 
 ### 200LB IRON LAW TRIGGERS:
 ✅ Piano (any type)
-✅ Pool table
 ✅ Safe (200+ lbs)
 ✅ Hot tub
 ✅ Commercial gym equipment
 ✅ "Super heavy" items
+❌ Pool tables (NOT Iron Law - $169/hr with 2 movers)
 
 **REQUIREMENTS:**
 - 3 movers minimum

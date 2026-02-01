@@ -94,13 +94,12 @@ export const CREW_CONFIGURATIONS = [
   { value: 'moving-4-movers', label: '4 Movers + Truck', rate: 259, hasTruck: true, crew: 4, description: '3-4 BR homes' },
 ] as const;
 
-// IRON LAW SERVICES - require 3 movers @ $179/hr for safety
+// IRON LAW SERVICES - require 3 movers @ $189/hr for safety
 // These services involve 200+ lb items that mandate Iron Law enforcement
+// NOTE: Pool tables are NOT Iron Law - they use $169/hr heavy items rate with 2 movers
 export const IRON_LAW_SERVICES = [
   'piano-moving',
-  'pool-table', 
   'safe-moving',
-  'heavy-items',
   'piano',           // subType from heavy-items
   'heavy-over-200',  // subType for 200+ lb items
 ] as const;
@@ -233,8 +232,8 @@ export const SERVICE_TYPES = [
     description: 'Pianos, pool tables, safes & oversized items',
     icon: 'weight',
     subTypes: [
-      { value: 'piano', label: 'Piano Moving', description: 'Upright and grand pianos (200+ lbs = 3 movers)' },
-      { value: 'pool-table', label: 'Pool Table Moving', description: 'Disassembly, move & reassembly (3 movers required)' },
+      { value: 'piano', label: 'Piano Moving', description: 'Upright and grand pianos (200+ lbs = 3 movers @ $189/hr)' },
+      { value: 'pool-table', label: 'Pool Table Moving', description: 'Disassembly, move & reassembly (2-3 movers @ $169/hr)' },
       { value: 'heavy-under-200', label: 'Heavy Items (Under 200 lbs)', description: 'Appliances, large furniture, gym equipment' },
       { value: 'heavy-over-200', label: 'Heavy Items (200+ lbs)', description: 'Safes, gun safes, hot tubs - IRON LAW: 3 movers @ $179/hr' },
       { value: 'same-day-heavy', label: 'Same-Day Heavy Items', description: 'Emergency heavy item moves' },

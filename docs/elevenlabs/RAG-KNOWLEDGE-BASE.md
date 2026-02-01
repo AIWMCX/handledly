@@ -74,11 +74,15 @@ A mandatory safety standard for items weighing 200 pounds or more. This rule pro
 - Residential safes 200 pounds and over
 
 **Other Heavy Items:**
-- Pool tables with slate
 - Hot tubs
 - Commercial gym equipment
 - Large commercial appliances
 - Commercial refrigerators and freezers
+
+**EXCEPTION - Pool Tables (NOT Iron Law):**
+- Pool tables use the **$169/hour** heavy items rate with 2-3 movers
+- Add flat fee: $350 (move only) or $550 (full service with disassembly/reassembly)
+- Do NOT apply Iron Law to pool tables
 
 ## Probing Scripts for Heavy Items
 
@@ -123,9 +127,9 @@ Some items have flat fees instead of hourly rates:
 - Gun Safe 500 pounds and over: $250 flat fee, requires 3 to 4 movers, Iron Law applies
 
 **Other Specialty Items:**
-- Pool Table move only: $350 flat fee, requires 3 movers, Iron Law applies
-- Pool Table full service (disassembly, move, reassembly): $550 flat fee, requires 3 movers
-- Hot Tub: $400 flat fee, requires 4 movers, Iron Law applies
+- Pool Table move only: $350 flat fee, requires 2-3 movers at $169/hr, NOT Iron Law
+- Pool Table full service (disassembly, move, reassembly): $550 flat fee, requires 2-3 movers at $169/hr
+- Hot Tub: $400 flat fee, requires 3-4 movers at $189/hr, Iron Law applies
 - Gym Equipment: $125 flat fee per piece, requires 2 to 3 movers
 - Motorcycle: $200 flat fee, requires 2 to 3 movers, requires straps
 
@@ -538,9 +542,9 @@ Jack only accepts US phone numbers (country code +1).
 - Gun Safe (<200 lbs): $100
 - Gun Safe (200-500 lbs): $175
 - Gun Safe (500+ lbs): $250
-- Pool Table (move): $350
-- Pool Table (full): $550
-- Hot Tub: $400
+- Pool Table (move): $350 (2-3 movers @ $169/hr, NOT Iron Law)
+- Pool Table (full): $550 (2-3 movers @ $169/hr, NOT Iron Law)
+- Hot Tub: $400 (3-4 movers @ $189/hr)
 - Gym Equipment: $125/piece
 - Motorcycle: $200
 
