@@ -5,7 +5,7 @@ import LaunchReadinessTracker from '@/components/admin/LaunchReadinessTracker';
 import E2ETestChecklist from '@/components/admin/E2ETestChecklist';
 import LaunchAlerts from '@/components/admin/LaunchAlerts';
 import QuickReferenceCard from '@/components/admin/QuickReferenceCard';
-import { Users, Phone, Calendar, DollarSign, MessageSquare, TrendingUp, BarChart3, Loader2, Download, Copy, Check, Rocket, ChevronDown, ChevronUp } from 'lucide-react';
+import { Users, Phone, Calendar, DollarSign, MessageSquare, TrendingUp, BarChart3, Loader2, Download, Copy, Check, Rocket, ChevronDown, ChevronUp, FileText } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } f
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { usePDFExport } from '@/hooks/usePDFExport';
 import { useExecutivePDFExport } from '@/hooks/useExecutivePDFExport';
+import { usePricingCheatSheetPDF } from '@/hooks/usePricingCheatSheetPDF';
 import { useDocumentationGenerator } from '@/hooks/useDocumentationGenerator';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -49,6 +50,7 @@ const getLast7DaysChats = (conversations: Array<{ created_at: string }> | null |
 const Overview = () => {
   const { generatePDF, isGenerating } = usePDFExport();
   const { generateExecutivePDF, isGenerating: isGeneratingExecutive } = useExecutivePDFExport();
+  const { generatePricingPDF, isGenerating: isGeneratingPricing } = usePricingCheatSheetPDF();
   const { generateMarkdownReport } = useDocumentationGenerator();
   const [copied, setCopied] = useState(false);
   const [viewMode, setViewMode] = useState<'standard' | 'launch'>('standard');
@@ -243,6 +245,25 @@ const Overview = () => {
               <>
                 <Download className="h-4 w-4" />
                 Executive PDF
+              </>
+            )}
+          </Button>
+          <Button
+            onClick={generatePricingPDF}
+            disabled={isGeneratingPricing}
+            variant="outline"
+            size="sm"
+            className="gap-2"
+          >
+            {isGeneratingPricing ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <FileText className="h-4 w-4" />
+                Pricing Cheat Sheet
               </>
             )}
           </Button>
