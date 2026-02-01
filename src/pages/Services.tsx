@@ -182,9 +182,10 @@ export default function Services() {
           {/* Local Moving Sub-Services Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {localMovingServices.map((service, index) => (
-              <div
+              <Link
                 key={service.title}
-                className={`p-6 rounded-2xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all hover-lift animate-fade-in relative ${
+                to="/quote"
+                className={`p-6 rounded-2xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all hover-lift animate-fade-in relative group cursor-pointer ${
                   service.isSameDay ? 'border-accent/50 ring-1 ring-accent/20' : ''
                 }`}
                 style={{ animationDelay: `${index * 100}ms` }}
@@ -197,7 +198,7 @@ export default function Services() {
                     </Badge>
                   </div>
                 )}
-                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:shadow-glow-gold transition-shadow">
                   <service.icon className="w-6 h-6 text-accent" />
                 </div>
                 {service.isSameDay && (
@@ -206,7 +207,7 @@ export default function Services() {
                     Same-Day
                   </Badge>
                 )}
-                <h3 className="font-heading text-lg font-semibold text-primary mb-2">{service.title}</h3>
+                <h3 className="font-heading text-lg font-semibold text-primary mb-2 group-hover:text-accent transition-colors">{service.title}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{service.description}</p>
                 <ul className="space-y-1">
                   {service.features.map((feature) => (
@@ -216,7 +217,7 @@ export default function Services() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </Link>
             ))}
           </div>
 
@@ -334,11 +335,12 @@ export default function Services() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
             {heavyItemsServices.map((service, index) => (
-              <div
+              <Link
                 key={service.title}
-                className={`p-6 rounded-2xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all hover-lift animate-fade-in relative ${
+                to="/quote"
+                className={`p-6 rounded-2xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all hover-lift animate-fade-in relative group cursor-pointer ${
                   service.isSameDay ? 'border-accent/50 ring-1 ring-accent/20' : ''
-                } ${service.closed || service.comingSoon ? 'opacity-70' : ''}`}
+                } ${service.closed || service.comingSoon ? 'opacity-70 pointer-events-none' : ''}`}
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {service.closed && !service.comingSoon && (
@@ -356,7 +358,7 @@ export default function Services() {
                     </Badge>
                   </div>
                 )}
-                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
+                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:shadow-glow-gold transition-shadow">
                   <service.icon className="w-6 h-6 text-accent" />
                 </div>
                 {service.isSameDay && !service.closed && !service.comingSoon && (
@@ -365,7 +367,7 @@ export default function Services() {
                     Same-Day
                   </Badge>
                 )}
-                <h3 className="font-heading text-base font-semibold text-primary mb-2">{service.title}</h3>
+                <h3 className="font-heading text-base font-semibold text-primary mb-2 group-hover:text-accent transition-colors">{service.title}</h3>
                 <p className="text-xs text-muted-foreground mb-4">{service.description}</p>
                 <ul className="space-y-1">
                   {service.features.map((feature) => (
@@ -375,7 +377,7 @@ export default function Services() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </Link>
             ))}
           </div>
 

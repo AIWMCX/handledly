@@ -66,9 +66,10 @@ export function PricingDisplay() {
               {localMovingTiers.map((tier) => {
                 const isPopular = 'popular' in tier && tier.popular;
                 return (
-                <div
+                <Link
                   key={tier.value}
-                  className={`p-5 rounded-2xl border relative transition-all hover-lift ${
+                  to="/quote"
+                  className={`p-5 rounded-2xl border relative transition-all hover-lift group cursor-pointer ${
                     isPopular 
                       ? 'bg-primary/5 border-primary ring-2 ring-primary/20 shadow-glow-primary' 
                       : 'bg-background border-border shadow-depth-2 hover:shadow-depth-3'
@@ -95,7 +96,7 @@ export function PricingDisplay() {
                     </span>
                   </div>
                   
-                  <h3 className="font-heading text-base font-semibold text-primary mb-1 mt-2">
+                  <h3 className="font-heading text-base font-semibold text-primary mb-1 mt-2 group-hover:text-accent transition-colors">
                     {tier.label}
                   </h3>
                   
@@ -107,7 +108,7 @@ export function PricingDisplay() {
                   <p className="text-xs text-muted-foreground">
                     {tier.description}
                   </p>
-                </div>
+                </Link>
               )})}
             </div>
           </TabsContent>
@@ -115,12 +116,12 @@ export function PricingDisplay() {
           {/* Heavy Items Tab */}
           <TabsContent value="heavy-items">
             <div className="max-w-2xl mx-auto">
-              <div className="p-8 rounded-2xl bg-background border border-border shadow-depth-3 text-center hover-lift">
-                <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4 shadow-glow-gold">
+              <Link to="/quote" className="block p-8 rounded-2xl bg-background border border-border shadow-depth-3 text-center hover-lift group cursor-pointer">
+                <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4 shadow-glow-gold group-hover:shadow-glow-gold transition-shadow">
                   <Dumbbell className="w-8 h-8 text-accent" />
                 </div>
                 
-                <h3 className="font-heading text-2xl font-semibold text-primary mb-2">
+                <h3 className="font-heading text-2xl font-semibold text-primary mb-2 group-hover:text-accent transition-colors">
                   Heavy Items Moving
                 </h3>
                 
@@ -154,7 +155,7 @@ export function PricingDisplay() {
                 <p className="text-sm text-muted-foreground">
                   Final quote varies based on item complexity and access
                 </p>
-              </div>
+              </Link>
             </div>
           </TabsContent>
         </Tabs>
