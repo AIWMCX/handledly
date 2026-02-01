@@ -6,3 +6,4 @@ export { WhyExpertCare } from './WhyExpertCare';
 export { RelatedServices } from './RelatedServices';
 export { ServiceCTA } from './ServiceCTA';
 export { ComingSoonSignup } from './ComingSoonSignup';
+export { ServiceTestimonials } from './ServiceTestimonials';
