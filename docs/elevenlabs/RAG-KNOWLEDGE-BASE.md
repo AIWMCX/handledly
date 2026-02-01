@@ -24,18 +24,19 @@
 ## Labor Only (No Truck)
 - 2 Movers: $139 per hour
 - 3 Movers: $169 per hour
-- 4 Movers: $239 per hour
+- 4 Movers: $239 per hour (or $249 if hesitant customer agrees)
 
 ## Moving With Truck
 - 2 Movers plus Truck: $159 per hour (Most Popular option)
-- 3 Movers plus Truck: $189 per hour
-- 3 Movers plus 2 Trucks: $209 per hour
-- 4 Movers plus Truck: $259 per hour
+- 3 Movers plus Truck: $189 per hour (or $199)
+- 3 Movers plus 2 Trucks: $209 per hour (or $219)
+- 4 Movers plus Truck: $259 per hour (or $269)
 
 ## Heavy Items Rates
-- Context-Based Rate: $169 per hour (heavy but manageable with 2-3 movers)
-- Iron Law Rate: $189 per hour (200+ pound items, 3 movers minimum, truck included)
+- Context-Based Rate: $169 per hour (heavy but manageable with 2-3 movers, includes pool tables)
+- Iron Law Rate: $189 per hour (200+ pound items like pianos/safes/hot tubs, 3 movers minimum, truck included)
 - Iron Law Labor-Only Rate: $179 per hour (200+ pound items, 3 movers, no truck)
+- IMPORTANT: Pool tables are NOT Iron Law - use $169/hr with 2-3 movers
 
 ## Fees and Discounts
 - Electronic Payment Processing Fee: plus $5
@@ -517,46 +518,52 @@ Jack only accepts US phone numbers (country code +1).
 
 ---
 
-# SECTION 22: QUICK REFERENCE PRICING CARD
+# SECTION 22: QUICK REFERENCE PRICING CARD (FEBRUARY 2026)
 
-## Labor Only
+## Labor Only (No Truck)
 - 2 Movers: $139/hr
 - 3 Movers: $169/hr
-- 4 Movers: $239/hr
+- 4 Movers: $239/hr (or $249)
 
 ## With Truck
 - 2 Movers + Truck: $159/hr (Most Popular)
-- 3 Movers + Truck: $189/hr
-- 3 Movers + 2 Trucks: $209/hr
-- 4 Movers + Truck: $259/hr
+- 3 Movers + Truck: $189/hr (or $199)
+- 3 Movers + 2 Trucks: $209/hr (or $219)
+- 4 Movers + Truck: $259/hr (or $269)
 
-## Heavy Items
-- Context-Based: $169/hr
-- Iron Law (200+ lbs): $189/hr (3 movers + truck)
-- Iron Law Labor-Only: $179/hr (3 movers, no truck)
+## Heavy Items (by situation)
+- Rate: $169/hr with 2-3 movers
+- Includes: Pool tables, gym equipment, manageable heavy items
+
+## Iron Law (200+ lbs) — MANDATORY
+- Rate: $189/hr with truck OR $179/hr labor-only
+- Crew: 3 movers minimum
+- Applies to: Pianos, safes 200+lbs, hot tubs, commercial equipment
+- NOT pool tables
 
 ## Specialty Flat Fees
-- Upright Piano: $150
-- Baby Grand: $250
-- Grand Piano: $350
-- Gun Safe (<200 lbs): $100
-- Gun Safe (200-500 lbs): $175
-- Gun Safe (500+ lbs): $250
-- Pool Table (move): $350 (2-3 movers @ $169/hr, NOT Iron Law)
-- Pool Table (full): $550 (2-3 movers @ $169/hr, NOT Iron Law)
-- Hot Tub: $400 (3-4 movers @ $189/hr)
-- Gym Equipment: $125/piece
-- Motorcycle: $200
+- Upright Piano: $150 (Iron Law, 3 movers)
+- Baby Grand: $250 (Iron Law, 3 movers)
+- Grand Piano: $350 (Iron Law, 3-4 movers)
+- Gun Safe (<200 lbs): $100 (2 movers)
+- Gun Safe (200-500 lbs): $175 (Iron Law, 3 movers)
+- Gun Safe (500+ lbs): $250 (Iron Law, 3-4 movers)
+- Pool Table move-only: $350 (NOT Iron Law, 2-3 movers @ $169/hr)
+- Pool Table full service: $550 (NOT Iron Law, 2-3 movers @ $169/hr)
+- Hot Tub: $400 (Iron Law, 3-4 movers)
+- Gym Equipment: $125/piece (2-3 movers)
+- Motorcycle: $200 (2-3 movers)
 
-## Fees
+## Fees & Policies
 - Electronic Payment: +$5
-- Negotiation Discount: -$10/hr
+- Negotiation Discount: $10/hr (after value framing, when customer hesitates)
+- Second Truck: FREE if addresses are close (crew decides on-site)
 
 ---
 
 # END OF KNOWLEDGE BASE
 
-**Version:** 3.0
+**Version:** 3.1
 **Effective Date:** February 1, 2026
 **Service Area:** Denver Metro, Colorado
 **Company:** Handledly Moving Services
