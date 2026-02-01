@@ -60,15 +60,16 @@ const SERVICE_LABELS: Record<string, string> = {
 };
 
 // Updated February 2026 - 200lb Iron Law threshold
+// NOTE: Pool tables are NOT Iron Law - they use $169/hr heavy items rate with 2 movers
 const SPECIALTY_LABELS: Record<string, string> = {
-  'piano-upright': 'Upright Piano (200+ lbs - 3 movers)',
-  'piano-grand': 'Grand Piano (200+ lbs - 3 movers)',
-  'pool-table-move': 'Pool Table (Move Only - 3 movers)',
-  'pool-table-full': 'Pool Table (Full Service - 3 movers)',
+  'piano-upright': 'Upright Piano (200+ lbs - 3 movers @ $189/hr)',
+  'piano-grand': 'Grand Piano (200+ lbs - 3 movers @ $189/hr)',
+  'pool-table-move': 'Pool Table (Move Only - 2-3 movers @ $169/hr)',
+  'pool-table-full': 'Pool Table (Full Service - 2-3 movers @ $169/hr)',
   'safe-small': 'Safe (Under 200lbs)',
-  'safe-large': 'Safe (200+ lbs - 3 movers @ $179/hr)',
-  'safe-gun': 'Gun Safe (200+ lbs - 3 movers @ $179/hr)',
-  'hot-tub': 'Hot Tub (200+ lbs - 3 movers)',
+  'safe-large': 'Safe (200+ lbs - 3 movers @ $189/hr)',
+  'safe-gun': 'Gun Safe (200+ lbs - 3 movers @ $189/hr)',
+  'hot-tub': 'Hot Tub (200+ lbs - 3-4 movers @ $189/hr)',
   'gym-equipment': 'Gym Equipment',
   'motorcycle': 'Motorcycle',
 };
@@ -113,8 +114,9 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
     ? data.specialtyItems.map(item => SPECIALTY_LABELS[item] || item).join(', ')
     : 'None';
 
-  // IRON LAW: Detect if this service requires 3 movers @ $179/hr
-  const IRON_LAW_SERVICES = ['piano-moving', 'pool-table', 'safe-moving', 'heavy-items', 'piano', 'heavy-over-200'];
+  // IRON LAW: Detect if this service requires 3 movers @ $189/hr
+  // NOTE: Pool tables are NOT Iron Law - they use heavy items rate
+  const IRON_LAW_SERVICES = ['piano-moving', 'safe-moving', 'piano', 'heavy-over-200'];
   const isIronLawService = IRON_LAW_SERVICES.includes(data.serviceType);
 
   // Iron Law Notice HTML (only shown for 200+ lb item services)

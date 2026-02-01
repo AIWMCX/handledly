@@ -32,7 +32,8 @@ Any item 200+ pounds requires:
 - $189/hour rate (or $179/hr labor-only)
 - NO EXCEPTIONS
 
-**Always triggers:** Pianos, pool tables, safes 200+lbs, hot tubs, commercial gym equipment
+**Always triggers:** Pianos, safes 200+lbs, hot tubs, commercial gym equipment
+**NOT Iron Law:** Pool tables - handled at $169/hr with 2-3 movers (+ flat fee $350-550)
 
 **Probe:** "Do you know roughly the weight, or did it take multiple people to move it originally?"
 

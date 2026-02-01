@@ -143,10 +143,10 @@ export const servicesData: Record<string, ServiceData> = {
       'Safe placement at destination',
     ],
     subServices: [
-      { title: 'Piano Moving', description: 'Upright and grand pianos (200+ lbs = 3 movers @ $179/hr)', icon: Piano, closed: true },
-      { title: 'Pool Table Moving', description: 'Disassembly, transport, and expert reassembly (3 movers required)', icon: Package },
+      { title: 'Piano Moving', description: 'Upright and grand pianos (200+ lbs = 3 movers @ $189/hr)', icon: Piano, closed: true },
+      { title: 'Pool Table Moving', description: 'Disassembly, transport, and expert reassembly (2-3 movers @ $169/hr)', icon: Package },
       { title: 'Heavy Items (Under 200 lbs)', description: 'Appliances, large furniture, gym equipment', icon: Dumbbell },
-      { title: 'Heavy Items (200+ lbs)', description: 'IRON LAW: 3 movers @ $179/hr - safes, gun safes, commercial equipment', icon: Shield },
+      { title: 'Heavy Items (200+ lbs)', description: 'IRON LAW: 3 movers @ $189/hr - safes, gun safes, commercial equipment', icon: Shield },
       { title: 'Same-Day Heavy Items', description: 'Emergency heavy item moves available', icon: Zap },
     ],
     hasSameDay: true,
