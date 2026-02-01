@@ -46,7 +46,7 @@ const localMovingServices = [
   },
 ];
 
-// HEAVY ITEMS sub-services
+// HEAVY ITEMS sub-services with dedicated page slugs
 const heavyItemsServices: {
   icon: typeof Piano;
   title: string;
@@ -55,12 +55,14 @@ const heavyItemsServices: {
   closed?: boolean;
   comingSoon?: boolean;
   isSameDay?: boolean;
+  slug?: string; // Dedicated landing page slug
 }[] = [
   {
     icon: Piano,
     title: "Piano Moving",
     description: "Upright and grand pianos moved with precision. Specialized equipment and trained handlers.",
     features: ["Upright pianos", "Grand pianos", "Climate-controlled"],
+    slug: "piano-moving",
     closed: true, // Temporarily not available
   },
   {
@@ -68,18 +70,20 @@ const heavyItemsServices: {
     title: "Pool Table Moving",
     description: "Professional disassembly, safe transport, and expert reassembly with precision leveling.",
     features: ["Disassembly included", "Professional reassembly", "Precision leveling"],
-  },
-  {
-    icon: Dumbbell,
-    title: "Heavy Items (Under 200 lbs)",
-    description: "Appliances, large furniture, gym equipment, and other substantial items.",
-    features: ["Appliances", "Large furniture", "Gym equipment"],
+    slug: "pool-table-moving",
   },
   {
     icon: Shield,
+    title: "Safe Moving",
+    description: "Gun safes, commercial safes up to 2,000+ lbs. Specialized equipment and floor protection.",
+    features: ["Gun safes", "Commercial vaults", "Floor protection"],
+    slug: "safe-moving",
+  },
+  {
+    icon: Dumbbell,
     title: "Heavy Items (200+ lbs)",
-    description: "Safes, gun safes, commercial equipment. IRON LAW: 3 movers @ $179/hr required.",
-    features: ["Safes & gun safes", "Commercial equipment", "Iron Law applies"],
+    description: "Appliances, gym equipment, commercial items. IRON LAW: 3 movers @ $189/hr required.",
+    features: ["Appliances", "Gym equipment", "Iron Law applies"],
   },
   {
     icon: Zap,
@@ -87,6 +91,7 @@ const heavyItemsServices: {
     description: "Emergency heavy item moves when you can't wait. Call now for immediate assistance.",
     features: ["Immediate response", "Priority scheduling", "Rush service"],
     isSameDay: true,
+    slug: "same-day-moving",
   },
 ];
 
@@ -337,7 +342,7 @@ export default function Services() {
             {heavyItemsServices.map((service, index) => (
               <Link
                 key={service.title}
-                to="/quote"
+                to={service.slug ? `/services/${service.slug}` : "/quote"}
                 className={`p-6 rounded-2xl glass-card shadow-depth-2 hover:shadow-depth-3 transition-all hover-lift animate-fade-in relative group cursor-pointer ${
                   service.isSameDay ? 'border-accent/50 ring-1 ring-accent/20' : ''
                 } ${service.closed || service.comingSoon ? 'opacity-70 pointer-events-none' : ''}`}

@@ -12,6 +12,7 @@ import { WhyExpertCare } from "./WhyExpertCare";
 import { RelatedServices } from "./RelatedServices";
 import { ServiceCTA } from "./ServiceCTA";
 import { ComingSoonSignup } from "./ComingSoonSignup";
+import { ServiceTestimonials } from "./ServiceTestimonials";
 import { SocialProofBanner, MobileStickyCTA } from "@/components/conversion";
 import { SEO } from "@/components/SEO";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -123,6 +124,15 @@ export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
         </Section>
       )}
       
+      {/* Service-specific testimonials if available */}
+      {data.testimonials && data.testimonials.length > 0 && (
+        <ServiceTestimonials 
+          testimonials={data.testimonials} 
+          serviceName={data.title}
+        />
+      )}
+      
+      {/* General testimonials */}
       <Testimonials />
       
       <Footer />

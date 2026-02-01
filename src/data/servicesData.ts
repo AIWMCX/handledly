@@ -28,6 +28,13 @@ export interface SubService {
   comingSoon?: boolean;
 }
 
+export interface ServiceTestimonial {
+  name: string;
+  location: string;
+  text: string;
+  rating: number;
+}
+
 export interface ServiceData {
   title: string;
   slug: string;
@@ -47,6 +54,7 @@ export interface ServiceData {
   hasSameDay?: boolean;
   closed?: boolean; // Service temporarily not available
   comingSoon?: boolean; // Service planned but not yet launched
+  testimonials?: ServiceTestimonial[]; // Service-specific testimonials
   // SEO fields
   metaTitle: string;
   metaDescription: string;
@@ -195,6 +203,26 @@ export const servicesData: Record<string, ServiceData> = {
       'Careful wrapping, loading, and transport',
       'Safe placement and unwrapping at destination',
     ],
+    testimonials: [
+      {
+        name: "Margaret K.",
+        location: "Cherry Creek, Denver",
+        text: "I inherited my grandmother's 1920s Steinway and was terrified to move it. The Handledly crew treated it like it was their own family heirloom. They even helped me find a piano tuner afterward. Truly exceptional service.",
+        rating: 5
+      },
+      {
+        name: "David L.",
+        location: "Highlands Ranch",
+        text: "Moved my baby grand from a third-floor condo with no elevator. I watched these guys work and couldn't believe how methodical they were. Not a single scratch on my piano or the walls. Worth every penny.",
+        rating: 5
+      },
+      {
+        name: "Susan T.",
+        location: "Boulder",
+        text: "Two other companies refused to move my upright piano down my steep basement stairs. Handledly came out, assessed the situation, and made it happen safely. They even wrapped and protected the banister.",
+        rating: 5
+      }
+    ],
     // SEO
     metaTitle: 'Piano Moving Denver - Safe & Professional Transport | Handledly Moving Services',
     metaDescription: 'Expert piano movers in Denver. Upright and grand pianos moved with precision care. Specialized equipment and trained professionals. Get your free quote!',
@@ -239,6 +267,26 @@ export const servicesData: Record<string, ServiceData> = {
       'Safe transport to new location',
       'Expert reassembly and leveling',
     ],
+    testimonials: [
+      {
+        name: "Mike R.",
+        location: "Littleton",
+        text: "Had my 9-foot Brunswick moved across town. They completely disassembled it, moved the 800+ pounds of slate without a chip, and had it perfectly level at my new place. Playing on it that same night!",
+        rating: 5
+      },
+      {
+        name: "Jennifer W.",
+        location: "Aurora",
+        text: "The previous movers I hired cracked my pool table slate. Handledly not only moved my replacement table flawlessly, they also re-felted it with tournament-grade cloth. These guys know their stuff.",
+        rating: 5
+      },
+      {
+        name: "Carlos M.",
+        location: "Lakewood",
+        text: "Skeptical about moving my antique billiards table from 1890. The crew took photos of every step, labeled every piece, and reassembled it exactly as it was. They clearly care about doing it right.",
+        rating: 5
+      }
+    ],
     // SEO
     metaTitle: 'Pool Table Movers Denver - Expert Disassembly & Setup | Handledly Moving Services',
     metaDescription: 'Professional pool table moving in Denver. Complete disassembly, safe transport, and expert reassembly with precision leveling. Fully insured service. Free quotes!',
@@ -282,6 +330,26 @@ export const servicesData: Record<string, ServiceData> = {
       'Specialists arrive with proper equipment',
       'Safe extraction with floor protection',
       'Secure placement at destination',
+    ],
+    testimonials: [
+      {
+        name: "Robert J.",
+        location: "Castle Rock",
+        text: "My 1,200-pound Liberty gun safe needed to go up 14 stairs to my new gun room. These guys showed up with serious equipment and moved it like pros. Not a mark on my hardwood floors. Impressive.",
+        rating: 5
+      },
+      {
+        name: "Amanda P.",
+        location: "Westminster",
+        text: "Inherited my father's commercial floor safe — we're talking 800 pounds of solid steel. Two other companies said it couldn't be done. Handledly did it in under two hours with zero drama.",
+        rating: 5
+      },
+      {
+        name: "Tom H.",
+        location: "Arvada",
+        text: "Moved my Browning gun safe from my old house basement to my new house second floor. The crew was professional, discrete, and used plywood runners to protect everything. Highly recommend.",
+        rating: 5
+      }
     ],
     // SEO
     metaTitle: 'Safe Moving Denver - Heavy Safe Transport Specialists | Handledly Moving Services',
