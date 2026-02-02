@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { quoteSubmissionSchema, validateRequest } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,13 +7,13 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-// Validate email format
+// Validate email format (backup validation)
 function isValidEmail(email: string): boolean {
   const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
   return emailRegex.test(email);
 }
 
-// Validate US phone number
+// Validate US phone number (backup validation)
 function isValidUSPhone(phone: string): boolean {
   const cleaned = phone.replace(/\D/g, '');
   if (cleaned.length === 10) return /^[2-9]\d{9}$/.test(cleaned);
@@ -36,20 +37,6 @@ function generateQuoteNumber(): string {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
-}
-
-// Check for XSS patterns
-function containsXSS(text: string): boolean {
-  if (!text) return false;
-  return /<script|javascript:|on\w+=/i.test(text);
-}
-
-// Sanitize text input
-function sanitize(text: string | undefined | null, maxLength: number): string | null {
-  if (!text) return null;
-  const trimmed = text.trim().slice(0, maxLength);
-  if (containsXSS(trimmed)) return null;
-  return trimmed;
 }
 
 // Quote calculation (mirror of client-side logic)
@@ -166,19 +153,27 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Extract and validate required fields
-    const fullName = sanitize(body.fullName, 200);
-    const email = sanitize(body.email, 320);
-    const phone = sanitize(body.phone, 30);
-    const serviceType = sanitize(body.serviceType, 100);
-    
-    if (!fullName || !email || !phone || !serviceType) {
-      return new Response(JSON.stringify({ error: "Missing required fields" }), {
+    // ZOD VALIDATION - Comprehensive input validation
+    const validation = validateRequest(quoteSubmissionSchema, body);
+    if (!validation.success) {
+      console.log("[submit-quote] Validation failed:", validation.errors);
+      return new Response(JSON.stringify({ 
+        error: validation.errors?.[0] || "Invalid input" 
+      }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
+    
+    const validatedData = validation.data!;
+    
+    // Extract validated fields
+    const fullName = validatedData.fullName;
+    const email = validatedData.email;
+    const phone = validatedData.phone; // Already cleaned by schema
+    const serviceType = validatedData.serviceType;
+    
+    // Backup validations (defense in depth)
     if (!isValidEmail(email)) {
       return new Response(JSON.stringify({ error: "Invalid email format" }), {
         status: 400,
@@ -193,24 +188,24 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Extract optional fields
-    const moveFromAddress = sanitize(body.moveFromAddress, 500);
-    const moveToAddress = sanitize(body.moveToAddress, 500);
-    const moveDate = body.moveDate || null;
-    const notes = sanitize(body.notes, 2000);
-    const bedrooms = Math.min(Math.max(0, parseInt(body.bedrooms) || 0), 20);
-    const preferEmailOnly = body.preferEmailOnly === true;
-    const hasStairs = body.hasStairs === true;
-    const crewSize = Math.min(Math.max(2, parseInt(body.crewSize) || 2), 6);
-    const estimatedHours = Math.min(Math.max(2, parseInt(body.estimatedHours) || 3), 12);
+    // Extract optional fields (already validated by zod)
+    const moveFromAddress = validatedData.moveFromAddress || null;
+    const moveToAddress = validatedData.moveToAddress || null;
+    const moveDate = validatedData.moveDate || null;
+    const notes = validatedData.notes || null;
+    const bedrooms = validatedData.bedrooms ?? 0;
+    const preferEmailOnly = validatedData.preferEmailOnly ?? false;
+    const hasStairs = validatedData.hasStairs ?? false;
+    const crewSize = validatedData.crewSize ?? 2;
+    const estimatedHours = validatedData.estimatedHours ?? 3;
     
-    // UTM tracking
-    const leadSource = sanitize(body.lead_source, 100) || 'website';
-    const utmSource = sanitize(body.utm_source, 200);
-    const utmMedium = sanitize(body.utm_medium, 200);
-    const utmCampaign = sanitize(body.utm_campaign, 200);
-    const utmContent = sanitize(body.utm_content, 200);
-    const utmTerm = sanitize(body.utm_term, 200);
+    // UTM tracking (already validated)
+    const leadSource = validatedData.lead_source || 'website';
+    const utmSource = validatedData.utm_source || null;
+    const utmMedium = validatedData.utm_medium || null;
+    const utmCampaign = validatedData.utm_campaign || null;
+    const utmContent = validatedData.utm_content || null;
+    const utmTerm = validatedData.utm_term || null;
 
     // Calculate quote server-side
     const crewConfig = isIronLawService(serviceType) ? 'moving-3-movers' : 

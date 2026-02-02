@@ -2,27 +2,15 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-// SECURITY: Strict whitelist of authorized admin emails
-// Only these 3 accounts have access to admin panel, dashboards, and client portal
-const AUTHORIZED_ADMIN_EMAILS: readonly string[] = [
-  'shcherbakou.edu@gmail.com',
-  'kshcherbakou.kos@gmail.com',
-  'saych.88@gmail.com',
-  'nevulis22@gmail.com',
-  'beltovbogdan@gmail.com',
-] as const;
-
-// Check if email is in the authorized whitelist (case-insensitive)
-const isAuthorizedEmail = (email: string | undefined): boolean => {
-  if (!email) return false;
-  return AUTHORIZED_ADMIN_EMAILS.includes(email.toLowerCase());
-};
+// SECURITY: Authorization is now SOLELY based on database roles (user_roles table)
+// The client-side email whitelist has been removed - RLS policies are the security boundary
+// Admin access is controlled by: has_role(auth.uid(), 'admin') in database policies
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   isAdmin: boolean;
-  isAuthorized: boolean; // New: checks email whitelist
+  isAuthorized: boolean; // Now derived from isAdmin (database role)
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
@@ -45,8 +33,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // SECURITY: Derived state - user must be in email whitelist to be authorized
-  const isAuthorized = isAuthorizedEmail(user?.email);
+  // SECURITY: isAuthorized now derived from database role (isAdmin)
+  // No client-side email whitelist - RLS policies are the actual security boundary
+  const isAuthorized = isAdmin;
 
   const checkAdminRole = async (userId: string) => {
     try {
