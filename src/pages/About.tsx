@@ -79,9 +79,9 @@ export default function About() {
         <Container className="relative z-10">
           <div className="max-w-3xl">
             {/* Denver Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-6">
-              <MapPin className="w-4 h-4 text-accent" />
-              <span className="text-sm font-medium text-accent">Denver's Professional Moving Team</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6 shadow-sm">
+              <MapPin className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-primary">Denver's Professional Moving Team</span>
             </div>
             
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-semibold mb-6">
@@ -151,8 +151,8 @@ export default function About() {
                 />
               </div>
               
-              {/* Floating Glass Card */}
-              <div className="absolute -bottom-6 -left-6 p-6 rounded-xl glass-card shadow-depth-3 hover-lift">
+              {/* Floating Glass Card - Hidden on mobile to prevent overlap */}
+              <div className="hidden sm:block absolute -bottom-6 -left-6 p-6 rounded-xl glass-card shadow-depth-3 hover-lift">
                 <div className="flex items-center gap-3">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (

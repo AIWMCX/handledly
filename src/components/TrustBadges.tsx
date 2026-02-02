@@ -42,7 +42,7 @@ export function TrustBadges() {
   return (
     <section className="py-8 bg-secondary/50 border-y border-border">
       <Container>
-        <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-8">
+        <div className="flex flex-wrap items-start sm:items-center justify-start sm:justify-center gap-x-8 sm:gap-x-12 gap-y-6 sm:gap-y-8 px-4 sm:px-0">
           {badges.map((badge, index) => (
             <div
               key={badge.label}

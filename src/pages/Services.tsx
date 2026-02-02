@@ -451,17 +451,7 @@ export default function Services() {
         </Container>
       </Section>
 
-      {/* Electronic Payment Fee Notice */}
-      <Section className="py-8">
-        <Container>
-          <div className="flex items-center justify-center gap-2 p-4 rounded-lg bg-muted/50 border border-border max-w-md mx-auto">
-            <Info className="w-4 h-4 text-muted-foreground shrink-0" />
-            <p className="text-sm text-muted-foreground">
-              +${ELECTRONIC_PAYMENT_FEE} processing fee for card/electronic payments
-            </p>
-          </div>
-        </Container>
-      </Section>
+      {/* Electronic Payment Fee Notice - Removed as per UX review */}
 
       {/* Final CTA */}
       <Section className="bg-secondary">
