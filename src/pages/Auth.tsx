@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,8 +16,14 @@ const authSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
+const emailSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+});
+
+type AuthMode = 'login' | 'signup' | 'reset';
+
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [mode, setMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -76,10 +83,44 @@ const Auth = () => {
     );
   }
 
+  const handlePasswordReset = async () => {
+    setError(null);
+    setSuccessMessage(null);
+
+    const validation = emailSchema.safeParse({ email });
+    if (!validation.success) {
+      setError(validation.error.errors[0].message);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/admin`,
+      });
+
+      if (error) {
+        setError(error.message);
+      } else {
+        setSuccessMessage('Password reset email sent! Check your inbox and click the link to set a new password.');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccessMessage(null);
+
+    if (mode === 'reset') {
+      await handlePasswordReset();
+      return;
+    }
 
     // Validate input
     const validation = authSchema.safeParse({ email, password });
@@ -91,7 +132,7 @@ const Auth = () => {
     setIsSubmitting(true);
 
     try {
-      if (isLogin) {
+      if (mode === 'login') {
         const { error } = await signIn(email, password);
         if (error) {
           if (error.message.includes('Invalid login credentials')) {
@@ -100,7 +141,7 @@ const Auth = () => {
             setError(error.message);
           }
         }
-      } else {
+      } else if (mode === 'signup') {
         const { error } = await signUp(email, password);
         if (error) {
           if (error.message.includes('already registered')) {
@@ -110,7 +151,7 @@ const Auth = () => {
           }
         } else {
           setSuccessMessage('Account created successfully! You can now sign in.');
-          setIsLogin(true);
+          setMode('login');
         }
       }
     } catch (err) {
@@ -120,6 +161,12 @@ const Auth = () => {
     }
   };
 
+  const switchMode = (newMode: AuthMode) => {
+    setMode(newMode);
+    setError(null);
+    setSuccessMessage(null);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -127,6 +174,37 @@ const Auth = () => {
       </div>
     );
   }
+
+  const getTitle = () => {
+    switch (mode) {
+      case 'login': return 'Admin Login';
+      case 'signup': return 'Create Account';
+      case 'reset': return 'Reset Password';
+    }
+  };
+
+  const getDescription = () => {
+    switch (mode) {
+      case 'login': return 'Sign in to access the admin dashboard';
+      case 'signup': return 'Create an admin account to manage your business';
+      case 'reset': return 'Enter your email to receive a password reset link';
+    }
+  };
+
+  const getButtonText = () => {
+    if (isSubmitting) {
+      switch (mode) {
+        case 'login': return 'Signing in...';
+        case 'signup': return 'Creating account...';
+        case 'reset': return 'Sending reset link...';
+      }
+    }
+    switch (mode) {
+      case 'login': return 'Sign In';
+      case 'signup': return 'Create Account';
+      case 'reset': return 'Send Reset Link';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -145,12 +223,10 @@ const Auth = () => {
         <Card className="w-full max-w-md border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-foreground">
-              {isLogin ? 'Admin Login' : 'Create Account'}
+              {getTitle()}
             </CardTitle>
             <CardDescription className="text-muted-foreground">
-              {isLogin 
-                ? 'Sign in to access the admin dashboard' 
-                : 'Create an admin account to manage your business'}
+              {getDescription()}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -183,21 +259,23 @@ const Auth = () => {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-foreground">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 bg-background/50 border-border/50"
-                    disabled={isSubmitting}
-                  />
+              {mode !== 'reset' && (
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-foreground">Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pl-10 bg-background/50 border-border/50"
+                      disabled={isSubmitting}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               <Button
                 type="submit"
@@ -207,25 +285,50 @@ const Auth = () => {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {isLogin ? 'Signing in...' : 'Creating account...'}
+                    {getButtonText()}
                   </>
                 ) : (
-                  isLogin ? 'Sign In' : 'Create Account'
+                  getButtonText()
                 )}
               </Button>
 
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsLogin(!isLogin);
-                    setError(null);
-                    setSuccessMessage(null);
-                  }}
-                  className="text-sm text-primary hover:underline"
-                >
-                  {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
-                </button>
+              <div className="text-center space-y-2">
+                {mode === 'login' && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => switchMode('reset')}
+                      className="text-sm text-muted-foreground hover:text-primary hover:underline block w-full"
+                    >
+                      Forgot your password?
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => switchMode('signup')}
+                      className="text-sm text-primary hover:underline"
+                    >
+                      Don't have an account? Sign up
+                    </button>
+                  </>
+                )}
+                {mode === 'signup' && (
+                  <button
+                    type="button"
+                    onClick={() => switchMode('login')}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Already have an account? Sign in
+                  </button>
+                )}
+                {mode === 'reset' && (
+                  <button
+                    type="button"
+                    onClick={() => switchMode('login')}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Back to sign in
+                  </button>
+                )}
               </div>
             </form>
           </CardContent>
