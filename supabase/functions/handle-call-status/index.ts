@@ -1,10 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { securityHeaders, secureJsonResponse, secureErrorResponse } from "../_shared/security.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, elevenlabs-signature',
 };
+
+// Maximum request body size (100KB)
+const MAX_BODY_SIZE = 100 * 1024;
 
 // ElevenLabs webhook payload structures
 interface ElevenLabsWebhook {
@@ -165,7 +169,7 @@ function mapStatus(status: string, failureReason?: string): string {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: { ...corsHeaders, ...securityHeaders } });
   }
 
   try {
@@ -175,24 +179,28 @@ serve(async (req) => {
     const body = await req.text();
     console.log('[handle-call-status] Body length:', body.length);
 
+    // VALIDATE REQUEST SIZE
+    if (body.length > MAX_BODY_SIZE) {
+      console.warn(`[handle-call-status] Request body too large: ${body.length} bytes`);
+      return secureErrorResponse('Request too large', corsHeaders, 413);
+    }
+
     // Get signature header
     const signatureHeader = req.headers.get('elevenlabs-signature');
     const webhookSecret = Deno.env.get('ELEVENLABS_WEBHOOKS_SECRET');
 
-    // Validate HMAC signature if secret is configured
-    if (webhookSecret) {
-      const validation = await validateHmacSignature(body, signatureHeader, webhookSecret);
-      if (!validation.valid) {
-        console.error('[handle-call-status] HMAC validation failed:', validation.reason);
-        return new Response(
-          JSON.stringify({ error: 'Invalid signature' }),
-          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      console.log('[handle-call-status] HMAC signature validated successfully');
-    } else {
-      console.warn('[handle-call-status] ELEVENLABS_WEBHOOKS_SECRET not configured - skipping HMAC validation');
+    // MANDATORY HMAC signature validation (fail closed)
+    if (!webhookSecret) {
+      console.error('[handle-call-status] CRITICAL: ELEVENLABS_WEBHOOKS_SECRET not configured');
+      return secureErrorResponse('Webhook validation not configured', corsHeaders, 500);
     }
+
+    const validation = await validateHmacSignature(body, signatureHeader, webhookSecret);
+    if (!validation.valid) {
+      console.error('[handle-call-status] HMAC validation failed:', validation.reason);
+      return secureErrorResponse('Invalid signature', corsHeaders, 401);
+    }
+    console.log('[handle-call-status] HMAC signature validated successfully');
 
     // Parse the webhook payload
     let webhook: ElevenLabsWebhook;
@@ -200,10 +208,7 @@ serve(async (req) => {
       webhook = JSON.parse(body);
     } catch {
       console.error('[handle-call-status] Failed to parse webhook JSON');
-      return new Response(
-        JSON.stringify({ error: 'Invalid JSON' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return secureErrorResponse('Invalid JSON', corsHeaders, 400);
     }
 
     console.log('[handle-call-status] Webhook type:', webhook.type);
@@ -213,7 +218,9 @@ serve(async (req) => {
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession: false }
+    });
 
     // Handle based on webhook type
     if (webhook.type === 'post_call_transcription') {
@@ -262,9 +269,9 @@ serve(async (req) => {
 
       if (!lead) {
         console.warn(`[handle-call-status] No lead found for conversation_id: ${conversationId} or call_sid: ${callSid}`);
-        return new Response(
-          JSON.stringify({ warning: 'No matching lead found', conversationId, callSid }),
-          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        return secureJsonResponse(
+          { warning: 'No matching lead found', conversationId, callSid },
+          corsHeaders
         );
       }
 
@@ -296,15 +303,15 @@ serve(async (req) => {
 
       console.log(`[handle-call-status] Successfully updated lead ${lead.id} with call results`);
 
-      return new Response(
-        JSON.stringify({ 
+      return secureJsonResponse(
+        { 
           success: true, 
           message: 'Call transcript processed',
           leadId: lead.id,
           status,
           durationSeconds: duration,
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        },
+        corsHeaders
       );
 
     } else if (webhook.type === 'call_initiation_failure') {
@@ -349,9 +356,9 @@ serve(async (req) => {
 
       if (!lead) {
         console.warn(`[handle-call-status] No lead found for failed call - conversation_id: ${conversationId}, call_sid: ${callSid}`);
-        return new Response(
-          JSON.stringify({ warning: 'No matching lead found for failed call', conversationId, callSid }),
-          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        return secureJsonResponse(
+          { warning: 'No matching lead found for failed call', conversationId, callSid },
+          corsHeaders
         );
       }
 
@@ -379,40 +386,37 @@ serve(async (req) => {
 
       console.log(`[handle-call-status] Successfully updated lead ${lead.id} with failure status`);
 
-      return new Response(
-        JSON.stringify({ 
+      return secureJsonResponse(
+        { 
           success: true, 
           message: 'Call failure processed',
           leadId: lead.id,
           status,
           failureReason: data.failure_reason,
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        },
+        corsHeaders
       );
 
     } else if (webhook.type === 'post_call_audio') {
       // Audio webhook - just log for now, could be used for recording storage later
       console.log('[handle-call-status] Received post_call_audio webhook - acknowledging');
       
-      return new Response(
-        JSON.stringify({ success: true, message: 'Audio webhook acknowledged' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      return secureJsonResponse(
+        { success: true, message: 'Audio webhook acknowledged' },
+        corsHeaders
       );
     }
 
     // Unknown webhook type
     console.warn(`[handle-call-status] Unknown webhook type: ${webhook.type}`);
-    return new Response(
-      JSON.stringify({ warning: 'Unknown webhook type', type: webhook.type }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    return secureJsonResponse(
+      { warning: 'Unknown webhook type', type: webhook.type },
+      corsHeaders
     );
 
   } catch (error: unknown) {
     console.error('[handle-call-status] Error:', error);
     // SEC-002: Sanitized error response - no internal details exposed
-    return new Response(
-      JSON.stringify({ error: 'Service temporarily unavailable' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return secureErrorResponse('Service temporarily unavailable', corsHeaders, 500);
   }
 });

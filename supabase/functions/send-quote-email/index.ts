@@ -5,18 +5,16 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { 
+  validateRequestSize, 
+  secureJsonResponse, 
+  secureErrorResponse,
+  securityHeaders
+} from "../_shared/security.ts";
 
 // Rate limiting configuration
 const RATE_LIMIT_MAX = 5; // 5 emails per minute
 const RATE_LIMIT_WINDOW = 1;
-
-function getClientIdentifier(req: Request): string {
-  const forwarded = req.headers.get('x-forwarded-for');
-  if (forwarded) return forwarded.split(',')[0].trim();
-  const realIp = req.headers.get('x-real-ip');
-  if (realIp) return realIp;
-  return 'unknown';
-}
 
 interface QuoteEmailRequest {
   leadId: string;
@@ -454,11 +452,15 @@ const handler = async (req: Request): Promise<Response> => {
   
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: { ...corsHeaders, ...securityHeaders } });
   }
 
   try {
-    const data: QuoteEmailRequest = await req.json();
+    // VALIDATE REQUEST SIZE (100KB limit)
+    const { body: bodyText, error: sizeError } = await validateRequestSize(req, corsHeaders);
+    if (sizeError) return sizeError;
+
+    const data: QuoteEmailRequest = JSON.parse(bodyText);
     
     // Parse names for logging
     const firstName = data.firstName || data.customerName?.split(' ')[0] || 'Customer';
@@ -469,7 +471,9 @@ const handler = async (req: Request): Promise<Response> => {
     // Initialize Supabase client for database operations
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession: false }
+    });
 
     // SEC-001: Verify token and lead freshness before sending email
     if (data.verificationToken) {
@@ -481,27 +485,21 @@ const handler = async (req: Request): Promise<Response> => {
 
       if (verifyError || !lead) {
         console.error('[send-quote-email] Lead verification failed:', verifyError?.message);
-        return new Response(
-          JSON.stringify({ error: 'Invalid request' }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return secureErrorResponse('Invalid request', corsHeaders, 403);
       }
 
       // Verify token matches
       if (lead.verification_token !== data.verificationToken) {
         console.error('[send-quote-email] Token mismatch for lead:', data.leadId);
-        return new Response(
-          JSON.stringify({ error: 'Invalid request' }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return secureErrorResponse('Invalid request', corsHeaders, 403);
       }
 
       // Check if email was already sent (prevent replay)
       if (lead.email_sent) {
         console.log('[send-quote-email] Email already sent for lead:', data.leadId);
-        return new Response(
-          JSON.stringify({ success: true, message: 'Email already sent' }),
-          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        return secureJsonResponse(
+          { success: true, message: 'Email already sent' },
+          corsHeaders
         );
       }
 
@@ -511,10 +509,7 @@ const handler = async (req: Request): Promise<Response> => {
       const ageMinutes = (now.getTime() - createdAt.getTime()) / (1000 * 60);
       if (ageMinutes > 5) {
         console.error('[send-quote-email] Lead too old:', ageMinutes, 'minutes');
-        return new Response(
-          JSON.stringify({ error: 'Request expired' }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return secureErrorResponse('Request expired', corsHeaders, 403);
       }
 
       // SEC-003: Server-side lead linkage to conversation (RLS prevents client-side updates)
@@ -557,13 +552,11 @@ const handler = async (req: Request): Promise<Response> => {
         })
         .eq('id', data.leadId);
 
-      return new Response(JSON.stringify({ 
-        success: false, 
-        error: emailResponse.error.message || 'Email delivery failed'
-      }), {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      });
+      return secureJsonResponse(
+        { success: false, error: emailResponse.error.message || 'Email delivery failed' },
+        corsHeaders,
+        500
+      );
     }
 
     // Email sent successfully - log the actual message ID
@@ -584,23 +577,14 @@ const handler = async (req: Request): Promise<Response> => {
       console.log(`[send-quote-email] Lead ${data.leadId} marked as email sent`);
     }
 
-    return new Response(JSON.stringify({ 
-      success: true, 
-      messageId: emailResponse.data?.id 
-    }), {
-      status: 200,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
-  } catch (error: any) {
+    return secureJsonResponse(
+      { success: true, messageId: emailResponse.data?.id },
+      corsHeaders
+    );
+  } catch (error: unknown) {
     console.error("[send-quote-email] Error:", error);
     // SEC-002: Sanitized error response - no internal details exposed
-    return new Response(
-      JSON.stringify({ error: 'Email service temporarily unavailable' }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    return secureErrorResponse('Email service temporarily unavailable', corsHeaders, 500);
   }
 };
 

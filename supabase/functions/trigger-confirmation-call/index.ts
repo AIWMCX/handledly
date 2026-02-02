@@ -2,18 +2,18 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { 
+  validateRequestSize, 
+  secureJsonResponse, 
+  secureErrorResponse,
+  securityHeaders,
+  getClientIp,
+  checkIpRateLimit
+} from "../_shared/security.ts";
 
 // Rate limiting configuration
 const RATE_LIMIT_MAX = 5; // 5 calls per minute
 const RATE_LIMIT_WINDOW = 1;
-
-function getClientIdentifier(req: Request): string {
-  const forwarded = req.headers.get('x-forwarded-for');
-  if (forwarded) return forwarded.split(',')[0].trim();
-  const realIp = req.headers.get('x-real-ip');
-  if (realIp) return realIp;
-  return 'unknown';
-}
 
 interface CallRequest {
   leadId: string;
@@ -540,45 +540,53 @@ serve(async (req) => {
   
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: { ...corsHeaders, ...securityHeaders } });
   }
 
   try {
+    // VALIDATE REQUEST SIZE (100KB limit)
+    const { body: bodyText, error: sizeError } = await validateRequestSize(req, corsHeaders);
+    if (sizeError) return sizeError;
     const ELEVENLABS_API_KEY = Deno.env.get('ELEVENLABS_API_KEY');
     const ELEVENLABS_AGENT_ID = Deno.env.get('ELEVENLABS_AGENT_ID');
     const ELEVENLABS_PHONE_NUMBER_ID = Deno.env.get('ELEVENLABS_PHONE_NUMBER_ID');
     
     if (!ELEVENLABS_API_KEY) {
       console.error('[trigger-confirmation-call] ELEVENLABS_API_KEY is not configured');
-      return new Response(
-        JSON.stringify({ error: 'ElevenLabs API key not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return secureErrorResponse('ElevenLabs API key not configured', corsHeaders, 500);
     }
 
     if (!ELEVENLABS_AGENT_ID) {
       console.error('[trigger-confirmation-call] ELEVENLABS_AGENT_ID is not configured');
-      return new Response(
-        JSON.stringify({ error: 'ElevenLabs agent ID not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return secureErrorResponse('ElevenLabs agent ID not configured', corsHeaders, 500);
     }
 
     if (!ELEVENLABS_PHONE_NUMBER_ID) {
       console.error('[trigger-confirmation-call] ELEVENLABS_PHONE_NUMBER_ID is not configured');
-      return new Response(
-        JSON.stringify({ error: 'ElevenLabs phone number ID not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return secureErrorResponse('ElevenLabs phone number ID not configured', corsHeaders, 500);
     }
 
-    const data: CallRequest = await req.json();
+    const data: CallRequest = JSON.parse(bodyText);
     console.log(`[trigger-confirmation-call] Received request for lead ${data.leadId}`);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession: false }
+    });
+
+    // IP-based rate limiting (10 calls per hour per IP)
+    const clientIp = getClientIp(req);
+    const rateLimitResult = await checkIpRateLimit(supabase, clientIp, 'edge:trigger-confirmation-call', 10, 60);
+    if (!rateLimitResult.allowed) {
+      console.warn(`[trigger-confirmation-call] IP rate limit exceeded for ${clientIp}`);
+      return secureJsonResponse(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        { ...corsHeaders, 'Retry-After': '3600' },
+        429
+      );
+    }
 
     // SEC-001: Verify token and lead freshness before initiating call
     if (data.verificationToken) {
@@ -590,24 +598,14 @@ serve(async (req) => {
 
       if (verifyError || !lead) {
         console.error('[trigger-confirmation-call] Lead verification failed:', verifyError?.message);
-        return new Response(
-          JSON.stringify({ error: 'Invalid request' }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return secureErrorResponse('Invalid request', corsHeaders, 403);
       }
 
       // Verify token matches
       if (lead.verification_token !== data.verificationToken) {
         console.error('[trigger-confirmation-call] Token mismatch for lead:', data.leadId);
-        return new Response(
-          JSON.stringify({ error: 'Invalid request' }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return secureErrorResponse('Invalid request', corsHeaders, 403);
       }
-
-      // Check if call was already processed (prevent replay)
-      // Only block if there's EVIDENCE a call was actually made (has call_sid or conversation_id)
-      // OR if status indicates active/completed processing
       if (lead.confirmation_call_status === 'calling' || 
           lead.confirmation_call_status === 'completed' ||
           lead.confirmation_call_status === 'failed_sms_sent' ||
@@ -617,12 +615,11 @@ serve(async (req) => {
           hasCallSid: !!lead.call_sid,
           hasConversationId: !!lead.conversation_id
         });
-        return new Response(
-          JSON.stringify({ success: true, message: 'Call already processed' }),
-          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        return secureJsonResponse(
+          { success: true, message: 'Call already processed' },
+          corsHeaders
         );
       }
-      
       // Log if retrying a previously failed attempt
       if (lead.confirmation_call_status === 'pending' || lead.confirmation_call_status === 'failed') {
         console.log('[trigger-confirmation-call] Retrying call for lead:', data.leadId, 'previous status:', lead.confirmation_call_status);
@@ -634,10 +631,7 @@ serve(async (req) => {
       const ageMinutes = (now.getTime() - createdAt.getTime()) / (1000 * 60);
       if (ageMinutes > 5) {
         console.error('[trigger-confirmation-call] Lead too old:', ageMinutes, 'minutes');
-        return new Response(
-          JSON.stringify({ error: 'Request expired' }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return secureErrorResponse('Request expired', corsHeaders, 403);
       }
     }
 
@@ -661,22 +655,19 @@ serve(async (req) => {
     await executeCall(data);
 
     // Return after call execution completes
-    return new Response(
-      JSON.stringify({ 
+    return secureJsonResponse(
+      { 
         success: true, 
         message: 'Confirmation call initiated',
         leadId: data.leadId,
         initiatedAt: new Date().toISOString(),
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      },
+      corsHeaders
     );
 
   } catch (error: unknown) {
     console.error('[trigger-confirmation-call] Error:', error);
     // SEC-002: Sanitized error response - no internal details exposed
-    return new Response(
-      JSON.stringify({ error: 'Service temporarily unavailable' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return secureErrorResponse('Service temporarily unavailable', corsHeaders, 500);
   }
 });
