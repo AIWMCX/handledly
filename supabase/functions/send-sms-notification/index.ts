@@ -1,18 +1,11 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
 import { getCorsHeaders } from "../_shared/cors.ts";
-
-// Rate limiting configuration
-const RATE_LIMIT_MAX = 5; // 5 SMS per minute
-const RATE_LIMIT_WINDOW = 1;
-
-function getClientIdentifier(req: Request): string {
-  const forwarded = req.headers.get('x-forwarded-for');
-  if (forwarded) return forwarded.split(',')[0].trim();
-  const realIp = req.headers.get('x-real-ip');
-  if (realIp) return realIp;
-  return 'unknown';
-}
+import { 
+  validateRequestSize, 
+  secureJsonResponse, 
+  secureErrorResponse,
+  securityHeaders 
+} from "../_shared/security.ts";
 
 interface SMSRequest {
   leadId: string;
@@ -29,28 +22,31 @@ Deno.serve(async (req) => {
   
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: { ...corsHeaders, ...securityHeaders } });
   }
 
   try {
-    const { leadId, verificationToken, customerName, phone, totalQuote, quoteNumber, serviceType } = 
-      await req.json() as SMSRequest;
+    // VALIDATE REQUEST SIZE (100KB limit)
+    const { body: bodyText, error: sizeError } = await validateRequestSize(req, corsHeaders);
+    if (sizeError) return sizeError;
+
+    const { leadId, verificationToken, customerName, phone, totalQuote, quoteNumber } = 
+      JSON.parse(bodyText) as SMSRequest;
 
     console.log(`Processing SMS notification for lead: ${leadId}`);
 
     // Validate required fields
     if (!leadId || !verificationToken || !phone) {
       console.error("Missing required fields");
-      return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return secureErrorResponse("Missing required fields", corsHeaders, 400);
     }
 
     // Initialize Supabase client with service role
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { persistSession: false }
+    });
 
     // Verify the token matches the lead and lead was created recently (5 min window)
     const { data: lead, error: leadError } = await supabase
@@ -61,19 +57,13 @@ Deno.serve(async (req) => {
 
     if (leadError || !lead) {
       console.error("Lead not found:", leadError);
-      return new Response(
-        JSON.stringify({ error: "Lead not found" }),
-        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return secureErrorResponse("Lead not found", corsHeaders, 404);
     }
 
     // Verify token
     if (lead.verification_token !== verificationToken) {
       console.error("Invalid verification token");
-      return new Response(
-        JSON.stringify({ error: "Invalid verification token" }),
-        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return secureErrorResponse("Invalid verification token", corsHeaders, 403);
     }
 
     // Verify timing (5 minute window)
@@ -83,10 +73,7 @@ Deno.serve(async (req) => {
     
     if (timeDiffMinutes > 5) {
       console.error("Verification window expired");
-      return new Response(
-        JSON.stringify({ error: "Verification window expired" }),
-        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return secureErrorResponse("Verification window expired", corsHeaders, 403);
     }
 
     // Get Twilio credentials
@@ -96,10 +83,7 @@ Deno.serve(async (req) => {
 
     if (!twilioAccountSid || !twilioAuthToken || !twilioPhoneNumber) {
       console.error("Twilio credentials not configured");
-      return new Response(
-        JSON.stringify({ error: "SMS service not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return secureErrorResponse("SMS service not configured", corsHeaders, 500);
     }
 
     // Format phone number (ensure E.164 format)
@@ -111,14 +95,14 @@ Deno.serve(async (req) => {
     
     if (!isValidUS) {
       console.warn(`[send-sms-notification] Skipping SMS - non-US phone number detected: ${phone}`);
-      return new Response(
-        JSON.stringify({ 
+      return secureJsonResponse(
+        { 
           success: false, 
           skipped: true,
           reason: "Non-US phone number not supported",
           message: "SMS only available for US phone numbers" 
-        }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        },
+        corsHeaders
       );
     }
     
@@ -155,50 +139,54 @@ Deno.serve(async (req) => {
       const errorData = await twilioResponse.text();
       console.error("Twilio API error:", errorData);
       
-      // Log error to lead notes
-      await supabase
+      // Log error to lead notes (non-blocking)
+      supabase
         .from("leads")
         .update({
           notes: lead.notes 
             ? `${lead.notes}\n[SMS Error: ${errorData}]` 
             : `[SMS Error: ${errorData}]`,
         })
-        .eq("id", leadId);
+        .eq("id", leadId)
+        .then(({ error: updateErr }) => {
+          if (updateErr) console.error('[send-sms-notification] Failed to update lead notes:', updateErr.message);
+        });
 
-      return new Response(
-        JSON.stringify({ error: "Failed to send SMS", details: errorData }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      return secureJsonResponse(
+        { error: "Failed to send SMS", details: errorData },
+        corsHeaders,
+        500
       );
     }
 
     const twilioData = await twilioResponse.json();
     console.log("SMS sent successfully:", twilioData.sid);
 
-    // Update lead notes with SMS confirmation
-    await supabase
+    // Update lead notes with SMS confirmation (non-blocking)
+    supabase
       .from("leads")
       .update({
         notes: lead.notes 
           ? `${lead.notes}\n[SMS sent: ${new Date().toISOString()}]` 
           : `[SMS sent: ${new Date().toISOString()}]`,
       })
-      .eq("id", leadId);
+      .eq("id", leadId)
+      .then(({ error: updateErr }) => {
+        if (updateErr) console.error('[send-sms-notification] Failed to update lead notes:', updateErr.message);
+      });
 
-    return new Response(
-      JSON.stringify({ 
+    return secureJsonResponse(
+      { 
         success: true, 
         messageSid: twilioData.sid,
         message: "SMS notification sent successfully" 
-      }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      },
+      corsHeaders
     );
 
   } catch (error: unknown) {
     console.error("Error sending SMS:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    return new Response(
-      JSON.stringify({ error: "Internal server error", details: errorMessage }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return secureErrorResponse("Internal server error", corsHeaders, 500);
   }
 });

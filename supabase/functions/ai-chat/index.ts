@@ -1,19 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { 
+  validateRequestSize, 
+  secureJsonResponse, 
+  secureErrorResponse,
+  getClientIp,
+  securityHeaders 
+} from "../_shared/security.ts";
 
 // Rate limiting configuration
 const RATE_LIMIT_MAX = 30; // 30 requests per minute
 const RATE_LIMIT_WINDOW = 1; // 1 minute
-
-// Get client identifier for rate limiting
-function getClientIdentifier(req: Request): string {
-  const forwarded = req.headers.get('x-forwarded-for');
-  if (forwarded) return forwarded.split(',')[0].trim();
-  const realIp = req.headers.get('x-real-ip');
-  if (realIp) return realIp;
-  return 'unknown';
-}
 
 // Cost per AI message (approximate for Gemini Flash)
 const AI_COST_PER_MESSAGE = 0.002;
@@ -22,7 +20,9 @@ const AI_COST_PER_MESSAGE = 0.002;
 const getSupabaseClient = () => {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-  return createClient(supabaseUrl, supabaseKey);
+  return createClient(supabaseUrl, supabaseKey, {
+    auth: { persistSession: false }
+  });
 };
 
 // Check if circuit breaker allows this request
@@ -45,20 +45,18 @@ async function checkCircuitBreaker(): Promise<{ allowed: boolean; reason?: strin
   }
 }
 
-// Record cost after successful AI call
-async function recordCost(sessionId?: string, ipHash?: string): Promise<void> {
-  try {
-    const supabase = getSupabaseClient();
-    await supabase.rpc('record_service_cost', {
-      p_service_type: 'ai_chat',
-      p_cost: AI_COST_PER_MESSAGE,
-      p_session_id: sessionId || null,
-      p_ip_hash: ipHash || null,
-      p_metadata: {}
-    });
-  } catch (err) {
-    console.warn('[ai-chat] Failed to record cost:', err);
-  }
+// Record cost after successful AI call (non-blocking)
+function recordCostAsync(sessionId?: string, ipHash?: string): void {
+  const supabase = getSupabaseClient();
+  supabase.rpc('record_service_cost', {
+    p_service_type: 'ai_chat',
+    p_cost: AI_COST_PER_MESSAGE,
+    p_session_id: sessionId || null,
+    p_ip_hash: ipHash || null,
+    p_metadata: {}
+  }).then(({ error }) => {
+    if (error) console.warn('[ai-chat] Failed to record cost:', error.message);
+  });
 }
 
 // Professional moving assistant system prompt with quote collection workflow - CONVERSION OPTIMIZED
@@ -202,6 +200,7 @@ interface ChatRequest {
   message: string;
   conversationHistory?: Message[];
   sessionId?: string;
+  ipHash?: string;
 }
 
 interface QuoteData {
@@ -245,39 +244,49 @@ serve(async (req) => {
   
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: { ...corsHeaders, ...securityHeaders } });
   }
 
   try {
+    // VALIDATE REQUEST SIZE (100KB limit)
+    const { body: bodyText, error: sizeError } = await validateRequestSize(req, corsHeaders);
+    if (sizeError) return sizeError;
+
+    // Parse the request body
+    const { message, conversationHistory = [], sessionId } = JSON.parse(bodyText) as ChatRequest;
+
     // RATE LIMIT CHECK - Prevent abuse
-    const clientId = getClientIdentifier(req);
+    const clientIp = getClientIp(req);
     const supabase = getSupabaseClient();
     
     const { data: allowed, error: rateLimitError } = await supabase.rpc('check_rate_limit_readonly', {
       p_table_name: 'edge_ai_chat',
-      p_identifier: clientId,
+      p_identifier: clientIp,
       p_max_requests: RATE_LIMIT_MAX,
       p_time_window_minutes: RATE_LIMIT_WINDOW,
     });
     
     if (!rateLimitError && !allowed) {
-      console.warn(`[ai-chat] Rate limit exceeded for ${clientId}`);
-      return new Response(
-        JSON.stringify({ 
+      console.warn(`[ai-chat] Rate limit exceeded for ${clientIp}`);
+      return secureJsonResponse(
+        { 
           error: 'Too many requests. Please wait a moment before trying again.',
           code: 'RATE_LIMIT_EXCEEDED',
           retryable: true,
           retryAfter: 60,
-        }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' } }
+        },
+        { ...corsHeaders, 'Retry-After': '60' },
+        429
       );
     }
     
-    // Record rate limit entry
+    // Record rate limit entry (non-blocking)
     if (!rateLimitError) {
-      await supabase.from('rate_limit_tracker').insert({
-        identifier: clientId,
+      supabase.from('rate_limit_tracker').insert({
+        identifier: clientIp,
         table_name: 'edge_ai_chat',
+      }).then(({ error }) => {
+        if (error) console.warn('[ai-chat] Rate limit tracking failed:', error.message);
       });
     }
     
@@ -285,37 +294,30 @@ serve(async (req) => {
     const circuitCheck = await checkCircuitBreaker();
     if (!circuitCheck.allowed) {
       console.warn(`[ai-chat] Circuit breaker tripped: ${circuitCheck.reason}`);
-      return new Response(
-        JSON.stringify({ 
+      return secureJsonResponse(
+        { 
           error: 'Service temporarily unavailable due to high demand. Please try again later.',
           code: 'CIRCUIT_BREAKER_TRIPPED'
-        }),
-        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        },
+        corsHeaders,
+        503
       );
     }
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       console.error('LOVABLE_API_KEY is not configured');
-      return new Response(
-        JSON.stringify({ error: 'AI service is not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return secureErrorResponse('AI service is not configured', corsHeaders, 500);
     }
 
-    const { message, conversationHistory = [], sessionId, ipHash } = await req.json() as ChatRequest & { ipHash?: string };
-
     if (!message || typeof message !== 'string') {
-      return new Response(
-        JSON.stringify({ error: 'Message is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return secureErrorResponse('Message is required', corsHeaders, 400);
     }
 
     console.log(`[ai-chat] Session ${sessionId}: Processing message - "${message.substring(0, 50)}..."`);
     
-    // Record cost for this request
-    await recordCost(sessionId, ipHash);
+    // Record cost for this request (non-blocking)
+    recordCostAsync(sessionId, clientIp);
 
     // Build messages array with system prompt and conversation history
     const messages: Message[] = [
@@ -343,23 +345,22 @@ serve(async (req) => {
       console.error(`[ai-chat] API error: ${response.status} - ${errorText}`);
       
       if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: 'Service is busy. Please try again in a moment.' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        return secureJsonResponse(
+          { error: 'Service is busy. Please try again in a moment.' },
+          corsHeaders,
+          429
         );
       }
       
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'Service temporarily unavailable. Please try again later.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        return secureJsonResponse(
+          { error: 'Service temporarily unavailable. Please try again later.' },
+          corsHeaders,
+          402
         );
       }
       
-      return new Response(
-        JSON.stringify({ error: 'Failed to generate response' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return secureErrorResponse('Failed to generate response', corsHeaders, 500);
     }
 
     const data = await response.json();
@@ -367,10 +368,7 @@ serve(async (req) => {
 
     if (!assistantMessage) {
       console.error('[ai-chat] No response content from AI');
-      return new Response(
-        JSON.stringify({ error: 'No response generated' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return secureErrorResponse('No response generated', corsHeaders, 500);
     }
 
     // Extract quote data if present
@@ -382,20 +380,21 @@ serve(async (req) => {
       console.log(`[ai-chat] Session ${sessionId}: Quote data extracted for ${quoteData.fullName}`);
     }
 
-    return new Response(
-      JSON.stringify({ 
+    return secureJsonResponse(
+      { 
         response: cleanResponse,
         sessionId,
         action: quoteData ? { type: 'submit_quote', data: quoteData } : null,
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      },
+      corsHeaders
     );
 
   } catch (error) {
     console.error('[ai-chat] Error:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error occurred' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    return secureErrorResponse(
+      error instanceof Error ? error.message : 'Unknown error occurred',
+      corsHeaders,
+      500
     );
   }
 });
