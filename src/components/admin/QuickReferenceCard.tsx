@@ -27,7 +27,7 @@ const QuickReferenceCard = () => {
 
   const contacts = [
     { label: 'Technical Support', value: 'support@lovable.dev', type: 'email' },
-    { label: 'Business Phone', value: '(720) 555-0123', type: 'phone' },
+    { label: 'Business Phone', value: '(878) 218-7397', type: 'phone' },
   ];
 
   const credentials = [
