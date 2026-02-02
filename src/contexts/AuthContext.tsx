@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 // Only these 3 accounts have access to admin panel, dashboards, and client portal
 const AUTHORIZED_ADMIN_EMAILS: readonly string[] = [
   'shcherbakou.edu@gmail.com',
+  'kshcherbakou.kos@gmail.com',
   'saych.88@gmail.com',
   'nevulis22@gmail.com',
   'beltovbogdan@gmail.com',
