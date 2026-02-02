@@ -63,6 +63,7 @@ const services = [
     description: "Pianos, safes, pool tables, appliances, and oversized items.",
     link: "/services/heavy-items-moving",
     badge: null,
+    customRate: 169,
   },
 ];
 
@@ -79,10 +80,10 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       <SEO 
-        title="Handledly | America's First AI-Powered Moving SaaS Platform"
-        description="Automate Dispatching. Elevate Service. Build Trust at Scale. AI-powered moving operations with instant quotes, smart scheduling, and seamless customer communication."
+        title="Denver's Top-Rated Movers | Handledly™ - $159/hr Flat Rate Moving"
+        description="Denver's highest-rated moving company. Flat hourly rates from $159/hr, no hidden fees, free packing materials. 500+ damage-free days. Get your free quote in 60 seconds."
         canonicalUrl="https://handledly.com/"
-        keywords={['moving SaaS', 'AI moving platform', 'dispatch automation', 'moving company software', 'AI scheduling', 'instant quotes', 'Denver movers', 'professional moving services']}
+        keywords={['Denver movers', 'moving company Denver', 'local movers Denver', 'affordable moving', 'professional movers', 'Denver moving services', 'flat rate movers', 'same day moving']}
       />
       
       <AnnouncementBar />
@@ -103,9 +104,9 @@ export default function Index() {
               </div>
               
               <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold leading-tight mb-6">
-                Automate Dispatching.<br />
-                <span className="text-accent">Elevate Service.</span><br />
-                Build Trust at Scale.
+                Denver's<br />
+                <span className="text-accent">Top-Rated Movers.</span><br />
+                Flat Rates. No Surprises.
               </h1>
               
               <p className="text-lg lg:text-xl text-muted-foreground mb-4 max-w-2xl leading-relaxed">
@@ -231,7 +232,7 @@ export default function Index() {
                   <span className="text-accent font-medium text-sm group-hover:underline">
                     Learn More →
                   </span>
-                  <span className="text-xs text-muted-foreground">From ${HOURLY_RATES['moving-2-movers']}/hr</span>
+                  <span className="text-xs text-muted-foreground">From ${service.customRate || HOURLY_RATES['moving-2-movers']}/hr</span>
                 </div>
               </Link>
             ))}
