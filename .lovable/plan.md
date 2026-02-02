@@ -1,133 +1,284 @@
 
-# Pricing Cheat Sheet PDF Implementation Plan
+# Jack v4.1 Optimization + Launch Readiness Checklist PDF
 
 ## Overview
-Create a print-ready PDF version of the Pricing Cheat Sheet that can be downloaded and printed for crew reference during calls and on-site jobs.
+This plan addresses two critical launch-day requirements:
+1. **Jack v4.1 Optimization**: Enhance frontend visibility of Iron Law pricing, specialty flat fees, and enable Jack to receive pre-filled data from web form submissions
+2. **Launch Readiness Checklist PDF**: Create a comprehensive print-ready PDF that covers all pricing, Jack scripts, and customer journey elements for launch-day verification
 
-## Technical Approach
+---
 
-### File 1: `src/components/admin/pdf/PricingCheatSheetPDF.tsx`
-A new PDF document component using `@react-pdf/renderer` with the following pages:
+## Part 1: Jack v4.1 Optimization
 
-**Page 1: Core Pricing Tables**
-- Labor Only rates (2/3/4 movers)
-- Moving with Truck rates
-- 200lb Iron Law section (highlighted with warning color)
+### 1.1 Iron Law Visibility on Homepage
 
-**Page 2: Specialty Items**
-- Piano Moving (flat fees + hourly by type)
-- Safe Moving (by weight class)
-- Pool Table Moving (NOT Iron Law - emphasized)
-- Other Specialty Items (Hot Tub, Gym Equipment, Motorcycle)
+**Current State**: The homepage `PricingDisplay.tsx` shows the Heavy Items tab with a generic $169/hr rate. The Iron Law ($189/hr for 200+ lb items) is not prominently displayed.
 
-**Page 3: Quick Reference**
-- Crew Sizing Guide (property size → crew recommendation)
-- What's Included (NO stair fees, NO elevator fees, etc.)
-- What's NOT Included
-- Key Scripts for objection handling
-- Never Do list
-- Contact information
+**Enhancement**: Add a prominent Iron Law warning badge in the Heavy Items section that clearly distinguishes:
+- $189/hr WITH TRUCK (default for 200+ lb items)
+- $169/hr for Pool Tables (NOT Iron Law)
 
-### Design Specifications
-- Use existing color scheme (`navy: #1E3A5F`, `gold: #F9B233`)
-- High contrast tables for print readability
-- Warning colors for Iron Law sections
-- Helvetica font (system font, no CORS issues)
-- A4 size, landscape orientation for better table viewing
+**Files to Modify**:
+- `src/components/PricingDisplay.tsx` - Add Iron Law warning section with visual distinction
 
-### File 2: `src/hooks/usePricingCheatSheetPDF.tsx`
-A simple hook that:
-- Generates the PDF blob using `pdf().toBlob()`
-- Creates a download link with filename `handledly-pricing-cheat-sheet-2026-02.pdf`
-- Shows success/error toast notifications
+**Visual Design**:
+```text
+┌─────────────────────────────────────────────────┐
+│ ⚠️ 200LB IRON LAW                               │
+│ Items 200+ lbs require 3 movers @ $189/hr       │
+│ Pianos • Gun Safes • Hot Tubs                   │
+├─────────────────────────────────────────────────┤
+│ ✓ Pool Tables NOT Iron Law → $169/hr            │
+└─────────────────────────────────────────────────┘
+```
 
-### File 3: Update `src/pages/admin/Settings.tsx` (or create dedicated page)
-Add a "Download Pricing Cheat Sheet PDF" button that calls the hook.
+### 1.2 Specialty Flat Fees Display
 
-Alternatively, we can add a quick download button accessible from the Overview dashboard.
+**Current State**: The Heavy Items tab lists items but doesn't show individual flat fees (Piano $150-350, Safe $100-250, Pool Table $350-550).
 
-## Implementation Details
+**Enhancement**: Replace generic list with detailed specialty pricing cards showing:
+- Item type with icon
+- Flat fee range
+- Hourly rate
+- Iron Law indicator
 
-### Table Structure
+**Files to Modify**:
+- `src/components/PricingDisplay.tsx` - Expand Heavy Items tab with detailed fee grid
+
+**Visual Design**:
+```text
+┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
+│ 🎹 Piano Moving  │ │ 🔐 Safe Moving   │ │ 🎱 Pool Table    │
+│ $150-$350 flat   │ │ $100-$250 flat   │ │ $350-$550 flat   │
+│ $189/hr (3 crew) │ │ $189/hr (3 crew) │ │ $169/hr (2-3)    │
+│ ⚠️ IRON LAW      │ │ ⚠️ IRON LAW      │ │ ✓ NOT Iron Law   │
+└──────────────────┘ └──────────────────┘ └──────────────────┘
+```
+
+### 1.3 Jack Pre-Fill from Web Form (Contextual Updates)
+
+**Current State**: When a user submits the web quote form, Jack doesn't receive any context about the submission. If the user then calls via the Voice Agent, Jack starts cold.
+
+**Enhancement**: Enable Jack to receive contextual data from web form submissions via `conversation.sendContextualUpdate()`. When a quote is submitted:
+1. Store quote data in sessionStorage
+2. When VoiceAgent connects, send context to Jack with quote details
+3. Jack can then reference: "I see you just submitted a quote for a 3-bedroom move on March 15th..."
+
+**Files to Modify**:
+- `src/pages/Quote.tsx` - Store quote data on submission
+- `src/components/VoiceAgent.tsx` - Send contextual update when connecting
+
+**Technical Implementation**:
+```typescript
+// Quote.tsx - After successful submission
+sessionStorage.setItem('recentQuote', JSON.stringify({
+  quoteNumber: quoteNumber,
+  firstName: firstName,
+  serviceType: data.serviceType,
+  moveDate: data.moveDate,
+  bedrooms: data.bedrooms,
+  estimatedTotal: quote.total,
+}));
+
+// VoiceAgent.tsx - After connection
+const recentQuote = sessionStorage.getItem('recentQuote');
+if (recentQuote) {
+  const quote = JSON.parse(recentQuote);
+  conversation.sendContextualUpdate(
+    `Customer ${quote.firstName} just submitted quote ${quote.quoteNumber} for a ${quote.bedrooms}-bedroom ${quote.serviceType} on ${quote.moveDate}. Estimated total: $${quote.estimatedTotal}.`
+  );
+}
+```
+
+---
+
+## Part 2: Launch Readiness Checklist PDF
+
+### 2.1 PDF Component Structure
+
+**File to Create**: `src/components/admin/pdf/LaunchReadinessChecklistPDF.tsx`
+
+A comprehensive 4-page PDF covering every launch verification item:
+
+**Page 1: Pricing Verification Checklist**
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│ PAGE 1: CORE PRICING                                        │
+│ PRICING VERIFICATION CHECKLIST                              │
 ├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────────────┐  ┌─────────────────────┐          │
-│  │ LABOR ONLY          │  │ MOVING WITH TRUCK   │          │
-│  │ 2 Movers: $139/hr   │  │ 2 + Truck: $159/hr  │          │
-│  │ 3 Movers: $169/hr   │  │ 3 + Truck: $189/hr  │          │
-│  │ 4 Movers: $239/hr   │  │ 4 + Truck: $259/hr  │          │
-│  └─────────────────────┘  └─────────────────────┘          │
-│                                                             │
-│  ⚠️ 200LB IRON LAW (HIGHLIGHTED BOX)                       │
-│  Any item 200+ lbs = MINIMUM 3 movers                      │
-│  WITH TRUCK: $189/hr | LABOR-ONLY: $179/hr                 │
-│  Triggers: Piano, Gun Safe, Safe 200+, Hot Tub             │
-│  NOT Iron Law: Pool Table → $169/hr                        │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────┐
-│ PAGE 2: SPECIALTY ITEMS                                     │
-├─────────────────────────────────────────────────────────────┤
-│  PIANO MOVING                SAFE MOVING                   │
-│  ┌──────────────────────┐   ┌──────────────────────┐       │
-│  │ Upright: $150 flat   │   │ Small (<200): $100   │       │
-│  │ Baby Grand: $250     │   │ Med (200-500): $175  │       │
-│  │ Grand: $350          │   │ Large (500+): $250   │       │
-│  │ All @ $189/hr        │   │ 200+ @ $189/hr       │       │
-│  └──────────────────────┘   └──────────────────────┘       │
-│                                                             │
-│  POOL TABLE (NOT Iron Law!)   OTHER SPECIALTY              │
-│  ┌──────────────────────┐   ┌──────────────────────┐       │
-│  │ Move Only: $350      │   │ Hot Tub: $400        │       │
-│  │ Full Service: $550   │   │ Gym Equip: $125      │       │
-│  │ @ $169/hr (2-3 crew) │   │ Motorcycle: $200     │       │
-│  └──────────────────────┘   └──────────────────────┘       │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────┐
-│ PAGE 3: QUICK REFERENCE                                     │
-├─────────────────────────────────────────────────────────────┤
-│  CREW SIZING             WHAT'S INCLUDED                   │
-│  Studio/1BR → 2+truck    ✓ Crew, truck, fuel               │
-│  2BR → 2-3+truck         ✓ Blankets, straps                │
-│  3BR → 3+truck           ✓ Floor/door protection           │
-│  4+BR → 4+truck          ✓ Basic disassembly               │
-│  200lb+ → 3+ (Iron Law)  ✓ NO stair/elevator fees          │
-│                                                             │
-│  KEY SCRIPTS                                                │
-│  Price objection: "Rate covers crew, truck..."             │
-│  Iron Law: "For items over 200 pounds..."                  │
-│  Competitor: "We set crew correctly..."                    │
-│                                                             │
-│  NEVER DO: 2 movers for 200lb+, skip heavy probe...        │
-│                                                             │
-│  Version 4.0 | February 2026 | HD-XXXXX format             │
+│ [ ] Labor Only rates match: $139 / $169 / $239             │
+│ [ ] Truck rates match: $159 / $189 / $259                  │
+│ [ ] Iron Law @ $189/hr WITH TRUCK displays correctly       │
+│ [ ] Iron Law @ $179/hr LABOR-ONLY noted                    │
+│ [ ] Pool Table @ $169/hr (NOT Iron Law) confirmed          │
+│ [ ] Electronic payment +$5 fee shows                       │
+│ [ ] Specialty flat fees visible:                           │
+│     - Pianos: $150 / $250 / $350                           │
+│     - Safes: $100 / $175 / $250                            │
+│     - Pool Tables: $350 / $550                             │
+│     - Hot Tub: $400                                        │
+│ [ ] Quote format HD-XXXXX everywhere                       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Key Features
-- **High print contrast**: Dark navy headers, white backgrounds
-- **Iron Law highlighted**: Gold/warning background so it stands out
-- **Pool Table exception**: Explicitly marked as NOT Iron Law
-- **Lamination-friendly**: Clean borders, no complex gradients
-- **Quote format**: Shows new `HD-XXXXX` format
+**Page 2: Jack AI Voice Agent Checklist**
+```text
+┌─────────────────────────────────────────────────────────────┐
+│ JACK AI VOICE AGENT VERIFICATION                            │
+├─────────────────────────────────────────────────────────────┤
+│ ELEVENLABS DASHBOARD:                                       │
+│ [ ] Voice = Matt (deep, professional)                       │
+│ [ ] Speed = 1.1                                             │
+│ [ ] Turn Eagerness = Patient                                │
+│ [ ] System prompt v4.0 uploaded                             │
+│ [ ] RAG Knowledge Base v4.0 uploaded                        │
+│ [ ] "Publish" clicked (live configuration)                  │
+│                                                             │
+│ JACK RESPONSE TESTS:                                        │
+│ [ ] Test: "Piano" → quotes $189/hr (not $179)              │
+│ [ ] Test: "Pool table" → quotes $169/hr (not $189)         │
+│ [ ] Test: "Gun safe 300 lbs" → quotes $189/hr              │
+│ [ ] Test: 6-point confirmation before ending call           │
+│ [ ] Test: HD-XXXXX quote format used                        │
+│                                                             │
+│ DISCOVERY FLOW (90 seconds):                                │
+│ [ ] Location (from/to)                                      │
+│ [ ] Size (bedrooms)                                         │
+│ [ ] Access (stairs/elevator)                                │
+│ [ ] Truck need                                              │
+│ [ ] Heavy items probe (CRITICAL)                            │
+│ [ ] Quote + close                                           │
+│                                                             │
+│ 6-POINT CONFIRMATION:                                       │
+│ [ ] First name                                              │
+│ [ ] Last name                                               │
+│ [ ] Quote number (HD-XXXXX)                                 │
+│ [ ] Move date                                               │
+│ [ ] Destination                                             │
+│ [ ] Estimate amount                                         │
+└─────────────────────────────────────────────────────────────┘
+```
 
-## Files to Create/Modify
-1. **CREATE**: `src/components/admin/pdf/PricingCheatSheetPDF.tsx` - Main PDF component
-2. **CREATE**: `src/hooks/usePricingCheatSheetPDF.tsx` - Download hook
-3. **MODIFY**: `src/pages/admin/Overview.tsx` - Add download button (or Settings page)
+**Page 3: Customer Journey Verification**
+```text
+┌─────────────────────────────────────────────────────────────┐
+│ CUSTOMER JOURNEY VERIFICATION                               │
+├─────────────────────────────────────────────────────────────┤
+│ HOMEPAGE (/):                                               │
+│ [ ] "$159/hr" rate displays in hero                         │
+│ [ ] "Get Instant Quote" CTA works                           │
+│ [ ] VoiceAgent floating button visible                      │
+│ [ ] ChatWidget accessible                                   │
+│ [ ] Pricing section shows all tiers                         │
+│                                                             │
+│ QUOTE PAGE (/quote):                                        │
+│ [ ] 3-step wizard loads                                     │
+│ [ ] Service type selection works                            │
+│ [ ] Date picker works (no timezone issues)                  │
+│ [ ] Phone validation (US only)                              │
+│ [ ] Form submits successfully                               │
+│ [ ] Quote confirmation shows HD-XXXXX                       │
+│ [ ] Email sent notification appears                         │
+│ [ ] 30-second call countdown works                          │
+│                                                             │
+│ EMAIL CONFIRMATION:                                         │
+│ [ ] Subject contains HD-XXXXX quote number                  │
+│ [ ] Branding correct (Handledly, not HM-)                   │
+│ [ ] Pricing breakdown accurate                              │
+│ [ ] No mention of "USDOT" or "BBB A+"                       │
+│                                                             │
+│ AI CALLBACK:                                                │
+│ [ ] Call triggers after 30 seconds                          │
+│ [ ] Jack receives quote context                             │
+│ [ ] Professional greeting                                   │
+└─────────────────────────────────────────────────────────────┘
+```
 
-## Download Flow
-1. User clicks "Download Pricing Cheat Sheet" button
-2. Hook generates PDF blob client-side using `@react-pdf/renderer`
-3. Browser triggers download: `handledly-pricing-cheat-sheet-2026-02.pdf`
-4. Toast shows "Cheat Sheet Downloaded"
+**Page 4: Admin Dashboard & Edge Functions**
+```text
+┌─────────────────────────────────────────────────────────────┐
+│ ADMIN & TECHNICAL VERIFICATION                              │
+├─────────────────────────────────────────────────────────────┤
+│ ADMIN DASHBOARD (/admin):                                   │
+│ [ ] Login works                                             │
+│ [ ] Leads table loads                                       │
+│ [ ] Quote requests visible                                  │
+│ [ ] Pricing Cheat Sheet PDF downloads                       │
+│                                                             │
+│ EDGE FUNCTIONS:                                             │
+│ [ ] ai-chat - Responds to queries                           │
+│ [ ] send-quote-email - Emails sent                          │
+│ [ ] trigger-confirmation-call - Calls trigger               │
+│ [ ] elevenlabs-conversation-token - Token generated         │
+│                                                             │
+│ SECRETS CONFIGURED:                                         │
+│ [ ] ELEVENLABS_API_KEY                                      │
+│ [ ] ELEVENLABS_AGENT_ID                                     │
+│ [ ] RESEND_API_KEY                                          │
+│ [ ] FROM_EMAIL                                              │
+│ [ ] ADMIN_EMAIL                                             │
+│                                                             │
+│ EXTERNAL ACTIVATIONS (MANUAL):                              │
+│ [ ] Google Ads pixel in index.html                          │
+│ [ ] Facebook Pixel in index.html                            │
+│ [ ] ElevenLabs "Publish" clicked                            │
+│                                                             │
+│ POST-LAUNCH MONITORING:                                     │
+│ SELECT * FROM leads ORDER BY created_at DESC LIMIT 10;      │
+│ SELECT * FROM quote_requests ORDER BY created_at DESC;      │
+└─────────────────────────────────────────────────────────────┘
+```
 
-## Print Specifications
-- A4 size, portrait orientation
-- 3 pages total
-- Designed for single-sided printing
-- Can be laminated for durability
-- All text readable at normal print size (10pt minimum)
+### 2.2 Download Hook
+
+**File to Create**: `src/hooks/useLaunchReadinessPDF.tsx`
+- Generates PDF blob using `pdf().toBlob()`
+- Downloads as `handledly-launch-readiness-checklist-2026-02.pdf`
+- Shows toast notification on success/failure
+
+### 2.3 Admin Integration
+
+**File to Modify**: `src/pages/admin/Overview.tsx`
+- Add "Launch Readiness Checklist" download button alongside existing PDF buttons
+
+---
+
+## Files Summary
+
+| Action | File Path | Description |
+|--------|-----------|-------------|
+| MODIFY | `src/components/PricingDisplay.tsx` | Add Iron Law visibility, specialty flat fees grid |
+| MODIFY | `src/pages/Quote.tsx` | Store quote data in sessionStorage |
+| MODIFY | `src/components/VoiceAgent.tsx` | Send contextual update with quote data |
+| CREATE | `src/components/admin/pdf/LaunchReadinessChecklistPDF.tsx` | 4-page launch verification PDF |
+| CREATE | `src/hooks/useLaunchReadinessPDF.tsx` | PDF generation hook |
+| MODIFY | `src/pages/admin/Overview.tsx` | Add Launch Readiness download button |
+
+---
+
+## Technical Notes
+
+### Iron Law Visibility Design
+- Warning badge with gold/amber background
+- Clear "$189/hr WITH TRUCK" vs "$179/hr LABOR-ONLY" distinction
+- Green badge for Pool Table exception ($169/hr)
+
+### Pre-Fill Context for Jack
+- Uses `sendContextualUpdate()` method from ElevenLabs SDK
+- Context only sent if quote submitted in same session
+- Jack receives full context: name, quote number, service, date, estimate
+
+### Launch Checklist PDF Design
+- A4 portrait, 4 pages
+- High contrast for print readability
+- Checkbox format for verification
+- Includes SQL snippets for monitoring
+
+---
+
+## Verification Tests After Implementation
+
+1. **Homepage Check**: Verify Iron Law badge shows "$189/hr" prominently
+2. **Heavy Items Tab**: Confirm specialty flat fees are visible
+3. **Quote Flow**: Submit quote, then call via VoiceAgent - Jack should acknowledge the recent quote
+4. **PDF Download**: Download Launch Readiness PDF from admin dashboard
+5. **Print Test**: Print PDF and verify all checkboxes are readable
