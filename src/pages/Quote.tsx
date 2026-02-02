@@ -202,6 +202,21 @@ const generateQuoteNumber = (): string => {
         preferEmailOnly: data.preferEmailOnly,
         quoteNumber: quoteNumber,
       });
+      
+      // Store quote data in sessionStorage for Jack voice agent context
+      sessionStorage.setItem('recentQuote', JSON.stringify({
+        quoteNumber: quoteNumber,
+        firstName: firstName,
+        lastName: lastName,
+        serviceType: data.serviceType,
+        moveDate: data.moveDate,
+        bedrooms: data.bedrooms,
+        estimatedTotal: quote.total,
+        crewSize: quote.crewSize,
+        moveFrom: data.moveFromAddress,
+        moveTo: data.moveToAddress,
+      }));
+      
       setIsSubmitted(true);
       toast.success("Quote submitted! Check your email.");
 

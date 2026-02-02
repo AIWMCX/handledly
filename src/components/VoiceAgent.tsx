@@ -42,6 +42,24 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
       console.log("Connected to voice agent");
       retryCountRef.current = 0;
       toast.success("Connected! Start speaking...");
+      
+      // Send contextual update if user recently submitted a quote
+      const recentQuoteData = sessionStorage.getItem('recentQuote');
+      if (recentQuoteData) {
+        try {
+          const quote = JSON.parse(recentQuoteData);
+          const contextMessage = `Customer ${quote.firstName} ${quote.lastName || ''} just submitted quote ${quote.quoteNumber} for a ${quote.bedrooms}-bedroom ${quote.serviceType.replace(/-/g, ' ')} move${quote.moveDate ? ` on ${quote.moveDate}` : ''}. Estimated total: $${quote.estimatedTotal}. Crew size: ${quote.crewSize} movers.${quote.moveFrom ? ` Moving from ${quote.moveFrom}` : ''}${quote.moveTo ? ` to ${quote.moveTo}` : ''}.`;
+          
+          // Use sendContextualUpdate to give Jack context without triggering a response
+          conversation.sendContextualUpdate(contextMessage);
+          console.log("Sent quote context to Jack:", contextMessage);
+          
+          // Clear the quote data so it's only sent once
+          sessionStorage.removeItem('recentQuote');
+        } catch (e) {
+          console.error("Failed to parse recent quote data:", e);
+        }
+      }
     },
     onDisconnect: () => {
       console.log("Disconnected from voice agent");

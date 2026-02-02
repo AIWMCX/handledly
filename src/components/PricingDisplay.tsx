@@ -1,6 +1,6 @@
 import { Container } from "@/components/layout";
 import { HOURLY_RATES, INCLUDED_WITH_EVERY_MOVE, ELECTRONIC_PAYMENT_FEE, CREW_CONFIGURATIONS } from "@/lib/quoteCalculator";
-import { CheckCircle, Users, Truck, Dumbbell, Info, Zap, Building, Home } from "lucide-react";
+import { CheckCircle, Users, Truck, Dumbbell, Info, Zap, Building, Home, AlertTriangle, Music, Lock, Flame, Refrigerator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,6 +11,58 @@ const localMovingTiers = CREW_CONFIGURATIONS.map(config => ({
   ...config,
   isLabor: !config.hasTruck,
 }));
+
+// Specialty items with Iron Law designation and flat fees
+const SPECIALTY_ITEMS = [
+  {
+    name: 'Piano Moving',
+    icon: Music,
+    flatFee: '$150 - $350',
+    hourlyRate: '$189/hr',
+    crew: '3 movers',
+    isIronLaw: true,
+  },
+  {
+    name: 'Safe Moving',
+    icon: Lock,
+    flatFee: '$100 - $250',
+    hourlyRate: '$189/hr',
+    crew: '3 movers',
+    isIronLaw: true,
+  },
+  {
+    name: 'Pool Table',
+    icon: Dumbbell,
+    flatFee: '$350 - $550',
+    hourlyRate: '$169/hr',
+    crew: '2-3 movers',
+    isIronLaw: false,
+  },
+  {
+    name: 'Hot Tub',
+    icon: Flame,
+    flatFee: '$400',
+    hourlyRate: '$189/hr',
+    crew: '3 movers',
+    isIronLaw: true,
+  },
+  {
+    name: 'Gun Safe',
+    icon: Lock,
+    flatFee: '$175 - $350',
+    hourlyRate: '$189/hr',
+    crew: '3 movers',
+    isIronLaw: true,
+  },
+  {
+    name: 'Heavy Appliances',
+    icon: Refrigerator,
+    flatFee: '$75 - $150',
+    hourlyRate: '$169/hr',
+    crew: '2-3 movers',
+    isIronLaw: false,
+  },
+];
 
 export function PricingDisplay() {
   return (
@@ -115,47 +167,99 @@ export function PricingDisplay() {
           
           {/* Heavy Items Tab */}
           <TabsContent value="heavy-items">
-            <div className="max-w-2xl mx-auto">
-              <Link to="/quote" className="block p-8 rounded-2xl bg-background border border-border shadow-depth-3 text-center hover-lift group cursor-pointer">
-                <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4 shadow-glow-gold group-hover:shadow-glow-gold transition-shadow">
-                  <Dumbbell className="w-8 h-8 text-accent" />
+            <div className="max-w-4xl mx-auto space-y-6">
+              {/* Iron Law Warning Badge */}
+              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <AlertTriangle className="w-5 h-5 text-amber-500" />
+                  <span className="font-heading text-lg font-semibold text-amber-500">200LB IRON LAW</span>
                 </div>
-                
-                <h3 className="font-heading text-2xl font-semibold text-primary mb-2 group-hover:text-accent transition-colors">
-                  Heavy Items Moving
-                </h3>
-                
-                <div className="mb-4">
-                  <span className="text-4xl font-bold text-foreground">${HOURLY_RATES['heavy-items']}</span>
-                  <span className="text-muted-foreground">/hr</span>
-                </div>
-                
-                <p className="text-muted-foreground mb-6">
-                  Professional handling for oversized and heavy items
+                <p className="text-sm text-foreground mb-3">
+                  Items 200+ lbs require <strong>3 movers minimum</strong> for safety
                 </p>
-                
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm mb-6">
-                  {[
-                    'Pianos (Upright & Grand)',
-                    'Pool Tables',
-                    'Safes (Under 200 lbs)',
-                    'Safes (200+ lbs)',
-                    'Appliances',
-                    'Gym Equipment',
-                    'Hot Tubs',
-                    'Gun Safes',
-                    'Commercial Equipment'
-                  ].map((item) => (
-                    <span key={item} className="px-3 py-2 rounded-lg bg-secondary border border-border text-xs shadow-depth-1">
-                      {item}
-                    </span>
-                  ))}
+                <div className="flex flex-wrap justify-center gap-3">
+                  <Badge className="bg-amber-500/20 text-amber-600 border-amber-500/30">
+                    <Truck className="w-3 h-3 mr-1" />
+                    WITH TRUCK: $189/hr
+                  </Badge>
+                  <Badge className="bg-muted text-muted-foreground border-border">
+                    LABOR ONLY: $179/hr
+                  </Badge>
                 </div>
-                
-                <p className="text-sm text-muted-foreground">
-                  Final quote varies based on item complexity and access
+                <p className="text-xs text-muted-foreground mt-2">
+                  Applies to: Pianos • Gun Safes • Hot Tubs • Heavy Appliances
                 </p>
-              </Link>
+              </div>
+              
+              {/* Pool Table Exception */}
+              <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/30 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span className="text-sm font-medium text-green-600">
+                    Pool Tables NOT Iron Law → <strong>$169/hr</strong> (2-3 movers)
+                  </span>
+                </div>
+              </div>
+
+              {/* Specialty Item Cards Grid */}
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {SPECIALTY_ITEMS.map((item) => (
+                  <Link
+                    key={item.name}
+                    to="/quote"
+                    className={`p-5 rounded-xl border transition-all hover-lift group cursor-pointer ${
+                      item.isIronLaw 
+                        ? 'bg-amber-500/5 border-amber-500/20 hover:border-amber-500/40' 
+                        : 'bg-background border-border hover:border-accent/40'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                        item.isIronLaw ? 'bg-amber-500/10' : 'bg-accent/10'
+                      }`}>
+                        <item.icon className={`w-5 h-5 ${item.isIronLaw ? 'text-amber-500' : 'text-accent'}`} />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-foreground group-hover:text-accent transition-colors">
+                          {item.name}
+                        </h4>
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                          item.isIronLaw 
+                            ? 'bg-amber-500/20 text-amber-600' 
+                            : 'bg-green-500/20 text-green-600'
+                        }`}>
+                          {item.isIronLaw ? '⚠️ IRON LAW' : '✓ Standard'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Flat Fee:</span>
+                        <span className="font-semibold text-foreground">{item.flatFee}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Hourly Rate:</span>
+                        <span className="font-medium text-accent">{item.hourlyRate}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Crew:</span>
+                        <span className="text-foreground">{item.crew}</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Bottom CTA */}
+              <div className="text-center pt-4">
+                <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90 hover-lift">
+                  <Link to="/quote">Get Heavy Item Quote</Link>
+                </Button>
+                <p className="text-xs text-muted-foreground mt-3">
+                  Final quote varies based on item complexity, stairs, and access
+                </p>
+              </div>
             </div>
           </TabsContent>
         </Tabs>
