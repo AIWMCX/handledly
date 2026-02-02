@@ -29,6 +29,9 @@ const services = [
   { label: "Piano Moving", slug: "/services/piano-moving" },
   { label: "Pool Table Moving", slug: "/services/pool-table-moving" },
   { label: "Heavy Items Moving", slug: "/services/heavy-items-moving" },
+  { label: "Safe Moving", slug: "/services/safe-moving" },
+  { label: "Long Distance Moving", slug: "/services/long-distance-moving" },
+  { label: "Junk Removal", slug: "/services/junk-removal" },
 ];
 
 const denverAreas = [
