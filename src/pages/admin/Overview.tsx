@@ -17,6 +17,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { usePDFExport } from '@/hooks/usePDFExport';
 import { useExecutivePDFExport } from '@/hooks/useExecutivePDFExport';
 import { usePricingCheatSheetPDF } from '@/hooks/usePricingCheatSheetPDF';
+import { useLaunchReadinessPDF } from '@/hooks/useLaunchReadinessPDF';
 import { useDocumentationGenerator } from '@/hooks/useDocumentationGenerator';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -51,6 +52,7 @@ const Overview = () => {
   const { generatePDF, isGenerating } = usePDFExport();
   const { generateExecutivePDF, isGenerating: isGeneratingExecutive } = useExecutivePDFExport();
   const { generatePricingPDF, isGenerating: isGeneratingPricing } = usePricingCheatSheetPDF();
+  const { generateLaunchReadinessPDF, isGenerating: isGeneratingLaunch } = useLaunchReadinessPDF();
   const { generateMarkdownReport } = useDocumentationGenerator();
   const [copied, setCopied] = useState(false);
   const [viewMode, setViewMode] = useState<'standard' | 'launch'>('standard');
@@ -264,6 +266,25 @@ const Overview = () => {
               <>
                 <FileText className="h-4 w-4" />
                 Pricing Cheat Sheet
+              </>
+            )}
+          </Button>
+          <Button
+            onClick={generateLaunchReadinessPDF}
+            disabled={isGeneratingLaunch}
+            variant="outline"
+            size="sm"
+            className="gap-2 border-amber-500/50 text-amber-600 hover:bg-amber-500/10"
+          >
+            {isGeneratingLaunch ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Rocket className="h-4 w-4" />
+                Launch Checklist
               </>
             )}
           </Button>
