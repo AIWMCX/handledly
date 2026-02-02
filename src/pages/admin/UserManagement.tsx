@@ -15,6 +15,7 @@ import { format } from 'date-fns';
 // Authorized admin emails whitelist - must match AuthContext.tsx
 const AUTHORIZED_ADMIN_EMAILS = [
   'shcherbakou.edu@gmail.com',
+  'kshcherbakou.kos@gmail.com',
   'saych.88@gmail.com',
   'nevulis22@gmail.com',
   'beltovbogdan@gmail.com',
