@@ -870,6 +870,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_valid_phone: { Args: { phone_input: string }; Returns: boolean }
       record_service_cost: {
         Args: {
           p_cost: number
