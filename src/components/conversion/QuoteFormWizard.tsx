@@ -475,7 +475,7 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="grid gap-2.5">
                     <Label className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground/90">
                       <CalendarIcon className="w-4 h-4 text-accent" />
@@ -535,7 +535,7 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="grid gap-2.5">
                     <Label htmlFor="bedrooms" className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground/90">
                       <BedDouble className="w-4 h-4 text-accent" />
@@ -603,7 +603,7 @@ export function QuoteFormWizard({ onSubmit, initialServiceType, className }: Quo
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="grid gap-2.5">
                     <Label htmlFor="phone" className="flex items-center gap-2 text-sm font-semibold tracking-wide text-foreground/90">
                       <Phone className="w-4 h-4 text-accent" />

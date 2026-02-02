@@ -171,7 +171,7 @@ export function ExitIntentModal() {
                   <Gift className="w-8 h-8 text-accent" />
                 </motion.div>
               </div>
-              <h2 className="font-heading text-2xl font-bold text-center">
+              <h2 className="font-heading text-2xl font-bold text-center text-white drop-shadow-sm">
                 Wait! Don't Leave Empty-Handed
               </h2>
             </div>

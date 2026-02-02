@@ -22,13 +22,13 @@ const quickLinks = [
 ];
 
 const services = [
-  "Apartment & Condo Moving",
-  "House & Townhouse Moving",
-  "Labor-Only Moving Help",
-  "Same-Day Moving",
-  "Piano Moving",
-  "Pool Table Moving",
-  "Heavy Items Moving",
+  { label: "Apartment & Condo Moving", slug: "/services/residential-movers" },
+  { label: "House & Townhouse Moving", slug: "/services/local-moving" },
+  { label: "Labor-Only Moving Help", slug: "/services/moving-help-labor" },
+  { label: "Same-Day Moving", slug: "/services/same-day-moving" },
+  { label: "Piano Moving", slug: "/services/piano-moving" },
+  { label: "Pool Table Moving", slug: "/services/pool-table-moving" },
+  { label: "Heavy Items Moving", slug: "/services/heavy-items-moving" },
 ];
 
 const denverAreas = [
@@ -145,12 +145,12 @@ export function Footer() {
             <p className="font-heading text-lg font-semibold mb-6 text-white">Our Services</p>
             <ul className="space-y-2">
               {services.map((service) => (
-                <li key={service}>
+                <li key={service.label}>
                   <Link 
-                    to="/services" 
+                    to={service.slug} 
                     className="text-white/80 hover:text-accent transition-colors text-sm"
                   >
-                    {service}
+                    {service.label}
                   </Link>
                 </li>
               ))}
