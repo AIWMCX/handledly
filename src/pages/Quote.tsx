@@ -9,54 +9,12 @@ import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { SEO } from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import {
-  calculateQuote,
-  isIronLawService,
-  IRON_LAW_MIN_CREW,
-  type ServiceType as CalcServiceType,
-} from "@/lib/quoteCalculator";
-import { CheckCircle, Shield, Clock, Star, MapPin } from "lucide-react";
+import { CheckCircle, Shield, Clock, MapPin } from "lucide-react";
 import { SocialProofBanner, MobileStickyCTA, QuoteFormWizard } from "@/components/conversion";
-import { QuoteFormData, ServiceType } from "@/types/conversion";
+import { QuoteFormData } from "@/types/conversion";
 import { ConversionEvents } from "@/lib/analytics";
-import { generateId, withRetry, classifyError, validateQuoteData } from "@/lib/apiUtils";
+import { withRetry, classifyError, validateQuoteData } from "@/lib/apiUtils";
 
-// Map QuoteFormWizard ServiceType to quoteCalculator ServiceType
-const mapToCalcServiceType = (wizardType: ServiceType): CalcServiceType => {
-  const mapping: Record<ServiceType, CalcServiceType> = {
-    'local-moving': 'local-moving',
-    'residential': 'local-moving',
-    'long-distance': 'local-moving',
-    'same-day': 'local-moving',
-    'piano-moving': 'heavy-items',
-    'pool-table': 'heavy-items',
-    'safe-moving': 'heavy-items',
-    'heavy-items': 'heavy-items',
-    'junk-removal': 'heavy-items',
-    'moving-help': 'local-moving',
-  };
-  return mapping[wizardType] || 'local-moving';
-};
-
-// Map crew size to crew configuration string
-// IRON LAW: Force 3 movers for heavy item services
-const mapCrewConfig = (crewSize: number, serviceType: ServiceType): string => {
-  // IRON LAW ENFORCEMENT: Piano, pool table, safe, heavy-items get 3 movers
-  if (isIronLawService(serviceType)) {
-    return 'moving-3-movers';
-  }
-  if (crewSize <= 2) return 'moving-2-movers';
-  if (crewSize === 3) return 'moving-3-movers';
-  return 'moving-4-movers';
-};
-
-// Split full name into first and last name
-const splitName = (fullName: string): { firstName: string; lastName: string } => {
-  const nameParts = fullName.trim().split(' ');
-  const firstName = nameParts[0] || 'Friend';
-  const lastName = nameParts.slice(1).join(' ') || '';
-  return { firstName, lastName };
-};
 
 export default function Quote() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -71,14 +29,8 @@ export default function Quote() {
     quoteNumber: string;
   } | null>(null);
 
-// Generate quote number: HD-XXXXX format (per branding spec)
-const generateQuoteNumber = (): string => {
-  const random = Math.random().toString(36).substring(2, 7).toUpperCase();
-  return `HD-${random}`;
-};
-
   const handleWizardSubmit = async (data: QuoteFormData) => {
-    // Pre-submission validation
+    // Pre-submission validation (client-side for UX)
     const validation = validateQuoteData({
       fullName: data.fullName,
       email: data.email,
@@ -92,79 +44,39 @@ const generateQuoteNumber = (): string => {
       throw new Error(validation.errors[0]);
     }
 
-    // Split name for personalized communication
-    const { firstName, lastName } = splitName(data.fullName);
-    
-    // Map wizard data to calculator input
-    const calcServiceType = mapToCalcServiceType(data.serviceType);
-    // IRON LAW: Force 3-mover config for heavy item services
-    const crewConfig = mapCrewConfig(data.crewSize, data.serviceType);
-    
-    // Calculate quote using existing quoteCalculator
-    // Pass the original wizard serviceType as subType for Iron Law detection
-    const quote = calculateQuote({
-      serviceType: calcServiceType,
-      subType: data.serviceType, // Pass for Iron Law service detection
-      bedrooms: data.bedrooms,
-      crewConfig: crewConfig,
-      estimatedHours: data.estimatedHours,
-    });
-
-    // Generate IDs and verification token client-side for security
-    const leadId = generateId();
-    const quoteRequestId = generateId();
-    const quoteNumber = generateQuoteNumber();
-    const verificationToken = crypto.randomUUID();
-
     try {
-      // Use retry logic for resilient submission
-      await withRetry(
+      // Submit quote via secure edge function (no direct DB access)
+      const response = await withRetry(
         async () => {
-          // Create lead with verification token for secure edge function calls
-          const { error: leadError } = await supabase
-            .from('leads')
-            .insert({
-              id: leadId,
-              full_name: data.fullName,
+          const { data: result, error } = await supabase.functions.invoke('submit-quote', {
+            body: {
+              fullName: data.fullName,
               email: data.email,
               phone: data.phone,
-              property_type: data.serviceType,
+              serviceType: data.serviceType,
+              moveFromAddress: data.moveFromAddress,
+              moveToAddress: data.moveToAddress,
+              moveDate: data.moveDate || null,
               bedrooms: data.bedrooms,
-              move_from_address: data.moveFromAddress,
-              move_to_address: data.moveToAddress,
-              move_date: data.moveDate || null,
-              notes: data.notes || null,
-              estimated_quote: quote.total,
-              status: 'new',
-              prefer_email_only: data.preferEmailOnly,
-              has_specialty_items: data.hasStairs,
-              verification_token: verificationToken,
-              // UTM tracking for marketing attribution
+              hasStairs: data.hasStairs,
+              floorNumber: data.floorNumber,
+              notes: data.notes,
+              preferEmailOnly: data.preferEmailOnly,
+              crewSize: data.crewSize,
+              estimatedHours: data.estimatedHours,
+              // UTM tracking
               lead_source: data.lead_source || 'website',
               utm_source: data.utm_source || null,
               utm_medium: data.utm_medium || null,
               utm_campaign: data.utm_campaign || null,
               utm_content: data.utm_content || null,
               utm_term: data.utm_term || null,
-            });
+            },
+          });
 
-          if (leadError) throw leadError;
-
-          // Create quote request - also NO .select() needed
-          const { error: quoteError } = await supabase
-            .from('quote_requests')
-            .insert({
-              id: quoteRequestId,
-              lead_id: leadId,
-              property_type: data.serviceType,
-              bedrooms: data.bedrooms,
-              has_stairs: data.hasStairs,
-              floor_number: data.floorNumber,
-              total_quote: quote.total,
-              quote_number: quoteNumber,
-            });
-
-          if (quoteError) throw quoteError;
+          if (error) throw error;
+          if (!result?.success) throw new Error(result?.error || 'Submission failed');
+          return result;
         },
         {
           maxRetries: 3,
@@ -176,18 +88,18 @@ const generateQuoteNumber = (): string => {
       );
 
       // Track conversion event
-      ConversionEvents.quoteRequested(data.serviceType, quote.total);
+      ConversionEvents.quoteRequested(data.serviceType, response.total);
 
       // Send GA4 purchase event for revenue tracking
       if (typeof window.gtag === 'function') {
         window.gtag('event', 'purchase', {
-          transaction_id: quoteNumber,
-          value: quote.total,
+          transaction_id: response.quoteNumber,
+          value: response.total,
           currency: 'USD',
           items: [{
             item_id: data.serviceType,
             item_name: data.serviceType.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-            price: quote.total,
+            price: response.total,
             quantity: 1
           }]
         });
@@ -196,23 +108,23 @@ const generateQuoteNumber = (): string => {
       // Store submitted data for confirmation screen
       setSubmittedData({
         customerName: data.fullName || "Friend",
-        firstName: firstName,
-        totalQuote: quote.total,
+        firstName: response.firstName,
+        totalQuote: response.total,
         email: data.email,
         preferEmailOnly: data.preferEmailOnly,
-        quoteNumber: quoteNumber,
+        quoteNumber: response.quoteNumber,
       });
       
       // Store quote data in sessionStorage for Jack voice agent context
       sessionStorage.setItem('recentQuote', JSON.stringify({
-        quoteNumber: quoteNumber,
-        firstName: firstName,
-        lastName: lastName,
+        quoteNumber: response.quoteNumber,
+        firstName: response.firstName,
+        lastName: response.lastName,
         serviceType: data.serviceType,
         moveDate: data.moveDate,
         bedrooms: data.bedrooms,
-        estimatedTotal: quote.total,
-        crewSize: quote.crewSize,
+        estimatedTotal: response.total,
+        crewSize: response.crewSize,
         moveFrom: data.moveFromAddress,
         moveTo: data.moveToAddress,
       }));
@@ -220,24 +132,24 @@ const generateQuoteNumber = (): string => {
       setIsSubmitted(true);
       toast.success("Quote submitted! Check your email.");
 
-      // Send email quote with verification token for security
+      // Send email quote via edge function (uses returned verification token)
       supabase.functions.invoke('send-quote-email', {
         body: {
-          leadId: leadId,
-          verificationToken: verificationToken,
-          firstName: firstName,
-          lastName: lastName,
+          leadId: response.leadId,
+          verificationToken: response.verificationToken,
+          firstName: response.firstName,
+          lastName: response.lastName,
           customerName: data.fullName,
           email: data.email,
           phone: data.phone,
           serviceType: data.serviceType,
-          crewSize: quote.crewSize,
-          hourlyRate: quote.hourlyRate,
-          estimatedHours: quote.estimatedHours,
-          laborCost: quote.laborCost,
-          specialtyFee: quote.specialtyFee,
-          totalQuote: quote.total,
-          quoteNumber: quoteNumber,
+          crewSize: response.crewSize,
+          hourlyRate: response.hourlyRate,
+          estimatedHours: response.estimatedHours,
+          laborCost: response.laborCost,
+          specialtyFee: response.specialtyFee,
+          totalQuote: response.total,
+          quoteNumber: response.quoteNumber,
           moveDate: data.moveDate || undefined,
           moveFrom: data.moveFromAddress || undefined,
           moveTo: data.moveToAddress || undefined,
@@ -248,34 +160,32 @@ const generateQuoteNumber = (): string => {
         toast.success("Quote emailed to you!");
       }).catch((err) => {
         console.error("Email error:", err);
-        // Don't fail the whole submission for email issues
       });
 
-      // Schedule confirmation call with verification token if not email-only
+      // Schedule confirmation call if not email-only
       if (!data.preferEmailOnly) {
         setCallScheduled(true);
         supabase.functions.invoke('trigger-confirmation-call', {
           body: {
-            leadId: leadId,
-            verificationToken: verificationToken,
-            firstName: firstName,
-            lastName: lastName,
+            leadId: response.leadId,
+            verificationToken: response.verificationToken,
+            firstName: response.firstName,
+            lastName: response.lastName,
             customerName: data.fullName,
             phone: data.phone,
             email: data.email,
             serviceType: data.serviceType,
-            totalQuote: quote.total,
-            quoteNumber: quoteNumber,
+            totalQuote: response.total,
+            quoteNumber: response.quoteNumber,
             moveDate: data.moveDate || undefined,
             moveFrom: data.moveFromAddress || undefined,
             moveTo: data.moveToAddress || undefined,
-            crewSize: quote.crewSize,
-            estimatedHours: quote.estimatedHours,
+            crewSize: response.crewSize,
+            estimatedHours: response.estimatedHours,
           }
         }).catch((err) => {
           console.error("Call scheduling error:", err);
           setCallScheduled(false);
-          // Don't fail the whole submission for call issues
         });
       }
 
@@ -286,7 +196,7 @@ const generateQuoteNumber = (): string => {
       const classifiedError = classifyError(error);
       toast.error(classifiedError.userMessage);
       
-      throw error; // Re-throw so the wizard knows submission failed
+      throw error;
     }
   };
 
