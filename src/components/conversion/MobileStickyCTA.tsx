@@ -36,7 +36,7 @@ const ACTION_CONFIG: Record<MobileCTAAction, { label: string; icon: typeof Phone
 };
 
 export const MobileStickyCTA = forwardRef<HTMLDivElement, MobileStickyCTAProps>(function MobileStickyCTA({
-  phoneNumber = '(720) 605-3767',
+  phoneNumber = '(878) 218-7397',
   primaryAction = 'call',
   secondaryAction = 'quote',
   showAfterScroll = 300,
