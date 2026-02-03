@@ -36,7 +36,7 @@ const differentiators = [
   },
   {
     Icon: DamageFreeDaysIcon,
-    title: "500+ Damage-Free Days",
+    title: "Safe & Secure",
     description: "Proven track record of careful handling",
   },
 ];

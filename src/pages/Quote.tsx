@@ -4,7 +4,7 @@ import { VoiceAgent } from "@/components/VoiceAgent";
 import { ChatWidget } from "@/components/ChatWidget";
 import { QuoteConfirmation } from "@/components/QuoteConfirmation";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
-import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
+
 import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { SEO } from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
@@ -239,7 +239,7 @@ export default function Quote() {
                 
                 {/* Trust indicators row */}
                 <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
-                  <GoogleReviewsBadge compact />
+                  
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/5 border border-primary/10">
                     <Clock className="w-4 h-4 text-primary" />
                     <span className="text-sm font-medium text-primary">Same-Day Response</span>

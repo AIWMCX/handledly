@@ -5,7 +5,7 @@ import { VoiceAgent } from "@/components/VoiceAgent";
 import { ChatWidget } from "@/components/ChatWidget";
 import { StickyCTA } from "@/components/StickyCTA";
 import { TrustBadges } from "@/components/TrustBadges";
-import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
+
 import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { HOURLY_RATES, CREW_CONFIGURATIONS, ELECTRONIC_PAYMENT_FEE } from "@/lib/quoteCalculator";
 import { SEO } from "@/components/SEO";
@@ -144,7 +144,7 @@ export default function Services() {
             
             {/* Trust indicators */}
             <div className="flex flex-wrap items-center gap-3 mb-6">
-              <GoogleReviewsBadge compact />
+              
               <Badge variant="outline" className="px-4 py-2 text-sm border-accent text-accent">
                 <Zap className="w-4 h-4 mr-2" />
                 Same-Day Available

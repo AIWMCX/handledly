@@ -5,7 +5,7 @@ import { VoiceAgent } from "@/components/VoiceAgent";
 import { ChatWidget } from "@/components/ChatWidget";
 import { StickyCTA } from "@/components/StickyCTA";
 import { TrustBadges } from "@/components/TrustBadges";
-import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
+
 import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { MeshGradientHero } from "@/components/ui/BackgroundEffects";
 import { SEO } from "@/components/SEO";
@@ -95,7 +95,7 @@ export default function About() {
             
             {/* Trust indicators */}
             <div className="flex flex-wrap items-center gap-4">
-              <GoogleReviewsBadge compact />
+              
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/5 border border-primary/10">
                 <Truck className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium text-primary">Professional Denver Movers</span>

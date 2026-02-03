@@ -11,7 +11,7 @@ import { StatsBar } from "@/components/StatsBar";
 import { PricingDisplay } from "@/components/PricingDisplay";
 import { Testimonials } from "@/components/Testimonials";
 import { StickyCTA } from "@/components/StickyCTA";
-import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
+
 import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { Badge } from "@/components/ui/badge";
 import { MeshGradientHero } from "@/components/ui/BackgroundEffects";
@@ -125,10 +125,6 @@ export default function Index() {
                 </Badge>
               </div>
               
-              {/* Google Reviews Badge */}
-              <div className="mb-8">
-                <GoogleReviewsBadge rating={4.9} reviewCount={500} />
-              </div>
               
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90 h-14 px-8 text-lg hover-lift animate-glow-pulse">

@@ -1,13 +1,9 @@
 import { useState, useEffect } from "react";
-import { Shield, CheckCircle, Star, Phone, MapPin } from "lucide-react";
+import { Shield, CheckCircle, Phone, MapPin } from "lucide-react";
 const messages = [{
   icon: Shield,
   text: "NO HIDDEN FEES — FLAT HOURLY RATE",
   highlight: true
-}, {
-  icon: Star,
-  text: "500+ 5-STAR GOOGLE REVIEWS",
-  highlight: false
 }, {
   icon: CheckCircle,
   text: "SAME-DAY SERVICE AVAILABLE",
