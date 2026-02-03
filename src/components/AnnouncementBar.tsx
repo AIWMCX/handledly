@@ -55,7 +55,7 @@ export function AnnouncementBar() {
 
           {/* Progress dots */}
           <div className="hidden sm:flex items-center gap-1.5 ml-4">
-            {messages.map((_, i) => <button key={i} onClick={() => setCurrentIndex(i)} className={`w-1.5 h-1.5 rounded-full transition-all ${i === currentIndex ? "bg-accent w-4" : "bg-white/30 hover:bg-white/50"}`} aria-label={`Go to message ${i + 1}`} />)}
+            {messages.map((_, i) => {})}
           </div>
         </div>
       </div>
