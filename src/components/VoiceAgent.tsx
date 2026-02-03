@@ -179,6 +179,7 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
           onClick={isConnected ? stopConversation : startConversation}
           disabled={isConnecting}
           size="lg"
+          aria-label={isConnecting ? "Connecting call" : isConnected ? "End call" : "Start voice call"}
           className={cn(
             "w-16 h-16 rounded-full shadow-elegant transition-all duration-300",
             isConnected
