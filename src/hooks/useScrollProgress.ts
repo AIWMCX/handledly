@@ -24,11 +24,22 @@ export function useScrollProgress(options: UseScrollProgressOptions = {}): UseSc
   const lastUpdateRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
 
-  // Calculate scroll progress
+  // Cache document height to avoid repeated reads
+  const docHeightRef = useRef<number>(0);
+  const lastDocHeightUpdateRef = useRef<number>(0);
+  
+  // Calculate scroll progress with cached height
   const calculateProgress = useCallback(() => {
+    const now = Date.now();
     const scrollTop = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     
+    // Only recalculate doc height every 500ms to avoid forced reflows
+    if (now - lastDocHeightUpdateRef.current > 500 || docHeightRef.current === 0) {
+      docHeightRef.current = document.documentElement.scrollHeight - window.innerHeight;
+      lastDocHeightUpdateRef.current = now;
+    }
+    
+    const docHeight = docHeightRef.current;
     if (docHeight <= 0) return 0;
     
     const currentProgress = Math.min(100, Math.max(0, (scrollTop / docHeight) * 100));
@@ -76,8 +87,10 @@ export function useScrollProgress(options: UseScrollProgressOptions = {}): UseSc
 
   // Set up scroll listener
   useEffect(() => {
-    // Calculate initial progress
-    setProgress(calculateProgress());
+    // Calculate initial progress on next frame to avoid blocking
+    rafRef.current = requestAnimationFrame(() => {
+      setProgress(calculateProgress());
+    });
 
     window.addEventListener('scroll', handleScroll, { passive: true });
 
