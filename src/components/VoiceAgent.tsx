@@ -169,7 +169,7 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
 
   if (variant === "floating") {
     return (
-      <div className={cn("fixed bottom-24 md:bottom-6 right-6 z-40", className)}>
+      <div className={cn("fixed bottom-[7.5rem] md:bottom-6 right-6 z-40", className)}>
         {/* Pulse ring when connected */}
         {isConnected && (
           <div className="absolute inset-0 rounded-full animate-pulse-gold" />

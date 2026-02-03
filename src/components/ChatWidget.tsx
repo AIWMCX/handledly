@@ -366,7 +366,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
         <button
           onClick={handleOpen}
           className={cn(
-            "fixed bottom-[10rem] md:bottom-[6.5rem] right-6 z-40 w-14 h-14 rounded-full",
+            "fixed bottom-[12.5rem] md:bottom-[6.5rem] right-6 z-40 w-14 h-14 rounded-full",
             "bg-secondary hover:bg-secondary/80 border border-border",
             "shadow-lg transition-all duration-300 hover:scale-105",
             "flex items-center justify-center",
@@ -381,7 +381,7 @@ export function ChatWidget({ className, variant = "floating" }: ChatWidgetProps)
       {/* Chat Window */}
       {isOpen && (
         <div className={cn(
-          "fixed bottom-[10rem] md:bottom-[6.5rem] right-6 z-50 w-[calc(100%-3rem)] max-w-[380px] h-[480px] md:h-[560px]",
+          "fixed bottom-[12.5rem] md:bottom-[6.5rem] right-6 z-50 w-[calc(100%-3rem)] max-w-[380px] h-[420px] md:h-[560px]",
           "bg-card border border-border rounded-2xl shadow-elegant",
           "flex flex-col overflow-hidden",
           className
