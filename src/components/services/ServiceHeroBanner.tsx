@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ChevronRight, Star, Users, MapPin, Package } from "lucide-react";
-import { GoogleReviewsBadge } from "@/components/GoogleReviewsBadge";
+
 
 interface ServiceHeroBannerProps {
   serviceName: string;
@@ -52,7 +52,7 @@ export function ServiceHeroBanner({ serviceName, tagline }: ServiceHeroBannerPro
                   <Star key={i} className="w-4 h-4 text-white fill-white" />
                 ))}
               </div>
-              <span className="text-white/90 text-sm">4.9 Rating • 500+ Reviews</span>
+              <span className="text-white/90 text-sm">Licensed & Insured • Denver's Trusted Movers</span>
             </div>
           </div>
         </div>
