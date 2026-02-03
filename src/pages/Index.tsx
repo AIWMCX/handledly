@@ -1,18 +1,12 @@
+import { lazy, Suspense } from "react";
 import { Header, Footer, Container, Section, SectionHeader } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { VoiceAgent } from "@/components/VoiceAgent";
-import { ChatWidget } from "@/components/ChatWidget";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { TrustIndicators } from "@/components/TrustIndicators";
 import { TrustBadges } from "@/components/TrustBadges";
-import { HowItWorks } from "@/components/HowItWorks";
-import { StatsBar } from "@/components/StatsBar";
-import { PricingDisplay } from "@/components/PricingDisplay";
-import { Testimonials } from "@/components/Testimonials";
 import { StickyCTA } from "@/components/StickyCTA";
 
-import { ExitIntentModal } from "@/components/ExitIntentModal";
 import { Badge } from "@/components/ui/badge";
 import { MeshGradientHero } from "@/components/ui/BackgroundEffects";
 import { HOURLY_RATES } from "@/lib/quoteCalculator";
@@ -33,6 +27,15 @@ import {
   MobileStickyCTA,
   UrgencyBadge 
 } from "@/components/conversion";
+
+// Lazy load below-fold components for better FCP/LCP
+const VoiceAgent = lazy(() => import("@/components/VoiceAgent").then(m => ({ default: m.VoiceAgent })));
+const ChatWidget = lazy(() => import("@/components/ChatWidget").then(m => ({ default: m.ChatWidget })));
+const HowItWorks = lazy(() => import("@/components/HowItWorks").then(m => ({ default: m.HowItWorks })));
+const StatsBar = lazy(() => import("@/components/StatsBar").then(m => ({ default: m.StatsBar })));
+const PricingDisplay = lazy(() => import("@/components/PricingDisplay").then(m => ({ default: m.PricingDisplay })));
+const Testimonials = lazy(() => import("@/components/Testimonials").then(m => ({ default: m.Testimonials })));
+const ExitIntentModal = lazy(() => import("@/components/ExitIntentModal").then(m => ({ default: m.ExitIntentModal })));
 
 
 const services = [
@@ -192,7 +195,9 @@ export default function Index() {
       <TrustBadges />
 
       {/* Stats Bar */}
-      <StatsBar />
+      <Suspense fallback={<div className="py-12" />}>
+        <StatsBar />
+      </Suspense>
 
       {/* Services with mesh background */}
       <Section className="relative overflow-hidden bg-secondary">
@@ -246,10 +251,14 @@ export default function Index() {
       <TrustIndicators />
 
       {/* Pricing Display */}
-      <PricingDisplay />
+      <Suspense fallback={<div className="py-20" />}>
+        <PricingDisplay />
+      </Suspense>
 
       {/* How It Works */}
-      <HowItWorks />
+      <Suspense fallback={<div className="py-20" />}>
+        <HowItWorks />
+      </Suspense>
 
       {/* Why Choose Us */}
       <Section className="relative overflow-hidden bg-secondary">
@@ -318,7 +327,9 @@ export default function Index() {
 
 
       {/* Testimonials */}
-      <Testimonials />
+      <Suspense fallback={<div className="py-20" />}>
+        <Testimonials />
+      </Suspense>
 
       {/* Final CTA */}
       <Section className="relative overflow-hidden bg-secondary">
@@ -344,12 +355,14 @@ export default function Index() {
       </main>
 
       <Footer />
-      <ChatWidget />
-      <VoiceAgent />
       <StickyCTA />
-      <ExitIntentModal />
-      <SocialProofBanner />
-      <MobileStickyCTA />
+      <Suspense fallback={null}>
+        <ChatWidget />
+        <VoiceAgent />
+        <ExitIntentModal />
+        <SocialProofBanner />
+        <MobileStickyCTA />
+      </Suspense>
     </div>
   );
 }
