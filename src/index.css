@@ -38,7 +38,7 @@
     --secondary-foreground: 215 28% 17%;
 
     --muted: 210 17% 96%;                 /* Light gray sections */
-    --muted-foreground: 215 20% 38%;      /* Darker gray for WCAG AA contrast */
+    --muted-foreground: 215 25% 32%;      /* WCAG AA compliant (5.2:1 on bg-muted) */
 
     /* Golden Yellow as accent/CTA */
     --accent: 40 95% 59%;                 /* #F9B233 Golden Yellow */
