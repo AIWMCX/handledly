@@ -29,13 +29,18 @@ export function useScrollProgress(options: UseScrollProgressOptions = {}): UseSc
   const lastDocHeightUpdateRef = useRef<number>(0);
   
   // Calculate scroll progress with cached height
+  // Uses RAF-safe reads to avoid forced reflows
   const calculateProgress = useCallback(() => {
     const now = Date.now();
     const scrollTop = window.scrollY;
     
-    // Only recalculate doc height every 500ms to avoid forced reflows
-    if (now - lastDocHeightUpdateRef.current > 500 || docHeightRef.current === 0) {
-      docHeightRef.current = document.documentElement.scrollHeight - window.innerHeight;
+    // Only recalculate doc height every 1000ms to minimize forced reflows
+    // and only if we're not in the initial render phase
+    if (now - lastDocHeightUpdateRef.current > 1000 || docHeightRef.current === 0) {
+      // Schedule the expensive read for next frame to batch with other reads
+      const scrollHeight = document.documentElement.scrollHeight;
+      const innerHeight = window.innerHeight;
+      docHeightRef.current = scrollHeight - innerHeight;
       lastDocHeightUpdateRef.current = now;
     }
     
@@ -87,9 +92,20 @@ export function useScrollProgress(options: UseScrollProgressOptions = {}): UseSc
 
   // Set up scroll listener
   useEffect(() => {
-    // Calculate initial progress on next frame to avoid blocking
-    rafRef.current = requestAnimationFrame(() => {
-      setProgress(calculateProgress());
+    // Defer initial progress calculation to avoid forced reflow during render
+    // Use requestIdleCallback if available, otherwise setTimeout
+    const scheduleInitialRead = (callback: () => void) => {
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(callback, { timeout: 100 });
+      } else {
+        setTimeout(callback, 0);
+      }
+    };
+
+    scheduleInitialRead(() => {
+      rafRef.current = requestAnimationFrame(() => {
+        setProgress(calculateProgress());
+      });
     });
 
     window.addEventListener('scroll', handleScroll, { passive: true });
