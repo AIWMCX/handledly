@@ -100,7 +100,7 @@ export const HOURLY_RATES = {
 | Safe (Under 200lbs) | `safe-small` | $150 |
 | Safe (200-800lbs) | `safe-large` | $300 |
 | Gun Safe | `safe-gun` | $400 |
-| Hot Tub | `hot-tub` | $400 |
+
 | Gym Equipment | `gym-equipment` | $125 |
 | Motorcycle | `motorcycle` | $200 |
 
@@ -113,7 +113,7 @@ const SPECIALTY_RATES: Record<string, number> = {
   'safe-small': 150,
   'safe-large': 300,
   'safe-gun': 400,
-  'hot-tub': 400,
+  
   'gym-equipment': 125,
   'motorcycle': 200,
 };

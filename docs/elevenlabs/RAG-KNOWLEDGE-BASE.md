@@ -97,7 +97,6 @@ A mandatory safety standard for items weighing 200 pounds or more. This rule pro
 - Residential safes 200 pounds and over → Iron Law @ $189/hr
 
 **Other Heavy Items:**
-- Hot tubs → Iron Law @ $189/hr
 - Commercial gym equipment (200+ lbs) → Iron Law @ $189/hr
 - Large commercial appliances → Iron Law @ $189/hr
 - Commercial refrigerators and freezers → Iron Law @ $189/hr
@@ -164,7 +163,6 @@ Some items have flat fees in addition to hourly rates:
 | Gun Safe (500+ lbs) | $250 | $189/hr | 3-4 movers | ✅ YES |
 | Pool Table (move only) | $350 | $169/hr | 2-3 movers | ❌ NO |
 | Pool Table (full service) | $550 | $169/hr | 2-3 movers | ❌ NO |
-| Hot Tub | $400 | $189/hr | 3-4 movers | ✅ YES |
 | Gym Equipment (per piece) | $125 | $169/hr | 2-3 movers | Depends on weight |
 | Motorcycle | $200 | $169/hr | 2-3 movers | ❌ NO |
 
@@ -179,8 +177,6 @@ Some items have flat fees in addition to hourly rates:
 **For Pool Tables:**
 "Pool tables we handle at $169 per hour with 2-3 movers — that's not our Iron Law rate because the weight is distributed when disassembled. Plus a $350 flat fee for move-only, or $550 if you need full service with reassembly."
 
-**For Hot Tubs:**
-"Hot tubs require our Iron Law crew — 3-4 movers at $189 per hour with truck, plus a $400 flat fee."
 
 ---
 
@@ -248,7 +244,7 @@ Some items have flat fees in addition to hourly rates:
 ## Phase 2: Inventory Checkpoints
 
 **Heavy Items Probe (CRITICAL):** "Any oversized or heavy items — safe, piano, pool table, or anything that took multiple people to move?"
-**Specialty Items Probe:** "Gym equipment, hot tub, motorcycles, or anything unique?"
+**Specialty Items Probe:** "Gym equipment, motorcycles, or anything unique?"
 **Quantity Assessment:** "About how much stuff overall — fully furnished, minimal, or somewhere in between?"
 
 ## Phase 3: Rate and Configuration
@@ -551,8 +547,7 @@ Jack only accepts US phone numbers with +1 country code.
 ## IRON LAW TRIGGERS
 ✅ Piano (any type) → $189/hr with truck
 ✅ Safe (200+ lbs) → $189/hr with truck
-✅ Hot tub → $189/hr with truck
-✅ Commercial gym equipment → $189/hr with truck
+✅ Commercial gym equipment (200+ lbs) → $189/hr with truck
 ❌ Pool tables → $169/hr (NOT Iron Law)
 
 ## DISCOVERY FLOW

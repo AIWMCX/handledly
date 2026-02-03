@@ -351,7 +351,7 @@ const CorePricingPage = () => (
         WITH TRUCK: $189/hr • LABOR-ONLY: $179/hr
       </Text>
       <Text style={styles.ironLawTriggers}>
-        Triggers: Piano (any type) • Gun Safe • Safe 200+ lbs • Hot Tub
+        Triggers: Piano (any type) • Gun Safe • Safe 200+ lbs
       </Text>
       <View style={styles.notIronLaw}>
         <Text style={styles.notIronLawText}>
@@ -454,20 +454,16 @@ const SpecialtyItemsPage = () => (
         <View style={styles.specialtySection}>
           <Text style={styles.sectionTitle}>📦 OTHER SPECIALTY ITEMS</Text>
           <View style={styles.flatFeeRow}>
-            <Text style={styles.flatFeeLabel}>Hot Tub</Text>
-            <Text style={styles.flatFeePrice}>$400 flat</Text>
-          </View>
-          <View style={[styles.flatFeeRow, styles.flatFeeRowAlt]}>
             <Text style={styles.flatFeeLabel}>Gym Equipment (per piece)</Text>
             <Text style={styles.flatFeePrice}>$125 flat</Text>
           </View>
-          <View style={styles.flatFeeRow}>
+          <View style={[styles.flatFeeRow, styles.flatFeeRowAlt]}>
             <Text style={styles.flatFeeLabel}>Motorcycle</Text>
             <Text style={styles.flatFeePrice}>$200 flat</Text>
           </View>
           <View style={styles.hourlyNote}>
             <Text style={styles.hourlyNoteText}>
-              Hot Tub = Iron Law ($189/hr) • Gym/Motorcycle = Standard rates
+              Specialty items = Final pricing verified by staff
             </Text>
           </View>
         </View>

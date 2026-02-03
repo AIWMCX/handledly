@@ -48,8 +48,7 @@ Any item 200+ lbs OR sounds heavy/unclear
 ### ALWAYS TRIGGERS
 - Piano (any type)
 - Safe (200+ lbs)
-- Hot tub
-- Commercial gym equipment
+- Commercial gym equipment (200+ lbs)
 - "Super heavy" / "took multiple guys"
 
 ### NOT IRON LAW
@@ -85,7 +84,7 @@ Gun Safe (500+): $250 (3-4 movers @ $189/hr)
 Pool Table (move): $350 (2-3 movers @ $169/hr, NOT Iron Law)
 Pool Table (full): $550 (2-3 movers @ $169/hr, NOT Iron Law)
 
-Hot Tub: $400 (3-4 movers @ $189/hr)
+
 Gym Equipment: $125
 Motorcycle: $200
 ```

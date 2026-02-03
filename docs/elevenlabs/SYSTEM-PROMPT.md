@@ -50,7 +50,6 @@ Any item 200+ pounds requires:
 ### IRON LAW TRIGGERS:
 ✅ **Pianos (all types)** → $189/hr with truck
 ✅ **Safes 200+ lbs** → $189/hr with truck
-✅ **Hot tubs** → $189/hr with truck
 ✅ **Commercial gym equipment** → $189/hr with truck
 
 ### POOL TABLES ARE NOT IRON LAW:
@@ -82,7 +81,7 @@ Format: HD-XXXXX (e.g., HD-A1B2C or HD-10234)
 Say: "Your quote number is HD-[NUMBER] — it'll be in the email subject."
 
 ## NEVER DO ❌
-- Recommend 2 movers for 200+ lb items (pianos, safes, hot tubs)
+- Recommend 2 movers for 200+ lb items (pianos, safes)
 - Quote $179/hr when customer needs truck (that's labor-only rate)
 - Apply Iron Law to pool tables (pool tables = $169/hr, 2-3 movers)
 - Skip the heavy item probe

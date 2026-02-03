@@ -61,7 +61,7 @@ const SPECIALTY_RATES: Record<string, number> = {
   'safe-small': 150,
   'safe-large': 300,
   'safe-gun': 400,
-  'hot-tub': 400,
+  
   'gym-equipment': 125,
   'motorcycle': 200,
 };
@@ -122,7 +122,7 @@ export function isIronLawService(serviceType: string, subType?: string): boolean
 }
 
 // Estimate crew size based on service and property
-// IRON LAW: 200+ lb items (pianos, safes, hot tubs) = 3 movers minimum
+// IRON LAW: 200+ lb items (pianos, safes) = 3 movers minimum
 // NOTE: Pool tables are NOT Iron Law - handled at $169/hr with 2-3 movers
 function estimateCrewSize(input: QuoteInput): number {
   // IRON LAW ENFORCEMENT: Heavy item services get 3 movers automatically
@@ -172,7 +172,7 @@ export function calculateQuote(input: QuoteInput): QuoteBreakdown {
   const crewSize = estimateCrewSize(input);
   const estimatedHours = Math.ceil(estimateHours(input));
   
-  // IRON LAW: 200+ lb services (piano, safe, hot tub) use $189/hr rate
+  // IRON LAW: 200+ lb services (piano, safe) use $189/hr rate
   // NOTE: Pool tables are NOT Iron Law - they use $169/hr heavy items rate
   const isIronLaw = isIronLawService(input.serviceType as string, input.subType);
   
@@ -241,7 +241,7 @@ export const SERVICE_TYPES = [
       { value: 'piano', label: 'Piano Moving', description: 'Upright and grand pianos (200+ lbs = 3 movers @ $189/hr with truck)' },
       { value: 'pool-table', label: 'Pool Table Moving', description: 'Disassembly, move & reassembly (2-3 movers @ $169/hr - NOT Iron Law)' },
       { value: 'heavy-under-200', label: 'Heavy Items (Under 200 lbs)', description: 'Appliances, large furniture, gym equipment' },
-      { value: 'heavy-over-200', label: 'Heavy Items (200+ lbs)', description: 'Safes, gun safes, hot tubs - IRON LAW: 3 movers @ $189/hr with truck' },
+      { value: 'heavy-over-200', label: 'Heavy Items (200+ lbs)', description: 'Safes, gun safes, commercial equipment - IRON LAW: 3 movers @ $189/hr with truck' },
       { value: 'same-day-heavy', label: 'Same-Day Heavy Items', description: 'Emergency heavy item moves' },
     ]
   },
@@ -278,7 +278,7 @@ export const SPECIALTY_ITEMS = [
   { value: 'safe-small', label: 'Safe (Under 200lbs)', price: 150 },
   { value: 'safe-large', label: 'Safe (200-800lbs)', price: 300 },
   { value: 'safe-gun', label: 'Gun Safe', price: 400 },
-  { value: 'hot-tub', label: 'Hot Tub', price: 400 },
+  
   { value: 'gym-equipment', label: 'Gym Equipment', price: 125 },
   { value: 'motorcycle', label: 'Motorcycle', price: 200 },
 ];

@@ -37,8 +37,7 @@
 - ✅ Piano (any type)
 - ✅ Gun Safe (200+ lbs)
 - ✅ Safe (200+ lbs)
-- ✅ Hot Tub
-- ✅ Commercial gym equipment
+- ✅ Commercial gym equipment (200+ lbs)
 - ✅ Anything "super heavy" or "took multiple guys"
 
 ### NOT Iron Law:
@@ -79,7 +78,7 @@
 
 | Item | Flat Fee | Hourly Rate | Crew |
 |------|----------|-------------|------|
-| **Hot Tub** | **$400** | $189/hr | 3-4 movers |
+
 | **Gym Equipment** | **$125** | $169/hr | 2-3 movers |
 | **Motorcycle** | **$200** | $169/hr | 2 movers |
 

@@ -68,7 +68,7 @@ const SPECIALTY_LABELS: Record<string, string> = {
   'safe-small': 'Safe (Under 200lbs)',
   'safe-large': 'Safe (200+ lbs - 3 movers @ $189/hr)',
   'safe-gun': 'Gun Safe (200+ lbs - 3 movers @ $189/hr)',
-  'hot-tub': 'Hot Tub (200+ lbs - 3-4 movers @ $189/hr)',
+  
   'gym-equipment': 'Gym Equipment',
   'motorcycle': 'Motorcycle',
 };
