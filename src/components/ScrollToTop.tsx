@@ -42,8 +42,8 @@ export function ScrollToTop({ threshold = 400, className }: ScrollToTopProps) {
             'shadow-lg hover:shadow-xl',
             'hover:bg-primary/90 transition-all duration-200',
             'focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2',
-            // Position: bottom-right, above the sticky CTA bar
-            'bottom-24 right-4 sm:bottom-6 sm:right-6',
+            // Position: bottom-left on mobile to avoid overlap with FABs on right
+            'bottom-[7.5rem] left-4 sm:bottom-6 sm:left-auto sm:right-6',
             className
           )}
           aria-label="Scroll to top"
