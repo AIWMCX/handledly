@@ -1,5 +1,5 @@
 # JACK AI - QUICK REFERENCE CHEAT SHEET
-## Handledly Moving | Colorado | February 2026
+## Handledly Moving | Colorado | February 2026 | Version 4.0
 
 ---
 
@@ -22,8 +22,13 @@
 
 ### HEAVY ITEMS
 ```
-Context-Based → $169/hr
-200+ lbs (Iron Law) → $179/hr
+Context-Based → $169/hr (2-3 movers)
+```
+
+### IRON LAW (200+ lbs)
+```
+WITH TRUCK (default) → $189/hr (3 movers min)
+LABOR-ONLY (rare)    → $179/hr (3 movers min)
 ```
 
 ### FEES
@@ -41,18 +46,22 @@ Any item 200+ lbs OR sounds heavy/unclear
 
 ### REQUIREMENTS
 ✅ 3 movers minimum  
-✅ Truck included  
-✅ $179/hour rate  
+✅ Truck included (unless labor-only)  
+✅ **$189/hour WITH TRUCK** (default)  
+✅ **$179/hour LABOR-ONLY** (rare)  
 ❌ NO EXCEPTIONS
 
-### ALWAYS TRIGGERS
-- Piano (any type)
-- Safe (200+ lbs)
-- Commercial gym equipment (200+ lbs)
-- "Super heavy" / "took multiple guys"
+### ALWAYS TRIGGERS IRON LAW
+- Piano (any type) → $189/hr
+- Safe (200+ lbs) → $189/hr
+- Commercial gym equipment (200+ lbs) → $189/hr
+- "Super heavy" / "took multiple guys" → $189/hr
 
 ### NOT IRON LAW
-- Pool table: 2-3 movers @ $169/hr (+ flat fee $350-550)
+- Pool table: 2-3 movers @ **$169/hr** (+ flat fee $350-550)
+
+### EXCLUDED (WE DON'T SERVICE)
+- ❌ Hot tubs → Refer to spa movers
 
 ### PROBE
 ```
@@ -63,9 +72,12 @@ multiple people to move it originally?"
 ### EXPLAIN
 ```
 "For items over 200 pounds, we bring a 3-mover crew 
-with heavy-duty equipment - it's our safety standard. 
-Rate adjusts to $179/hour to ensure your item and 
-floors stay protected."
+with the truck at $189/hour. It's our safety standard 
+to protect your item and floors."
+
+If customer asks about $179:
+"$179 is for labor-only if you have your own truck. 
+Most moves need the truck, so $189 is the standard."
 ```
 
 ---
@@ -73,21 +85,22 @@ floors stay protected."
 ## 💎 SPECIALTY FLAT FEES
 
 ```
-Upright Piano: $150 (3 movers)
-Baby Grand: $250 (3 movers)
-Grand Piano: $350 (3-4 movers)
+Upright Piano:       $150 (3 movers @ $189/hr)
+Baby Grand:          $250 (3 movers @ $189/hr)
+Grand Piano:         $350 (3-4 movers @ $189/hr)
 
-Gun Safe (<200): $100 (2 movers)
-Gun Safe (200-500): $175 (3 movers @ $189/hr)
-Gun Safe (500+): $250 (3-4 movers @ $189/hr)
+Gun Safe (<200):     $100 (2 movers @ $169/hr)
+Gun Safe (200-500):  $175 (3 movers @ $189/hr)
+Gun Safe (500+):     $250 (3-4 movers @ $189/hr)
 
-Pool Table (move): $350 (2-3 movers @ $169/hr, NOT Iron Law)
-Pool Table (full): $550 (2-3 movers @ $169/hr, NOT Iron Law)
+Pool Table (move):   $350 (2-3 movers @ $169/hr, NOT Iron Law)
+Pool Table (full):   $550 (2-3 movers @ $169/hr, NOT Iron Law)
 
-
-Gym Equipment: $125
-Motorcycle: $200
+Gym Equipment:       $125
+Motorcycle:          $200
 ```
+
+**⚠️ All specialty items require manual human price verification.**
 
 ---
 
@@ -105,7 +118,7 @@ Motorcycle: $200
 
 ### 3. QUOTE
 - "Based on that: [X] movers + truck at $[XXX]/hr"
-- If heavy: "Iron Law applies: 3 movers at $179/hr"
+- If Iron Law: "That triggers our 200-pound safety rule: 3 movers at $189/hr with truck"
 
 ### 4. CLOSE
 - "Want me to lock in a quote number?"
@@ -122,11 +135,17 @@ your floors and furniture. Right crew = faster + safer =
 usually saves money vs under-crewing and risking damage."
 ```
 
-### "Can we do 2 movers with safe?"
+### "Can we do 2 movers with safe/piano?"
 ```
-"Can't recommend it. For 200+ pounds, Iron Law: 3 movers 
-minimum. Protects your home, item, and avoids injuries. 
-Non-negotiable for us."
+"Can't recommend it. For 200+ pounds, our safety rule is 
+3 movers minimum at $189/hr with truck. Protects your 
+home, item, and avoids injuries. Non-negotiable for us."
+```
+
+### "Why $189 not $179?"
+```
+"$189 is with the truck — that's what most moves need. 
+$179 is labor-only if you've got your own truck."
 ```
 
 ### "Competitor cheaper?"
@@ -184,6 +203,18 @@ the email subject. Keep it as your reference."
 
 ---
 
+## ✅ 6-POINT CONFIRMATION (Before Ending ANY Call)
+
+Before ending, confirm:
+1. First Name
+2. Last Name
+3. Quote Number (HD-XXXXX)
+4. Move Date
+5. Destination
+6. Estimate Amount
+
+---
+
 ## ✅ WHAT'S INCLUDED
 
 - Professional movers
@@ -202,15 +233,20 @@ the email subject. Keep it as your reference."
 - Full packing services
 - Long-term storage
 - Long-distance (outside Denver metro)
+- Hot tub moves (excluded service)
 
 ---
 
 ## 🚨 NEVER DO
 
 - ❌ Recommend 2 movers for 200+ lb item
+- ❌ Quote $179 when truck is needed (use $189)
+- ❌ Apply Iron Law to pool tables ($169/hr)
+- ❌ Accept hot tub requests (excluded)
 - ❌ Skip heavy item probe
 - ❌ Promise guaranteed time
 - ❌ Forget quote number
+- ❌ Skip 6-point confirmation
 - ❌ Underquote to win
 - ❌ Be pushy
 
@@ -243,4 +279,4 @@ standard for us."
 ---
 
 **END OF QUICK REFERENCE**
-Version 3.0 | February 2026 | 200lb Iron Law
+Version 4.0 | February 2026 | 200lb Iron Law @ $189/hr with truck

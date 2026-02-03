@@ -1,5 +1,5 @@
 # HANDLEDLY MASTER PRICING & IRON LAW REFERENCE
-## Version 3.0 - February 2026
+## Version 4.0 - February 2026
 
 ### CRITICAL: This is the SINGLE SOURCE OF TRUTH
 
@@ -69,6 +69,11 @@ Effective: February 1, 2026
 - Add flat fee: $350 (move only) or $550 (full service)
 - Do NOT apply Iron Law to pool tables
 
+### HOT TUBS - EXCLUDED SERVICE:
+- **We do NOT service hot tubs**
+- Refer customers to spa movers/specialists
+- Never quote a rate for hot tub moves
+
 ### PROBING SCRIPT:
 ```
 "Do you happen to know the approximate weight? Or was it 
@@ -78,9 +83,9 @@ something that took a few people to move in originally?"
 ### EXPLANATION SCRIPT:
 ```
 "For items over 200 pounds, we always bring a 3-mover crew 
-with our heavy-duty equipment - it's our safety standard. 
-That means the rate adjusts to $189/hour with truck, but it ensures 
-your item and floors stay protected."
+with the truck — it's our safety standard. That means the 
+rate is $189/hour, but it ensures your item and floors 
+stay protected."
 ```
 
 ### DE-ESCALATION SCRIPT:
@@ -95,19 +100,20 @@ your item and floors stay protected."
 
 **SPECIALTY ITEM PRICING**
 
-| Item | Price | Crew Required |
-|------|-------|---------------|
-| Upright Piano | $150 | 3 movers @ $189/hr |
-| Baby Grand Piano | $250 | 3 movers @ $189/hr |
-| Grand Piano | $350 | 3-4 movers @ $189/hr |
-| Gun Safe (<200 lbs) | $100 | 2 movers |
-| Gun Safe (200-500 lbs) | $175 | 3 movers @ $189/hr |
-| Gun Safe (500+ lbs) | $250 | 3-4 movers @ $189/hr |
-| Pool Table (move only) | $350 | 2-3 movers @ $169/hr |
-| Pool Table (full service) | $550 | 2-3 movers @ $169/hr |
+| Item | Price | Crew Required | Hourly Rate |
+|------|-------|---------------|-------------|
+| Upright Piano | $150 | 3 movers | $189/hr (Iron Law) |
+| Baby Grand Piano | $250 | 3 movers | $189/hr (Iron Law) |
+| Grand Piano | $350 | 3-4 movers | $189/hr (Iron Law) |
+| Gun Safe (<200 lbs) | $100 | 2 movers | $169/hr |
+| Gun Safe (200-500 lbs) | $175 | 3 movers | $189/hr (Iron Law) |
+| Gun Safe (500+ lbs) | $250 | 3-4 movers | $189/hr (Iron Law) |
+| Pool Table (move only) | $350 | 2-3 movers | $169/hr (NOT Iron Law) |
+| Pool Table (full service) | $550 | 2-3 movers | $169/hr (NOT Iron Law) |
+| Gym Equipment | $125 | 2-3 movers | $169/hr |
+| Motorcycle | $200 | 2-3 movers | $169/hr |
 
-| Gym Equipment | $125 | 2-3 movers |
-| Motorcycle | $200 | 2-3 movers |
+**⚠️ All specialty items require manual human price verification before final booking.**
 
 ---
 
@@ -125,6 +131,7 @@ your item and floors stay protected."
 - Packing materials (boxes, tape, bubble wrap)
 - Long-term storage
 - Packing services (available as add-on)
+- Hot tub moves (excluded service)
 
 ---
 
@@ -182,7 +189,7 @@ Applied to all electronic payment methods (credit card, ACH)
 
 **Rate + configuration:**
 - "Based on that, the best fit is [X] movers + truck at $[XXX]/hr."
-- If heavy: "If that item is around 200+ pounds, our Iron Law applies: 3 movers minimum at $179/hr for the heavy-item safety setup."
+- If heavy: "That triggers our 200-pound safety rule: 3 movers with truck at $189/hr."
 
 **Close:**
 - "Want me to lock in a quote number and email it to you so you've got it in writing?"
@@ -201,8 +208,15 @@ saves money versus under-crewing and risking damage."
 **"Can we do 2 movers with a safe?"**
 ```
 "I can't recommend it. For anything around 200 pounds, we follow 
-our Iron Law: 3 movers minimum. That's to protect your home and 
-the item — and to avoid injuries."
+our safety rule: 3 movers minimum at $189/hr with truck. That's 
+to protect your home and the item — and to avoid injuries."
+```
+
+**"Why $189 not $179?"**
+```
+"$189 is with the truck, which is what most moves need. $179 is 
+labor-only if you have your own truck. Most customers need the 
+truck, so $189 is the standard."
 ```
 
 **"Competitor offered cheaper"**
@@ -232,24 +246,25 @@ clear — no surprises."
 
 **HEAVY ITEMS:**
 - Context-based: $169/hr
-- 200+ lbs (Iron Law): $189/hr (3 movers + truck)
-- 200+ lbs Labor Only: $179/hr (3 movers, no truck)
+- 200+ lbs WITH TRUCK (Iron Law): $189/hr (3 movers min)
+- 200+ lbs LABOR-ONLY: $179/hr (3 movers min)
 
 **FEES:**
 - Electronic payment: +$5
 - Negotiation discount: $10 (after value framing)
 
 ### 200LB IRON LAW TRIGGERS:
-✅ Piano (any type)
-✅ Safe (200+ lbs)
-✅ Commercial gym equipment (200+ lbs)
-✅ "Super heavy" items
-❌ Pool tables (NOT Iron Law - $169/hr with 2 movers)
+✅ Piano (any type) → $189/hr
+✅ Safe (200+ lbs) → $189/hr
+✅ Commercial gym equipment (200+ lbs) → $189/hr
+✅ "Super heavy" items → $189/hr
+❌ Pool tables (NOT Iron Law - $169/hr with 2-3 movers)
+❌ Hot tubs (EXCLUDED - we don't service)
 
 **REQUIREMENTS:**
 - 3 movers minimum
-- Truck included
-- $189/hour rate (or $179/hr labor-only)
+- Truck included (unless labor-only)
+- $189/hour (with truck) or $179/hour (labor-only)
 - NO EXCEPTIONS
 
 ---
@@ -276,7 +291,19 @@ Subject: Your Handledly Quote #HD-XXXXX
 
 ---
 
-## SECTION 10: COLORADO-SPECIFIC TONE & LANGUAGE
+## SECTION 10: 6-POINT CONFIRMATION
+
+**Before ending ANY call, Jack must confirm:**
+1. First Name
+2. Last Name
+3. Quote Number (HD-XXXXX)
+4. Move Date
+5. Destination
+6. Estimate Amount
+
+---
+
+## SECTION 11: COLORADO-SPECIFIC TONE & LANGUAGE
 
 ### Goal: 
 Sound like a real Denver metro moving coordinator: confident, calm, efficient, respectful.
@@ -307,6 +334,14 @@ Sound like a real Denver metro moving coordinator: confident, calm, efficient, r
 
 ## CHANGE LOG
 
+### v4.0 (February 2026)
+- Clarified Iron Law: $189/hr WITH TRUCK (default), $179/hr LABOR-ONLY (rare)
+- Pool tables explicitly marked as NOT Iron Law ($169/hr)
+- Hot tubs marked as EXCLUDED SERVICE
+- Added 6-point confirmation requirement
+- Added specialty item verification note
+- Updated all scripts with correct $189/hr default
+
 ### v3.0 (February 2026)
 - Updated to **200lb Iron Law** (from 300lb)
 - New pricing structure implemented
@@ -323,15 +358,16 @@ Sound like a real Denver metro moving coordinator: confident, calm, efficient, r
 
 ## IMPLEMENTATION CHECKLIST
 
-- [ ] Frontend: quoteCalculator.ts updated to 200lb threshold
+- [x] Frontend: quoteCalculator.ts updated with $189 Iron Law rate
+- [x] Frontend: Pool tables excluded from Iron Law triggers
 - [ ] Frontend: PricingDisplay.tsx updated to 200lb threshold
 - [ ] Frontend: Services.tsx updated with $139/hr starting rate
 - [ ] Backend: AI chat edge function references this document
 - [ ] Backend: Email templates reference correct rates
-- [ ] Knowledge Base: jack-knowledge-base.md fully aligned
+- [ ] Knowledge Base: All docs aligned to v4.0
 - [ ] Testing: All pricing displays show correct rates
-- [ ] Testing: AI responses use 200lb Iron Law correctly
-- [ ] Testing: Quote calculator applies $179/hr for 200+ lb items
+- [ ] Testing: AI responses use $189/hr for Iron Law with truck
+- [ ] Testing: Pool tables quoted at $169/hr
 
 ---
 

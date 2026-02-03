@@ -1,5 +1,5 @@
 # HANDLEDLY PRICING CHEAT SHEET
-## Print-Ready Reference | February 2026
+## Print-Ready Reference | February 2026 | Version 4.0
 
 ---
 
@@ -30,18 +30,21 @@
 
 | Service Type | Rate | Crew |
 |--------------|------|------|
-| **Iron Law WITH TRUCK** | **$189/hr** | 3+ movers |
-| **Iron Law LABOR-ONLY** | **$179/hr** | 3+ movers |
+| **Iron Law WITH TRUCK (default)** | **$189/hr** | 3+ movers |
+| **Iron Law LABOR-ONLY (rare)** | **$179/hr** | 3+ movers |
 
 ### Always Triggers Iron Law:
-- ✅ Piano (any type)
-- ✅ Gun Safe (200+ lbs)
-- ✅ Safe (200+ lbs)
-- ✅ Commercial gym equipment (200+ lbs)
-- ✅ Anything "super heavy" or "took multiple guys"
+- ✅ Piano (any type) → $189/hr
+- ✅ Gun Safe (200+ lbs) → $189/hr
+- ✅ Safe (200+ lbs) → $189/hr
+- ✅ Commercial gym equipment (200+ lbs) → $189/hr
+- ✅ Anything "super heavy" or "took multiple guys" → $189/hr
 
 ### NOT Iron Law:
-- ❌ Pool Table → $169/hr (2-3 movers)
+- ❌ Pool Table → **$169/hr** (2-3 movers)
+
+### EXCLUDED SERVICE:
+- ❌ Hot Tubs → We do NOT service. Refer to spa movers.
 
 ---
 
@@ -78,9 +81,10 @@
 
 | Item | Flat Fee | Hourly Rate | Crew |
 |------|----------|-------------|------|
-
 | **Gym Equipment** | **$125** | $169/hr | 2-3 movers |
 | **Motorcycle** | **$200** | $169/hr | 2 movers |
+
+**⚠️ All specialty items require manual human price verification before final booking.**
 
 ---
 
@@ -121,6 +125,7 @@
 - Full packing services
 - Long-term storage
 - Long-distance (outside Denver metro)
+- Hot tub moves (excluded service)
 
 ---
 
@@ -132,7 +137,7 @@
 | 2 BR | 2-3 movers + truck |
 | 3 BR | 3 movers + truck |
 | 4+ BR | 4 movers + truck |
-| Any 200+ lb item | 3+ movers (Iron Law) |
+| Any 200+ lb item | 3+ movers @ $189/hr (Iron Law) |
 
 ---
 
@@ -158,11 +163,27 @@
 
 ---
 
+## ✅ 6-POINT CONFIRMATION
+
+Before ending ANY call, confirm:
+1. First Name
+2. Last Name
+3. Quote Number (HD-XXXXX)
+4. Move Date
+5. Destination
+6. Estimate Amount
+
+---
+
 ## 🚨 NEVER DO
 
 - ❌ Recommend 2 movers for 200+ lb item
+- ❌ Quote $179/hr when truck is needed (use $189)
+- ❌ Apply Iron Law to pool tables ($169/hr)
+- ❌ Accept hot tub requests (excluded)
 - ❌ Skip heavy item probe question
 - ❌ Promise guaranteed completion time
+- ❌ Skip 6-point confirmation
 - ❌ Forget to mention quote number
 - ❌ Underquote to win the job
 - ❌ Be pushy with customers
@@ -175,7 +196,10 @@
 > "Rate covers crew, truck, and protecting your floors and furniture. Right crew = faster + safer = usually saves money vs under-crewing."
 
 ### Iron Law Explanation:
-> "For items over 200 pounds, we bring a 3-mover crew with heavy-duty equipment - it's our safety standard. Rate is $189/hour with truck to ensure your item and floors stay protected."
+> "For items over 200 pounds, we bring a 3-mover crew with the truck at $189/hour. It's our safety standard to protect your item and floors."
+
+### Why $189 Not $179:
+> "$189 is with the truck — that's what most moves need. $179 is labor-only if you've got your own truck."
 
 ### Competitor Cheaper:
 > "We set crew correctly, plan access, document everything. Quote number = no surprises."
@@ -190,4 +214,4 @@
 
 ---
 
-**Version 4.0 | February 2026 | 200lb Iron Law @ $189/hr**
+**Version 4.0 | February 2026 | 200lb Iron Law @ $189/hr with truck**
