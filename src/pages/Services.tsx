@@ -119,7 +119,7 @@ export default function Services() {
       />
       
       {/* Hero */}
-      <section className="pt-32 pb-16 lg:pt-40 lg:pb-20 bg-background relative overflow-hidden">
+      <section className="pt-40 pb-16 lg:pt-48 lg:pb-20 bg-background relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-20 right-10 w-72 h-72 bg-accent/5 rounded-full blur-3xl" />
