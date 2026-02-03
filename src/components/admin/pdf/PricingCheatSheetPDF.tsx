@@ -551,10 +551,6 @@ const QuickReferencePage = () => (
           </View>
           <View style={styles.checkItem}>
             <Text style={styles.checkMark}>✓</Text>
-            <Text style={styles.checkText}>Floor & door protection</Text>
-          </View>
-          <View style={styles.checkItem}>
-            <Text style={styles.checkMark}>✓</Text>
             <Text style={styles.checkText}>Basic disassembly/reassembly</Text>
           </View>
           <View style={styles.checkItem}>
@@ -579,7 +575,7 @@ const QuickReferencePage = () => (
             <Text style={styles.scriptTitle}>Price Objection:</Text>
             <Text style={styles.scriptText}>
               "That rate covers your full crew, our truck and fuel, all moving blankets 
-              and straps, plus floor and door protection—no hidden fees."
+              and straps—no hidden fees."
             </Text>
           </View>
 

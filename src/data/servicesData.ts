@@ -306,11 +306,11 @@ export const servicesData: Record<string, ServiceData> = {
     ],
     features: [
       { title: 'Heavy-Duty Equipment', description: 'Stair climbers and specialized dollies for extreme weight.' },
-      { title: 'Floor Protection', description: 'Plywood paths and mats to prevent floor damage.' },
       { title: 'Discrete Service', description: 'Unmarked trucks and professional discretion.' },
       { title: 'All Safe Types', description: 'Gun safes, fire safes, commercial vaults, data safes.' },
       { title: 'Anchoring Available', description: 'Bolt-down installation at destination.' },
       { title: 'Stair Capable', description: 'Equipment and technique for multi-floor moves.' },
+      { title: 'Expert Handling', description: 'Trained specialists for safe extraction and placement.' },
     ],
     expertCareTitle: 'Why Safe Moving Requires Specialists',
     expertCareDescription: "A 600-pound safe on stairs is extremely dangerous without proper equipment. The concentrated weight can crack floors, damage walls, and cause serious injury. Professional movers eliminate these risks.",

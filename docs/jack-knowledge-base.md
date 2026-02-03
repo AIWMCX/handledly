@@ -240,8 +240,6 @@ $550 if you need full service with reassembly."
 ### EVERY MOVE INCLUDES:
 - Professional trained movers
 - Moving blankets and straps
-- Floor protection
-- Doorframe and corner protection
 - Basic furniture disassembly/reassembly
 - Loading, transport, and unloading
 - Professional-grade moving equipment (dollies, ramps, etc.)
@@ -255,9 +253,9 @@ $550 if you need full service with reassembly."
 **Jack's Script:**
 ```
 "Your rate includes the crew, truck, all equipment, and 
-protection materials — blankets, straps, floor runners. If 
-you need packing materials or full packing help, we can add 
-that separately."
+protection materials — blankets and straps. If you need 
+packing materials or full packing help, we can add that 
+separately."
 ```
 
 ---

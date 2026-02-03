@@ -75,8 +75,8 @@ const heavyItemsServices: {
   {
     icon: Shield,
     title: "Safe Moving",
-    description: "Gun safes, commercial safes up to 2,000+ lbs. Specialized equipment and floor protection.",
-    features: ["Gun safes", "Commercial vaults", "Floor protection"],
+    description: "Gun safes, commercial safes up to 2,000+ lbs. Specialized equipment and expert handling.",
+    features: ["Gun safes", "Commercial vaults", "Expert handling"],
     slug: "safe-moving",
   },
   {
