@@ -10,6 +10,9 @@
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://www.google-analytics.com" />
     
+    <!-- Preload critical assets for faster FCP -->
+    <link rel="modulepreload" href="/src/main.tsx" />
+    
     <!-- Primary Meta Tags -->
     <title>Handledly | America's First AI-Powered Moving SaaS Platform</title>
     <meta name="description" content="Automate Dispatching. Elevate Service. Build Trust at Scale. AI-powered moving operations with instant quotes, smart scheduling, and seamless customer communication." />
@@ -41,15 +44,27 @@
     <link rel="canonical" href="https://handledly.com/" />
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-QZBNDFDW9Q"></script>
+    <!-- Google Analytics 4 - Deferred for better FCP -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-QZBNDFDW9Q', {
-        send_page_view: true,
-        cookie_flags: 'SameSite=None;Secure'
+      // Defer GA loading until after page is interactive
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var gaScript = document.createElement('script');
+          gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-QZBNDFDW9Q';
+          gaScript.async = true;
+          document.head.appendChild(gaScript);
+          
+          gaScript.onload = function() {
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
+            gtag('js', new Date());
+            gtag('config', 'G-QZBNDFDW9Q', {
+              send_page_view: true,
+              cookie_flags: 'SameSite=None;Secure'
+            });
+          };
+        }, 100);
       });
     </script>
     
