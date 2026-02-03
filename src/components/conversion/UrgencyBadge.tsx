@@ -125,11 +125,11 @@ export function UrgencyBadge({
   };
 
   const colorClasses: Record<UrgencyType, string> = {
-    slots_limited: 'bg-accent/10 text-accent border-accent/30',
+    slots_limited: 'bg-accent/10 text-accent-text border-accent/30',
     discount_expiring: 'bg-destructive/10 text-destructive border-destructive/30',
     same_day: 'bg-success/10 text-success border-success/30',
     popular: 'bg-primary/10 text-primary border-primary/30',
-    last_minute: 'bg-accent/10 text-accent border-accent/30',
+    last_minute: 'bg-accent/10 text-accent-text border-accent/30',
   };
 
   return (

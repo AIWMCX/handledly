@@ -38,7 +38,7 @@
     --secondary-foreground: 215 28% 17%;
 
     --muted: 210 17% 96%;                 /* Light gray sections */
-    --muted-foreground: 215 14% 46%;      /* #718096 Medium Gray */
+    --muted-foreground: 215 20% 38%;      /* Darker gray for WCAG AA contrast */
 
     /* Golden Yellow as accent/CTA */
     --accent: 40 95% 59%;                 /* #F9B233 Golden Yellow */
@@ -60,6 +60,9 @@
     --gold: 40 95% 59%;                   /* #F9B233 */
     --gold-light: 40 100% 65%;
     --gold-dark: 40 90% 50%;
+    
+    /* Accessible accent for text on light backgrounds (WCAG AA 4.5:1) */
+    --accent-text: 30 100% 30%;           /* Darker amber for text contrast */
 
     /* Typography */
     --font-heading: 'Poppins', sans-serif;

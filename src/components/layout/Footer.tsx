@@ -66,7 +66,7 @@ export function Footer() {
                 {area}
               </span>
             ))}
-            <span className="px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-medium">
+            <span className="px-3 py-1 rounded-full bg-accent/20 text-accent-text text-xs font-medium">
               + 20 More Cities
             </span>
           </div>
@@ -216,7 +216,7 @@ export function Footer() {
         {/* Quote Promise Banner */}
         <div className="mt-12 p-4 bg-accent/20 border border-accent/30 rounded-lg text-center backdrop-blur-sm">
           <p className="text-sm font-medium text-white">
-            🚚 Get Your Personal Moving Quote in <span className="text-accent">10 Minutes or Less</span> — Call Now or Fill Out Our Form
+            🚚 Get Your Personal Moving Quote in <span className="text-white font-semibold">10 Minutes or Less</span> — Call Now or Fill Out Our Form
           </p>
         </div>
 
