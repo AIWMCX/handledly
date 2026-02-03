@@ -11,6 +11,7 @@ import {
   secureErrorResponse,
   securityHeaders
 } from "../_shared/security.ts";
+import { quoteEmailRequestSchema, validateRequest } from "../_shared/validation.ts";
 
 // Rate limiting configuration
 const RATE_LIMIT_MAX = 5; // 5 emails per minute
@@ -21,7 +22,7 @@ interface QuoteEmailRequest {
   verificationToken?: string;
   conversationId?: string; // For server-side lead linkage
   firstName: string;
-  lastName: string;
+  lastName?: string;
   customerName: string; // Fallback
   email: string;
   phone: string;
@@ -460,7 +461,25 @@ const handler = async (req: Request): Promise<Response> => {
     const { body: bodyText, error: sizeError } = await validateRequestSize(req, corsHeaders);
     if (sizeError) return sizeError;
 
-    const data: QuoteEmailRequest = JSON.parse(bodyText);
+    // Parse and validate the request body with zod
+    let parsedBody: unknown;
+    try {
+      parsedBody = JSON.parse(bodyText);
+    } catch {
+      return secureErrorResponse('Invalid JSON in request body', corsHeaders, 400);
+    }
+
+    const validation = validateRequest(quoteEmailRequestSchema, parsedBody);
+    if (!validation.success || !validation.data) {
+      console.warn('[send-quote-email] Validation failed:', validation.errors);
+      return secureJsonResponse(
+        { error: 'Invalid request', details: validation.errors },
+        corsHeaders,
+        400
+      );
+    }
+
+    const data = validation.data;
     
     // Parse names for logging
     const firstName = data.firstName || data.customerName?.split(' ')[0] || 'Customer';

@@ -8,6 +8,7 @@ import {
   getClientIp,
   securityHeaders 
 } from "../_shared/security.ts";
+import { aiChatRequestSchema, validateRequest } from "../_shared/validation.ts";
 
 // Rate limiting configuration
 const RATE_LIMIT_MAX = 30; // 30 requests per minute
@@ -252,8 +253,25 @@ serve(async (req) => {
     const { body: bodyText, error: sizeError } = await validateRequestSize(req, corsHeaders);
     if (sizeError) return sizeError;
 
-    // Parse the request body
-    const { message, conversationHistory = [], sessionId } = JSON.parse(bodyText) as ChatRequest;
+    // Parse and validate the request body with zod
+    let parsedBody: unknown;
+    try {
+      parsedBody = JSON.parse(bodyText);
+    } catch {
+      return secureErrorResponse('Invalid JSON in request body', corsHeaders, 400);
+    }
+
+    const validation = validateRequest(aiChatRequestSchema, parsedBody);
+    if (!validation.success || !validation.data) {
+      console.warn('[ai-chat] Validation failed:', validation.errors);
+      return secureJsonResponse(
+        { error: 'Invalid request', details: validation.errors },
+        corsHeaders,
+        400
+      );
+    }
+
+    const { message, conversationHistory = [], sessionId } = validation.data;
 
     // RATE LIMIT CHECK - Prevent abuse
     const clientIp = getClientIp(req);
