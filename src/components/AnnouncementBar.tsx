@@ -43,7 +43,7 @@ export function AnnouncementBar() {
   const currentMessage = messages[currentIndex];
 
   return (
-    <div className="bg-accent text-primary py-2.5 overflow-hidden">
+    <div className="bg-primary text-white py-2.5 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center gap-4">
           {/* Main rotating message */}
@@ -52,24 +52,24 @@ export function AnnouncementBar() {
               isAnimating ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"
             }`}
           >
-            <currentMessage.icon className="w-4 h-4" />
+            <currentMessage.icon className="w-4 h-4 text-accent" />
             <span>{currentMessage.text}</span>
           </div>
 
           {/* Separator and phones - desktop only */}
           <div className="hidden lg:flex items-center gap-4">
-            <span className="text-primary/40">|</span>
+            <span className="text-white/40">|</span>
             <a 
               href="tel:+18782187397"
-              className="flex items-center gap-2 text-sm font-medium hover:underline"
+              className="flex items-center gap-2 text-sm font-medium hover:text-accent transition-colors"
             >
               <Phone className="w-3.5 h-3.5" />
               (878) 218-7397
             </a>
-            <span className="text-primary/40">|</span>
+            <span className="text-white/40">|</span>
             <a 
               href="tel:+17199203282"
-              className="text-sm font-medium hover:underline"
+              className="text-sm font-medium hover:text-accent transition-colors"
             >
               (719) 920-3282
             </a>
@@ -83,8 +83,8 @@ export function AnnouncementBar() {
                 onClick={() => setCurrentIndex(i)}
                 className={`w-1.5 h-1.5 rounded-full transition-all ${
                   i === currentIndex 
-                    ? "bg-primary w-4" 
-                    : "bg-primary/30 hover:bg-primary/50"
+                    ? "bg-accent w-4" 
+                    : "bg-white/30 hover:bg-white/50"
                 }`}
                 aria-label={`Go to message ${i + 1}`}
               />
