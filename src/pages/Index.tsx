@@ -119,7 +119,7 @@ export default function Index() {
                   <Users className="w-4 h-4 text-accent" />
                   <span className="text-foreground font-medium">2 Movers + Truck: ${HOURLY_RATES['moving-2-movers']}/hr</span>
                 </div>
-                <Badge className="px-3 py-1.5 bg-accent/10 text-accent border-accent/30 hover:bg-accent/20 shadow-depth-1">
+                <Badge className="px-3 py-1.5 bg-accent/10 text-accent-text border-accent/30 hover:bg-accent/20 shadow-depth-1">
                   <Zap className="w-3 h-3 mr-1" />
                   Same-Day Available
                 </Badge>
@@ -225,7 +225,7 @@ export default function Index() {
                 <h3 className="font-heading text-xl font-semibold text-primary mb-2">{service.title}</h3>
                 <p className="text-muted-foreground text-sm mb-4">{service.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-accent font-medium text-sm group-hover:underline">
+                  <span className="text-accent-text font-medium text-sm group-hover:underline">
                     Learn More →
                   </span>
                   <span className="text-xs text-muted-foreground">From ${service.customRate || HOURLY_RATES['moving-2-movers']}/hr</span>

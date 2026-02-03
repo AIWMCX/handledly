@@ -49,7 +49,7 @@ export function TrustIndicators() {
       
       <Container className="relative z-10">
         <div className="text-center mb-14">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-accent/10 text-accent-text text-sm font-medium mb-4">
             Why Choose Us
           </span>
           <h2 className="font-heading text-3xl lg:text-4xl font-semibold mb-4">

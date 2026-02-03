@@ -133,7 +133,7 @@ export function PricingDisplay() {
                   <div className="mb-1">
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
                       tier.hasTruck 
-                        ? 'bg-accent/10 text-accent' 
+                        ? 'bg-accent/10 text-accent-text' 
                         : 'bg-muted text-muted-foreground'
                     }`}>
                       {tier.hasTruck ? 'Full Service' : 'Labor Only'}
