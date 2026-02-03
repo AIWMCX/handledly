@@ -13,14 +13,22 @@ export function StickyCTA() {
   const isQuotePage = location.pathname === '/quote';
 
   useEffect(() => {
+    let rafId: number | null = null;
     const handleScroll = () => {
-      // Show after scrolling past hero (approx 500px)
-      const shouldShow = window.scrollY > 500;
-      setIsVisible(shouldShow && !isDismissed && !isQuotePage);
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        // Show after scrolling past hero (approx 500px)
+        const shouldShow = window.scrollY > 500;
+        setIsVisible(shouldShow && !isDismissed && !isQuotePage);
+        rafId = null;
+      });
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, [isDismissed, isQuotePage]);
 
   if (!isVisible || isQuotePage) return null;
