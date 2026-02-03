@@ -101,7 +101,7 @@ export const servicesData: Record<string, ServiceData> = {
       'You\'re settled in your new home',
     ],
     subServices: [
-      { title: 'Apartment & Condo Moving', description: 'Studios to 4+ BR apartments and high-rise condos', icon: Building },
+      { title: 'Apartment & Condo Moving', description: 'Studios to 4+ BDR apartments and high-rise condos', icon: Building },
       { title: 'House & Townhouse Moving', description: 'Single-family homes, townhouses, and duplexes', icon: Home },
       { title: 'Labor-Only Moving Help', description: 'Loading/unloading for your truck, pod, or container', icon: Users },
       { title: 'Same-Day Moving', description: 'Emergency moves — call now for immediate service', icon: Zap },

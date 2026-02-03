@@ -17,10 +17,10 @@
 
 | Crew Size | Hourly Rate | Best For |
 |-----------|-------------|----------|
-| **2 Movers + Truck** | **$159/hr** ⭐ | Studios, 1-2 BR apartments |
-| **3 Movers + Truck** | **$189/hr** | 2-3 BR, heavy items |
+| **2 Movers + Truck** | **$159/hr** ⭐ | Studios, 1-2 BDR apartments |
+| **3 Movers + Truck** | **$189/hr** | 2-3 BDR, heavy items |
 | **3 Movers + 2 Trucks** | **$209/hr** | Large moves, more capacity |
-| **4 Movers + Truck** | **$259/hr** | 3-4 BR homes |
+| **4 Movers + Truck** | **$259/hr** | 3-4 BDR homes |
 
 ---
 
@@ -133,10 +133,10 @@
 
 | Property Size | Recommended Crew |
 |---------------|------------------|
-| Studio / 1 BR | 2 movers + truck |
-| 2 BR | 2-3 movers + truck |
-| 3 BR | 3 movers + truck |
-| 4+ BR | 4 movers + truck |
+| Studio / 1 BDR | 2 movers + truck |
+| 2 BDR | 2-3 movers + truck |
+| 3 BDR | 3 movers + truck |
+| 4+ BDR | 4 movers + truck |
 | Any 200+ lb item | 3+ movers @ $189/hr (Iron Law) |
 
 ---

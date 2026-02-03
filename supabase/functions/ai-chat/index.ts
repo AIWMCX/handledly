@@ -87,10 +87,10 @@ const SYSTEM_PROMPT = `You are Jack, a friendly and professional moving speciali
 - 4 Movers Labor Only: $239/hour
 
 **Moving with Truck:**
-- 2 Movers + Truck: $159/hour (Most Popular for studios & 1-2 BR)
-- 3 Movers + Truck: $189/hour (2-3 BR or heavy items)
+- 2 Movers + Truck: $159/hour (Most Popular for studios & 1-2 BDR)
+- 3 Movers + Truck: $189/hour (2-3 BDR or heavy items)
 - 3 Movers + 2 Trucks: $209/hour (when more capacity needed)
-- 4 Movers + Truck: $259/hour (3-4 BR homes)
+- 4 Movers + Truck: $259/hour (3-4 BDR homes)
 
 **Heavy Items: $169/hour** (by situation - rate adjusts for 200+ lb items)
 
@@ -153,10 +153,10 @@ IMPORTANT: Try to collect multiple pieces in single questions to speed up the pr
 After collecting ALL information, confirm and submit immediately.
 
 ## QUOTE ESTIMATION GUIDE (with new pricing)
-- Studio/1BR: 2-3 hours, 2 movers (~$318-$477)
-- 2BR: 3-4 hours, 2-3 movers (~$477-$756)
-- 3BR: 4-6 hours, 3 movers (~$756-$1134)
-- 4BR+: 6-8 hours, 4 movers (~$1554-$2072)
+- Studio/1BDR: 2-3 hours, 2 movers (~$318-$477)
+- 2BDR: 3-4 hours, 2-3 movers (~$477-$756)
+- 3BDR: 4-6 hours, 3 movers (~$756-$1134)
+- 4BDR+: 6-8 hours, 4 movers (~$1554-$2072)
 - **Any 200+ lb item (pianos, safes): Add $189/hr rate with 3 movers + truck**
 - Piano: +$150-$350 depending on type (Iron Law applies)
 - Pool table: +$350-$550 flat fee (NOT Iron Law - $169/hr with 2 movers)

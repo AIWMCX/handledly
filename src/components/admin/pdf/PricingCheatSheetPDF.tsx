@@ -516,19 +516,19 @@ const QuickReferencePage = () => (
           <Text style={styles.quickRefTitle}>👥 CREW SIZING GUIDE</Text>
           <View style={styles.bulletItem}>
             <Text style={styles.bullet}>•</Text>
-            <Text style={styles.bulletText}>Studio / 1 BR → 2 movers + truck</Text>
+            <Text style={styles.bulletText}>Studio / 1 BDR → 2 movers + truck</Text>
           </View>
           <View style={styles.bulletItem}>
             <Text style={styles.bullet}>•</Text>
-            <Text style={styles.bulletText}>2 BR → 2-3 movers + truck</Text>
+            <Text style={styles.bulletText}>2 BDR → 2-3 movers + truck</Text>
           </View>
           <View style={styles.bulletItem}>
             <Text style={styles.bullet}>•</Text>
-            <Text style={styles.bulletText}>3 BR → 3 movers + truck</Text>
+            <Text style={styles.bulletText}>3 BDR → 3 movers + truck</Text>
           </View>
           <View style={styles.bulletItem}>
             <Text style={styles.bullet}>•</Text>
-            <Text style={styles.bulletText}>4+ BR → 4 movers + truck</Text>
+            <Text style={styles.bulletText}>4+ BDR → 4 movers + truck</Text>
           </View>
           <View style={[styles.bulletItem, { marginTop: 5 }]}>
             <Text style={styles.bullet}>⚠️</Text>

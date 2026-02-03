@@ -90,12 +90,12 @@ export const IRON_LAW_LABOR_ONLY_RATE = 179; // LABOR-ONLY (rare)
 // Crew configurations for local moving (Updated February 2026)
 export const CREW_CONFIGURATIONS = [
   { value: 'labor-2-movers', label: 'Labor Only - 2 Movers', rate: 139, hasTruck: false, crew: 2, description: 'Loading/unloading help' },
-  { value: 'moving-2-movers', label: '2 Movers + Truck', rate: 159, hasTruck: true, crew: 2, description: 'Studios & 1-2 BR', popular: true },
+  { value: 'moving-2-movers', label: '2 Movers + Truck', rate: 159, hasTruck: true, crew: 2, description: 'Studios & 1-2 BDR', popular: true },
   { value: 'labor-3-movers', label: 'Labor Only - 3 Movers', rate: 169, hasTruck: false, crew: 3, description: 'Larger jobs or 200+ lb items' },
-  { value: 'moving-3-movers', label: '3 Movers + Truck', rate: 189, hasTruck: true, crew: 3, description: '2-3 BR or heavy items' },
+  { value: 'moving-3-movers', label: '3 Movers + Truck', rate: 189, hasTruck: true, crew: 3, description: '2-3 BDR or heavy items' },
   { value: 'moving-3-movers-2-trucks', label: '3 Movers + 2 Trucks', rate: 209, hasTruck: true, crew: 3, description: 'When more capacity needed' },
   { value: 'labor-4-movers', label: 'Labor Only - 4 Movers', rate: 239, hasTruck: false, crew: 4, description: 'Large loading projects' },
-  { value: 'moving-4-movers', label: '4 Movers + Truck', rate: 259, hasTruck: true, crew: 4, description: '3-4 BR homes' },
+  { value: 'moving-4-movers', label: '4 Movers + Truck', rate: 259, hasTruck: true, crew: 4, description: '3-4 BDR homes' },
 ] as const;
 
 // IRON LAW SERVICES - require 3 movers @ $189/hr for safety
@@ -226,7 +226,7 @@ export const SERVICE_TYPES = [
     description: 'Apartments, houses, labor-only & same-day moves',
     icon: 'truck',
     subTypes: [
-      { value: 'apartment-condo', label: 'Apartment & Condo Moving', description: 'Studios to 4+ BR apartments and condos' },
+      { value: 'apartment-condo', label: 'Apartment & Condo Moving', description: 'Studios to 4+ BDR apartments and condos' },
       { value: 'house-townhouse', label: 'House & Townhouse Moving', description: 'Single-family homes and townhouses' },
       { value: 'labor-only', label: 'Labor-Only Moving Help', description: 'Loading/unloading for your truck or pod' },
       { value: 'same-day-local', label: 'Same-Day Moving', description: 'Emergency moves - call now!' },
