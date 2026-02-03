@@ -175,11 +175,11 @@ function estimateHours(input: QuoteInput): number {
 | Bedrooms | Estimated Hours |
 |----------|-----------------|
 | Studio | 2 hours |
-| 1 BR | 3 hours |
-| 2 BR | 4 hours |
-| 3 BR | 5 hours |
-| 4 BR | 6 hours |
-| 5+ BR | 7 hours |
+| 1 BDR | 3 hours |
+| 2 BDR | 4 hours |
+| 3 BDR | 5 hours |
+| 4 BDR | 6 hours |
+| 5+ BDR | 7 hours |
 
 ### Step 3: Get Hourly Rate
 

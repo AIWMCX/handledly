@@ -21,7 +21,7 @@ const localMovingServices = [
   {
     icon: Building,
     title: "Apartment & Condo Moving",
-    description: "Studios to 4+ BR apartments, high-rise condos, lofts. Elevator and stairs — no extra fees.",
+    description: "Studios to 4+ BDR apartments, high-rise condos, lofts. Elevator and stairs — no extra fees.",
     features: ["High-rise experience", "Elevator coordination", "No stair fees"],
     popular: true,
   },

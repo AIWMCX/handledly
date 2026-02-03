@@ -54,8 +54,8 @@ This folder contains two optimized files for your ElevenLabs agent:
 ### Step 5: Test the Agent
 1. Use "Test Agent" feature in ElevenLabs
 2. Run through these scenarios:
-   - Simple 2BR apartment move (should quote $159/hr)
-   - Move with piano (should trigger Iron Law $179/hr)
+   - Simple 2BDR apartment move (should quote $159/hr)
+   - Move with piano (should trigger Iron Law $189/hr)
    - Customer objection about price
    - Quote confirmation with HD-XXXXX number
 
