@@ -89,8 +89,9 @@ export default function Index() {
       <AnnouncementBar />
       <Header />
       
-      {/* Hero Section with Mesh Gradient */}
-      <section className="relative pt-40 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+      <main>
+        {/* Hero Section with Mesh Gradient */}
+        <section className="relative pt-40 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
         <MeshGradientHero />
         
         <Container className="relative z-10">
@@ -340,6 +341,7 @@ export default function Index() {
           </div>
         </Container>
       </Section>
+      </main>
 
       <Footer />
       <ChatWidget />
