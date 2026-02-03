@@ -90,7 +90,7 @@ export default function Index() {
       <Header />
       
       {/* Hero Section with Mesh Gradient */}
-      <section className="relative pt-36 pb-20 lg:pt-44 lg:pb-32 overflow-hidden">
+      <section className="relative pt-40 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
         <MeshGradientHero />
         
         <Container className="relative z-10">
