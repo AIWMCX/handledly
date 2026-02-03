@@ -10,6 +10,7 @@ import {
   getClientIp,
   checkIpRateLimit
 } from "../_shared/security.ts";
+import { callRequestSchema, validateRequest } from "../_shared/validation.ts";
 
 // Rate limiting configuration
 const RATE_LIMIT_MAX = 5; // 5 calls per minute
@@ -566,7 +567,25 @@ serve(async (req) => {
       return secureErrorResponse('ElevenLabs phone number ID not configured', corsHeaders, 500);
     }
 
-    const data: CallRequest = JSON.parse(bodyText);
+    // Parse and validate the request body with zod
+    let parsedBody: unknown;
+    try {
+      parsedBody = JSON.parse(bodyText);
+    } catch {
+      return secureErrorResponse('Invalid JSON in request body', corsHeaders, 400);
+    }
+
+    const validation = validateRequest(callRequestSchema, parsedBody);
+    if (!validation.success || !validation.data) {
+      console.warn('[trigger-confirmation-call] Validation failed:', validation.errors);
+      return secureJsonResponse(
+        { error: 'Invalid request', details: validation.errors },
+        corsHeaders,
+        400
+      );
+    }
+
+    const data = validation.data;
     console.log(`[trigger-confirmation-call] Received request for lead ${data.leadId}`);
 
     // Initialize Supabase client
