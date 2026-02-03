@@ -121,18 +121,18 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
   // Iron Law Notice HTML (only shown for 200+ lb item services)
   const ironLawNotice = isIronLawService ? `
               <!-- Iron Law Safety Notice -->
-              <div style="margin-bottom: 25px; padding: 16px 20px; background: linear-gradient(135deg, #1C1917 0%, #292524 100%); border-radius: 10px; border: 2px solid #D4AF37;">
+              <div style="margin-bottom: 25px; padding: 16px 20px; background-color: #FEF3C7; border-radius: 10px; border: 2px solid #F59E0B;">
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                   <tr>
                     <td width="40" style="vertical-align: top;">
                       <span style="font-size: 28px;">⚠️</span>
                     </td>
                     <td style="padding-left: 10px;">
-                      <p style="margin: 0 0 5px; font-size: 14px; font-weight: 700; color: #D4AF37; text-transform: uppercase; letter-spacing: 1px;">
+                      <p style="margin: 0 0 5px; font-size: 14px; font-weight: 700; color: #B45309; text-transform: uppercase; letter-spacing: 1px;">
                         200LB IRON LAW — SAFETY REQUIREMENT
                       </p>
-                      <p style="margin: 0; font-size: 13px; color: #A8A29E; line-height: 1.5;">
-                        Items 200+ lbs require a <strong style="color: #FAFAF9;">3-mover crew</strong> at our <strong style="color: #FAFAF9;">$189/hr</strong> safety rate with truck. This protects both your belongings and our team. Your quote reflects this requirement.
+                      <p style="margin: 0; font-size: 13px; color: #78350F; line-height: 1.5;">
+                        Items 200+ lbs require a <strong style="color: #1E3A5F;">3-mover crew</strong> at our <strong style="color: #1E3A5F;">$189/hr</strong> safety rate with truck. This protects both your belongings and our team. Your quote reflects this requirement.
                       </p>
                     </td>
                   </tr>
@@ -148,8 +148,8 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Moving Quote from Handledly Moving Services</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0C0A09; color: #FAFAF9;">
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0C0A09;">
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #FFFBF5; color: #1E3A5F;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #FFFBF5;">
     <tr>
       <td align="center" style="padding: 40px 20px;">
         <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%;">
@@ -157,11 +157,11 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
           <!-- Header -->
           <tr>
             <td style="text-align: center; padding-bottom: 30px;">
-              <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #FAFAF9;">
+              <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #1E3A5F;">
                 🏠 HANDLEDLY
               </h1>
-              <p style="margin: 10px 0 0; font-size: 14px; color: #A8A29E;">Moving Services</p>
-              <p style="margin: 10px 0 0; font-size: 16px; color: #D4AF37;">
+              <p style="margin: 10px 0 0; font-size: 14px; color: #64748B;">Moving Services</p>
+              <p style="margin: 10px 0 0; font-size: 16px; color: #F9B233; font-weight: 600;">
                 Your Quote is Ready
               </p>
             </td>
@@ -169,18 +169,18 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
           
           <!-- Main Content -->
           <tr>
-            <td style="background: linear-gradient(135deg, #1C1917 0%, #292524 100%); border-radius: 16px; border: 1px solid #44403C; padding: 40px;">
+            <td style="background: #FFFFFF; border-radius: 16px; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px rgba(0,0,0,0.05); padding: 40px;">
               
               ${data.quoteNumber ? `
               <!-- Quote Number Badge -->
-              <div style="text-align: center; margin-bottom: 30px; padding: 20px; background-color: #0C0A09; border-radius: 12px; border: 2px solid #D4AF37;">
-                <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #78716C;">
+              <div style="text-align: center; margin-bottom: 30px; padding: 20px; background-color: #FEF3C7; border-radius: 12px; border: 2px solid #F9B233;">
+                <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #92400E;">
                   YOUR QUOTE NUMBER
                 </p>
-                <p style="margin: 0; font-size: 28px; font-weight: 700; color: #D4AF37; letter-spacing: 3px; font-family: monospace;">
+                <p style="margin: 0; font-size: 28px; font-weight: 700; color: #1E3A5F; letter-spacing: 3px; font-family: monospace;">
                   ${data.quoteNumber}
                 </p>
-                <p style="margin: 10px 0 0; font-size: 12px; color: #A8A29E;">
+                <p style="margin: 10px 0 0; font-size: 12px; color: #64748B;">
                   Reference this number when speaking with our team
                 </p>
               </div>
@@ -189,28 +189,28 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
               ${ironLawNotice}
               
               <!-- Personal Greeting with Appreciation -->
-              <p style="margin: 0 0 10px; font-size: 20px; color: #FAFAF9; font-weight: 600;">
+              <p style="margin: 0 0 10px; font-size: 20px; color: #1E3A5F; font-weight: 600;">
                 Dear ${fullName},
               </p>
-              <p style="margin: 0 0 30px; font-size: 16px; color: #A8A29E; line-height: 1.7;">
-                <strong style="color: #D4AF37;">Thank you for choosing Handledly Moving Services!</strong> We truly appreciate your trust in us for your upcoming move. Our team is honored to be part of your moving journey and is committed to making this a stress-free experience.
+              <p style="margin: 0 0 30px; font-size: 16px; color: #64748B; line-height: 1.7;">
+                <strong style="color: #F9B233;">Thank you for choosing Handledly Moving Services!</strong> We truly appreciate your trust in us for your upcoming move. Our team is honored to be part of your moving journey and is committed to making this a stress-free experience.
               </p>
               
               <!-- Move Details Box -->
               ${data.moveFrom || data.moveTo ? `
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0C0A09; border-radius: 12px; border: 1px solid #44403C; margin-bottom: 25px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #F8FAFC; border-radius: 12px; border: 1px solid #E2E8F0; margin-bottom: 25px;">
                 <tr>
                   <td style="padding: 24px;">
-                    <h3 style="margin: 0 0 20px; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #D4AF37; font-weight: 700;">
+                    <h3 style="margin: 0 0 20px; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: #F9B233; font-weight: 700;">
                       📋 YOUR MOVE DETAILS
                     </h3>
                     
                     <!-- Move Date -->
                     <div style="margin-bottom: 18px;">
-                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">
+                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8; font-weight: 600;">
                         📅 MOVE DATE
                       </p>
-                      <p style="margin: 0; font-size: 16px; color: #FAFAF9; font-weight: 500;">
+                      <p style="margin: 0; font-size: 16px; color: #1E3A5F; font-weight: 500;">
                         ${moveDateFormatted}
                       </p>
                     </div>
@@ -218,10 +218,10 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                     ${data.moveFrom ? `
                     <!-- From Address -->
                     <div style="margin-bottom: 18px;">
-                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">
+                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8; font-weight: 600;">
                         📍 MOVING FROM
                       </p>
-                      <p style="margin: 0; font-size: 16px; color: #FAFAF9; font-weight: 500;">
+                      <p style="margin: 0; font-size: 16px; color: #1E3A5F; font-weight: 500;">
                         ${data.moveFrom}
                       </p>
                     </div>
@@ -230,10 +230,10 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                     ${data.moveTo ? `
                     <!-- To Address -->
                     <div style="margin-bottom: 0;">
-                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">
+                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8; font-weight: 600;">
                         📍 MOVING TO
                       </p>
-                      <p style="margin: 0; font-size: 16px; color: #FAFAF9; font-weight: 500;">
+                      <p style="margin: 0; font-size: 16px; color: #1E3A5F; font-weight: 500;">
                         ${data.moveTo}
                       </p>
                     </div>
@@ -244,16 +244,16 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
               ` : ''}
               
               <!-- Quote Box -->
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0C0A09; border-radius: 12px; border: 1px solid #44403C; margin-bottom: 30px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #F8FAFC; border-radius: 12px; border: 1px solid #E2E8F0; margin-bottom: 30px;">
                 <tr>
                   <td style="padding: 24px;">
                     
                     <!-- Service Type -->
-                    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #44403C;">
-                      <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #D4AF37;">
+                    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #E2E8F0;">
+                      <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #F9B233; font-weight: 600;">
                         SERVICE
                       </p>
-                      <p style="margin: 0; font-size: 20px; font-weight: 600; color: #FAFAF9;">
+                      <p style="margin: 0; font-size: 20px; font-weight: 600; color: #1E3A5F;">
                         ${serviceLabel}
                       </p>
                     </div>
@@ -262,18 +262,18 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
                       <tr>
                         <td width="50%" style="padding-right: 10px;">
-                          <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #78716C;">
+                          <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8;">
                             👥 CREW SIZE
                           </p>
-                          <p style="margin: 0; font-size: 16px; color: #FAFAF9;">
+                          <p style="margin: 0; font-size: 16px; color: #1E3A5F;">
                             ${data.crewSize} Movers + Truck
                           </p>
                         </td>
                         <td width="50%" style="padding-left: 10px;">
-                          <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #78716C;">
+                          <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8;">
                             💰 HOURLY RATE
                           </p>
-                          <p style="margin: 0; font-size: 16px; color: #D4AF37; font-weight: 600;">
+                          <p style="margin: 0; font-size: 16px; color: #F9B233; font-weight: 600;">
                             $${data.hourlyRate}/hour
                           </p>
                         </td>
@@ -284,18 +284,18 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
                       <tr>
                         <td width="50%" style="padding-right: 10px;">
-                          <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #78716C;">
+                          <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8;">
                             ⏱️ EST. HOURS
                           </p>
-                          <p style="margin: 0; font-size: 16px; color: #FAFAF9;">
+                          <p style="margin: 0; font-size: 16px; color: #1E3A5F;">
                             ~${data.estimatedHours} hours
                           </p>
                         </td>
                         <td width="50%" style="padding-left: 10px;">
-                          <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #78716C;">
+                          <p style="margin: 0 0 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #94A3B8;">
                             🚚 SERVICE TYPE
                           </p>
-                          <p style="margin: 0; font-size: 16px; color: #FAFAF9;">
+                          <p style="margin: 0; font-size: 16px; color: #1E3A5F;">
                             Full Service
                           </p>
                         </td>
@@ -303,37 +303,37 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
                     </table>
                     
                     <!-- Divider -->
-                    <div style="height: 1px; background-color: #44403C; margin: 20px 0;"></div>
+                    <div style="height: 1px; background-color: #E2E8F0; margin: 20px 0;"></div>
                     
                     <!-- Price Breakdown -->
                     <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                       <tr>
                         <td style="padding: 8px 0;">
-                          <span style="color: #A8A29E;">Labor (${data.estimatedHours} hrs × $${data.hourlyRate})</span>
+                          <span style="color: #64748B;">Labor (${data.estimatedHours} hrs × $${data.hourlyRate})</span>
                         </td>
                         <td align="right" style="padding: 8px 0;">
-                          <span style="color: #FAFAF9;">$${data.laborCost}</span>
+                          <span style="color: #1E3A5F;">$${data.laborCost}</span>
                         </td>
                       </tr>
                       ${data.specialtyFee > 0 ? `
                       <tr>
                         <td style="padding: 8px 0;">
-                          <span style="color: #A8A29E;">Specialty Items</span>
+                          <span style="color: #64748B;">Specialty Items</span>
                         </td>
                         <td align="right" style="padding: 8px 0;">
-                          <span style="color: #FAFAF9;">+$${data.specialtyFee}</span>
+                          <span style="color: #1E3A5F;">+$${data.specialtyFee}</span>
                         </td>
                       </tr>
                       ` : ''}
                       <tr>
-                        <td colspan="2" style="padding-top: 15px; border-top: 2px solid #D4AF37;">
+                        <td colspan="2" style="padding-top: 15px; border-top: 2px solid #F9B233;">
                           <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                             <tr>
                               <td>
-                                <span style="font-size: 18px; font-weight: 600; color: #FAFAF9;">ESTIMATED TOTAL</span>
+                                <span style="font-size: 18px; font-weight: 600; color: #1E3A5F;">ESTIMATED TOTAL</span>
                               </td>
                               <td align="right">
-                                <span style="font-size: 28px; font-weight: 700; color: #D4AF37;">$${data.totalQuote}</span>
+                                <span style="font-size: 28px; font-weight: 700; color: #F9B233;">$${data.totalQuote}</span>
                               </td>
                             </tr>
                           </table>
@@ -346,45 +346,44 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
               </table>
               
               <!-- No Hidden Fees Badge -->
-              <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); border-radius: 8px; margin-bottom: 30px;">
-                <p style="margin: 0; font-size: 16px; font-weight: 700; color: #0C0A09;">
+              <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #F9B233 0%, #F59E0B 100%); border-radius: 8px; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(245,158,11,0.3);">
+                <p style="margin: 0; font-size: 16px; font-weight: 700; color: #1E3A5F;">
                   ✓ NO HIDDEN FEES — JUST A FLAT HOURLY RATE
                 </p>
               </div>
               
               <!-- What's Included -->
               <div style="margin-bottom: 30px;">
-                <h3 style="margin: 0 0 15px; font-size: 16px; color: #D4AF37; text-transform: uppercase; letter-spacing: 1px;">
+                <h3 style="margin: 0 0 15px; font-size: 16px; color: #F9B233; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">
                   Everything Included:
                 </h3>
                 <table role="presentation" cellspacing="0" cellpadding="0">
-                  <tr><td style="padding: 5px 0; color: #A8A29E;">✓ Professional moving crew</td></tr>
-                  <tr><td style="padding: 5px 0; color: #A8A29E;">✓ Moving truck with fuel included</td></tr>
-                  <tr><td style="padding: 5px 0; color: #A8A29E;">✓ All packing materials (blankets, wrap, tape)</td></tr>
-                  <tr><td style="padding: 5px 0; color: #A8A29E;">✓ Furniture disassembly & reassembly</td></tr>
-                  
-                  <tr><td style="padding: 5px 0; color: #A8A29E;">✓ NO stair or elevator fees</td></tr>
-                  <tr><td style="padding: 5px 0; color: #A8A29E;">✓ NO truck/fuel surcharges</td></tr>
+                  <tr><td style="padding: 5px 0; color: #64748B;">✓ Professional moving crew</td></tr>
+                  <tr><td style="padding: 5px 0; color: #64748B;">✓ Moving truck with fuel included</td></tr>
+                  <tr><td style="padding: 5px 0; color: #64748B;">✓ All packing materials (blankets, wrap, tape)</td></tr>
+                  <tr><td style="padding: 5px 0; color: #64748B;">✓ Furniture disassembly & reassembly</td></tr>
+                  <tr><td style="padding: 5px 0; color: #64748B;">✓ NO stair or elevator fees</td></tr>
+                  <tr><td style="padding: 5px 0; color: #64748B;">✓ NO truck/fuel surcharges</td></tr>
                 </table>
               </div>
               
               ${data.specialtyItems?.length ? `
               <!-- Specialty Items -->
               <div style="margin-bottom: 30px;">
-                <h3 style="margin: 0 0 10px; font-size: 14px; color: #78716C; text-transform: uppercase; letter-spacing: 1px;">
+                <h3 style="margin: 0 0 10px; font-size: 14px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">
                   Specialty Items:
                 </h3>
-                <p style="margin: 0; color: #FAFAF9;">${specialtyItemsList}</p>
+                <p style="margin: 0; color: #1E3A5F;">${specialtyItemsList}</p>
               </div>
               ` : ''}
               
               ${data.notes ? `
               <!-- Additional Notes -->
-              <div style="margin-bottom: 30px; padding: 15px; background-color: #0C0A09; border-radius: 8px; border: 1px solid #44403C;">
-                <h3 style="margin: 0 0 10px; font-size: 14px; color: #78716C; text-transform: uppercase; letter-spacing: 1px;">
+              <div style="margin-bottom: 30px; padding: 15px; background-color: #F8FAFC; border-radius: 8px; border: 1px solid #E2E8F0;">
+                <h3 style="margin: 0 0 10px; font-size: 14px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px;">
                   Your Notes:
                 </h3>
-                <p style="margin: 0; color: #A8A29E; font-style: italic;">${data.notes}</p>
+                <p style="margin: 0; color: #64748B; font-style: italic;">${data.notes}</p>
               </div>
               ` : ''}
               
@@ -392,7 +391,7 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                   <td align="center" style="padding: 10px 5px;">
-                    <a href="tel:+18782187397" style="display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); color: #0C0A09; text-decoration: none; font-weight: 700; font-size: 16px; border-radius: 8px;">
+                    <a href="tel:+18782187397" style="display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #F9B233 0%, #F59E0B 100%); color: #1E3A5F; text-decoration: none; font-weight: 700; font-size: 16px; border-radius: 8px; box-shadow: 0 4px 6px rgba(245,158,11,0.3);">
                       📞 SCHEDULE MY MOVE
                     </a>
                   </td>
@@ -400,24 +399,24 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
               </table>
               
               <!-- Confirmation Call Notice -->
-              <div style="margin-top: 30px; padding: 20px; background-color: #1C1917; border-radius: 8px; border-left: 4px solid #D4AF37;">
-                <p style="margin: 0; font-size: 14px; color: #FAFAF9; line-height: 1.6;">
+              <div style="margin-top: 30px; padding: 20px; background-color: #F8FAFC; border-radius: 8px; border-left: 4px solid #F9B233;">
+                <p style="margin: 0; font-size: 14px; color: #1E3A5F; line-height: 1.6;">
                   <strong>📱 Expect a call in ~30 seconds!</strong><br>
-                  <span style="color: #A8A29E;">Our friendly team will call to confirm your quote details and help you schedule your move.</span>
+                  <span style="color: #64748B;">Our friendly team will call to confirm your quote details and help you schedule your move.</span>
                 </p>
               </div>
               
               <!-- Closing Appreciation -->
               <div style="text-align: center; padding: 30px 0 0;">
-                <p style="margin: 0 0 10px; color: #FAFAF9; font-size: 16px; line-height: 1.6;">
+                <p style="margin: 0 0 10px; color: #1E3A5F; font-size: 16px; line-height: 1.6;">
                   We're honored to be part of your moving journey.
                 </p>
-                <p style="margin: 0; color: #D4AF37; font-size: 18px; font-weight: 600;">
+                <p style="margin: 0; color: #F9B233; font-size: 18px; font-weight: 600;">
                   Thank you again for choosing Handledly!
                 </p>
-                <p style="margin: 20px 0 0; color: #A8A29E; font-size: 14px;">
+                <p style="margin: 20px 0 0; color: #64748B; font-size: 14px;">
                   Warm regards,<br>
-                  <strong style="color: #FAFAF9;">The Handledly Team</strong>
+                  <strong style="color: #1E3A5F;">The Handledly Team</strong>
                 </p>
               </div>
               
@@ -427,13 +426,13 @@ function generateEmailHtml(data: QuoteEmailRequest): string {
           <!-- Footer -->
           <tr>
             <td style="padding: 30px 20px; text-align: center;">
-              <p style="margin: 0 0 10px; font-size: 14px; color: #78716C;">
+              <p style="margin: 0 0 10px; font-size: 14px; color: #64748B;">
                 Handledly Moving Services • Licensed & Insured • Serving Denver Metro
               </p>
-              <p style="margin: 0 0 10px; font-size: 14px; color: #78716C;">
+              <p style="margin: 0 0 10px; font-size: 14px; color: #64748B;">
                 📞 (878) 218-7397 | (719) 920-3282 • 📧 hello@handledly.com
               </p>
-              <p style="margin: 0; font-size: 12px; color: #57534E;">
+              <p style="margin: 0; font-size: 12px; color: #94A3B8;">
                 Business Hours: Mon-Fri 7am-8pm, Sat 7am-6pm, Sun 8am-5pm
               </p>
             </td>
