@@ -115,7 +115,6 @@ Any single item that is:
 - Residential safe 200+ lbs → Iron Law @ $189/hr
 
 **Other Heavy Items:**
-- Hot tubs → Iron Law @ $189/hr
 - Commercial gym equipment (200+ lbs) → Iron Law @ $189/hr
 - Large commercial appliances → Iron Law @ $189/hr
 - Commercial refrigerators/freezers → Iron Law @ $189/hr
@@ -204,7 +203,6 @@ the equipment, you just provide the truck."
 | Gun Safe (500+ lbs) | $250 | $189/hr | 3-4 movers | ✅ YES |
 | Pool Table (move only) | $350 | $169/hr | 2-3 movers | ❌ NO |
 | Pool Table (full service) | $550 | $169/hr | 2-3 movers | ❌ NO |
-| Hot Tub | $400 | $189/hr | 3-4 movers | ✅ YES |
 | Gym Equipment (piece) | $125 | $169/hr | 2-3 movers | Depends on weight |
 | Motorcycle | $200 | $169/hr | 2-3 movers | ❌ NO |
 
@@ -234,12 +232,6 @@ when disassembled. Plus a $350 flat fee for move-only, or
 $550 if you need full service with reassembly."
 ```
 
-**For Hot Tubs:**
-```
-"Hot tubs require our Iron Law crew — 3-4 movers at $189 
-per hour with truck, plus a $400 flat fee. These are heavy 
-and awkward, so we bring the full heavy-duty setup."
-```
 
 ---
 
@@ -374,7 +366,7 @@ anything that took multiple people to move?"
 
 **Specialty Items Probe:**
 ```
-"Gym equipment, hot tub, motorcycles, or anything unique?"
+"Gym equipment, motorcycles, or anything unique?"
 ```
 
 **Quantity Assessment:**
@@ -662,8 +654,7 @@ if you need that."
 ### IRON LAW TRIGGERS
 ✅ Piano (any type) → $189/hr
 ✅ Safe (200+ lbs) → $189/hr
-✅ Hot tub → $189/hr
-✅ Commercial gym equipment → $189/hr
+✅ Commercial gym equipment (200+ lbs) → $189/hr
 ❌ Pool tables → $169/hr (NOT Iron Law)
 
 ### DISCOVERY FLOW

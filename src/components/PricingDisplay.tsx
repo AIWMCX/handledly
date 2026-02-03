@@ -39,14 +39,6 @@ const SPECIALTY_ITEMS = [
     isIronLaw: false,
   },
   {
-    name: 'Hot Tub',
-    icon: Flame,
-    flatFee: '$400',
-    hourlyRate: '$189/hr',
-    crew: '3 movers',
-    isIronLaw: true,
-  },
-  {
     name: 'Gun Safe',
     icon: Lock,
     flatFee: '$175 - $350',
@@ -187,7 +179,7 @@ export function PricingDisplay() {
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Applies to: Pianos • Gun Safes • Hot Tubs • Heavy Appliances
+                  Applies to: Pianos • Gun Safes • Heavy Appliances (200+ lbs)
                 </p>
               </div>
               

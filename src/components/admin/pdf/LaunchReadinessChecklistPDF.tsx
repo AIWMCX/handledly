@@ -176,7 +176,7 @@ export default function LaunchReadinessChecklistPDF() {
           <Text style={styles.sectionTitle}>Iron Law (200+ lb Items)</Text>
           <ChecklistItem text="Iron Law WITH TRUCK displays as $189/hr" />
           <ChecklistItem text="Iron Law LABOR-ONLY displays as $179/hr" />
-          <ChecklistItem text="Applies to: Pianos, Gun Safes, Hot Tubs" />
+          <ChecklistItem text="Applies to: Pianos, Gun Safes, Heavy Appliances" />
           <ChecklistItem text="Minimum 3 movers required" />
         </View>
 
@@ -192,7 +192,7 @@ export default function LaunchReadinessChecklistPDF() {
           <ChecklistItem text="Pianos: $150 / $250 / $350 (Upright/Baby Grand/Full Grand)" />
           <ChecklistItem text="Safes: $100 / $175 / $250 (by weight tier)" />
           <ChecklistItem text="Pool Tables: $350 / $550 (Standard/Slate)" />
-          <ChecklistItem text="Hot Tub: $400 flat" />
+          <ChecklistItem text="Gym Equipment: $125 flat" />
         </View>
 
         <View style={styles.section}>
@@ -234,7 +234,7 @@ export default function LaunchReadinessChecklistPDF() {
           <ChecklistItem text="Test: 'Piano' → Jack quotes $189/hr (NOT $179)" />
           <ChecklistItem text="Test: 'Pool table' → Jack quotes $169/hr (NOT $189)" />
           <ChecklistItem text="Test: 'Gun safe 300 lbs' → Jack quotes $189/hr" />
-          <ChecklistItem text="Test: 'Hot tub' → Jack quotes $189/hr + $400 flat" />
+          <ChecklistItem text="Test: Specialty items → Human verification required" />
           <ChecklistItem text="Test: Jack uses HD-XXXXX quote format" />
           <ChecklistItem text="Test: Jack completes 6-point confirmation" />
         </View>

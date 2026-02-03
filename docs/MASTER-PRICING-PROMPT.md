@@ -60,8 +60,7 @@ Effective: February 1, 2026
 ### ITEMS THAT ALWAYS TRIGGER IRON LAW:
 - All pianos (upright, baby grand, grand)
 - All safes & gun safes (200+ lbs)
-- Hot tubs
-- Commercial gym equipment
+- Commercial gym equipment (200+ lbs)
 - Large commercial appliances
 - Anything described as "super heavy", "took multiple guys", "barely moved it"
 
@@ -106,7 +105,7 @@ your item and floors stay protected."
 | Gun Safe (500+ lbs) | $250 | 3-4 movers @ $189/hr |
 | Pool Table (move only) | $350 | 2-3 movers @ $169/hr |
 | Pool Table (full service) | $550 | 2-3 movers @ $169/hr |
-| Hot Tub | $400 | 3-4 movers @ $189/hr |
+
 | Gym Equipment | $125 | 2-3 movers |
 | Motorcycle | $200 | 2-3 movers |
 
@@ -243,8 +242,7 @@ clear — no surprises."
 ### 200LB IRON LAW TRIGGERS:
 ✅ Piano (any type)
 ✅ Safe (200+ lbs)
-✅ Hot tub
-✅ Commercial gym equipment
+✅ Commercial gym equipment (200+ lbs)
 ✅ "Super heavy" items
 ❌ Pool tables (NOT Iron Law - $169/hr with 2 movers)
 
