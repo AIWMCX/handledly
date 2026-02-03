@@ -5,6 +5,51 @@
 
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
+// ============= PII Detection Patterns =============
+
+// Credit card patterns (major card types)
+const CREDIT_CARD_PATTERNS = [
+  /\b(?:4[0-9]{12}(?:[0-9]{3})?)\b/,           // Visa
+  /\b(?:5[1-5][0-9]{14})\b/,                    // MasterCard
+  /\b(?:3[47][0-9]{13})\b/,                     // American Express
+  /\b(?:6(?:011|5[0-9]{2})[0-9]{12})\b/,       // Discover
+  /\b(?:3(?:0[0-5]|[68][0-9])[0-9]{11})\b/,    // Diners Club
+  /\b(?:[0-9]{4}[\s-]?){3}[0-9]{4}\b/,         // Generic 16-digit with separators
+];
+
+// Social Security Number patterns
+const SSN_PATTERNS = [
+  /\b\d{3}[-\s]?\d{2}[-\s]?\d{4}\b/,           // 123-45-6789 or 123 45 6789
+];
+
+// Bank account patterns (routing + account)
+const BANK_PATTERNS = [
+  /\b\d{9}\s*\d{8,17}\b/,                       // Routing (9 digits) + Account number
+];
+
+/**
+ * Check if text contains potential PII that shouldn't be stored
+ * Returns true if PII is detected (validation fails)
+ */
+export function containsSensitivePII(text: string): boolean {
+  // Check for credit card numbers
+  for (const pattern of CREDIT_CARD_PATTERNS) {
+    if (pattern.test(text)) return true;
+  }
+  
+  // Check for SSN
+  for (const pattern of SSN_PATTERNS) {
+    if (pattern.test(text)) return true;
+  }
+  
+  // Check for bank account info
+  for (const pattern of BANK_PATTERNS) {
+    if (pattern.test(text)) return true;
+  }
+  
+  return false;
+}
+
 // ============= Common Validators =============
 
 // US Phone validation - strict format
@@ -34,6 +79,13 @@ export const safeTextSchema = (maxLength: number = 1000, minLength: number = 0) 
   .min(minLength, minLength > 0 ? "This field is required" : undefined)
   .max(maxLength, `Text exceeds maximum length of ${maxLength}`)
   .refine(val => !/<script|javascript:|on\w+=/i.test(val), "Invalid content detected");
+
+// Safe text with PII filtering - blocks credit cards, SSN, bank info
+export const safeTextWithPIIFilterSchema = (maxLength: number = 1000, minLength: number = 0) => z.string()
+  .min(minLength, minLength > 0 ? "This field is required" : undefined)
+  .max(maxLength, `Text exceeds maximum length of ${maxLength}`)
+  .refine(val => !/<script|javascript:|on\w+=/i.test(val), "Invalid content detected")
+  .refine(val => !containsSensitivePII(val), "Please don't share sensitive financial information like credit card or SSN numbers");
 
 // ============= Quote Submission Schema =============
 
@@ -69,11 +121,11 @@ export type QuoteSubmission = z.infer<typeof quoteSubmissionSchema>;
 
 export const chatMessageSchema = z.object({
   role: z.enum(['user', 'assistant', 'system']),
-  content: safeTextSchema(10000),
+  content: safeTextWithPIIFilterSchema(10000),
 });
 
 export const aiChatRequestSchema = z.object({
-  message: safeTextSchema(5000, 1),
+  message: safeTextWithPIIFilterSchema(5000, 1),
   conversationHistory: z.array(chatMessageSchema).max(20).optional().default([]),
   sessionId: z.string().max(100).optional(),
   ipHash: z.string().max(128).optional(),

@@ -89,137 +89,64 @@ export function useAIChat({ onError, onQuoteSubmitted }: UseAIChatOptions = {}) 
 
   // Process quote submission
   const processQuoteSubmission = useCallback(async (quoteData: QuoteData): Promise<QuoteSubmissionResult> => {
-    console.log('[useAIChat] Processing quote submission:', quoteData);
+    console.log('[useAIChat] Processing quote submission via submit-quote edge function:', quoteData);
     
     try {
       const { firstName, lastName } = splitName(quoteData.fullName);
-      const calcServiceType = mapToCalcServiceType(quoteData.serviceType);
       const bedrooms = quoteData.bedrooms || 2;
-      const crewConfig = mapCrewConfig(bedrooms);
-      
-      // Calculate quote
-      const quote = calculateQuote({
-        serviceType: calcServiceType,
-        bedrooms,
-        crewConfig,
-        estimatedHours: Math.max(2, 2 + bedrooms),
+
+      // Use the secure submit-quote edge function (same as QuoteFormWizard)
+      const { data: result, error } = await supabase.functions.invoke('submit-quote', {
+        body: {
+          fullName: quoteData.fullName,
+          email: quoteData.email,
+          phone: quoteData.phone,
+          serviceType: quoteData.serviceType || 'local-moving',
+          moveFromAddress: quoteData.moveFromAddress || null,
+          moveToAddress: quoteData.moveToAddress || null,
+          moveDate: quoteData.moveDate || null,
+          bedrooms,
+          notes: quoteData.notes || 'Quote submitted via AI chat',
+          lead_source: 'ai-chat',
+          conversationId, // For server-side lead linkage
+        }
       });
 
-      // Generate IDs
-      const leadId = generateId();
-      const quoteRequestId = generateId();
-      const quoteNumber = generateQuoteNumber();
-      const verificationToken = crypto.randomUUID();
+      if (error) {
+        console.error('[useAIChat] submit-quote error:', error);
+        throw new Error(error.message || 'Failed to submit quote');
+      }
 
-      // Create lead and quote request
-      await withRetry(async () => {
-        const { error: leadError } = await supabase
-          .from('leads')
-          .insert({
-            id: leadId,
-            full_name: quoteData.fullName,
-            email: quoteData.email,
-            phone: quoteData.phone,
-            property_type: quoteData.serviceType || 'local-moving',
-            bedrooms,
-            move_from_address: quoteData.moveFromAddress || null,
-            move_to_address: quoteData.moveToAddress || null,
-            move_date: quoteData.moveDate || null,
-            notes: quoteData.notes || 'Quote submitted via AI chat',
-            estimated_quote: quote.total,
-            status: 'new',
-            verification_token: verificationToken,
-            conversation_id: conversationId,
-            lead_source: 'ai-chat',
-            specialty_items: quoteData.specialItems || null,
-            has_specialty_items: (quoteData.specialItems?.length || 0) > 0,
-          });
+      if (!result || result.error) {
+        console.error('[useAIChat] submit-quote returned error:', result?.error);
+        throw new Error(result?.error || 'Quote submission failed');
+      }
 
-        if (leadError) throw leadError;
+      console.log('[useAIChat] Quote submitted successfully:', result);
 
-        const { error: quoteError } = await supabase
-          .from('quote_requests')
-          .insert({
-            id: quoteRequestId,
-            lead_id: leadId,
-            property_type: quoteData.serviceType || 'local-moving',
-            bedrooms,
-            total_quote: quote.total,
-            quote_number: quoteNumber,
-            specialty_items: quoteData.specialItems || null,
-          });
+      // Extract data from edge function response
+      // The submit-quote edge function already triggers email and call
+      const { leadId, quoteNumber, quote: quoteResult, verificationToken: serverToken } = result;
 
-        if (quoteError) throw quoteError;
-      }, { maxRetries: 3, baseDelay: 1000 });
-
-      // NOTE: lead_id linkage is now handled server-side by edge functions
-      // Client cannot update chat_conversations.lead_id due to RLS restrictions
-
-      // Send email confirmation (with conversationId for server-side linkage)
-      supabase.functions.invoke('send-quote-email', {
-        body: {
-          leadId,
-          verificationToken,
-          conversationId, // Server-side lead linkage
-          firstName,
-          lastName,
-          customerName: quoteData.fullName,
-          email: quoteData.email,
-          phone: quoteData.phone,
-          serviceType: quoteData.serviceType || 'local-moving',
-          crewSize: quote.crewSize,
-          hourlyRate: quote.hourlyRate,
-          estimatedHours: quote.estimatedHours,
-          laborCost: quote.laborCost,
-          specialtyFee: quote.specialtyFee,
-          totalQuote: quote.total,
-          quoteNumber,
-          moveDate: quoteData.moveDate,
-          moveFrom: quoteData.moveFromAddress,
-          moveTo: quoteData.moveToAddress,
-          notes: quoteData.notes,
-        }
-      }).catch(err => console.error('Email error:', err));
-
-      // Schedule confirmation call
-      supabase.functions.invoke('trigger-confirmation-call', {
-        body: {
-          leadId,
-          verificationToken,
-          firstName,
-          lastName,
-          customerName: quoteData.fullName,
-          phone: quoteData.phone,
-          email: quoteData.email,
-          serviceType: quoteData.serviceType || 'local-moving',
-          totalQuote: quote.total,
-          quoteNumber,
-          moveDate: quoteData.moveDate,
-          moveFrom: quoteData.moveFromAddress,
-          moveTo: quoteData.moveToAddress,
-          crewSize: quote.crewSize,
-          estimatedHours: quote.estimatedHours,
-        }
-      }).catch(err => console.error('Call error:', err));
-
-      const result: QuoteSubmissionResult = {
+      // Return success result
+      const submissionResult: QuoteSubmissionResult = {
         success: true,
         quoteNumber,
-        totalQuote: quote.total,
+        totalQuote: quoteResult?.total || 0,
         firstName,
         email: quoteData.email,
         leadId,
       };
 
-      setQuoteSubmission(result);
+      setQuoteSubmission(submissionResult);
       setIsQuoteSubmitted(true);
-      onQuoteSubmitted?.(result);
+      onQuoteSubmitted?.(submissionResult);
 
       // Track quote submission analytics
-      ConversionEvents.chatQuoteSubmitted(quoteNumber, quote.total, quoteData.serviceType);
+      ConversionEvents.chatQuoteSubmitted(quoteNumber, submissionResult.totalQuote, quoteData.serviceType);
 
       console.log('[useAIChat] Quote submitted successfully:', quoteNumber);
-      return result;
+      return submissionResult;
 
     } catch (error) {
       console.error('[useAIChat] Quote submission failed:', error);
