@@ -185,8 +185,6 @@ Some items have flat fees in addition to hourly rates:
 ## Every Move Includes
 - Professional trained movers
 - Moving blankets and straps
-- Floor protection
-- Doorframe and corner protection
 - Basic furniture disassembly and reassembly
 - Loading, transport, and unloading
 - Professional-grade moving equipment including dollies and ramps

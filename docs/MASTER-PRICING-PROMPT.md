@@ -122,7 +122,6 @@ stay protected."
 **WHAT'S INCLUDED WITH EVERY MOVE:**
 - Professional movers with training
 - Moving blankets and straps
-- Floor and doorframe protection
 - Basic furniture disassembly/reassembly
 - Loading, transport, and unloading
 - Professional-grade moving equipment
@@ -314,7 +313,6 @@ Sound like a real Denver metro moving coordinator: confident, calm, efficient, r
 - "tight parking / narrow street"
 - "stairs / long carry"
 - "weather can flip fast — we plan for it"
-- "We'll protect floors, door frames, and corners"
 
 ### Style rules:
 - Short sentences

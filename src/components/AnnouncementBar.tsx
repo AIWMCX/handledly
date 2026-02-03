@@ -37,7 +37,7 @@ export function AnnouncementBar() {
           {/* Main rotating message */}
           <div className={`flex items-center gap-2 text-sm font-bold transition-all duration-300 ${isAnimating ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"}`}>
             <currentMessage.icon className="w-4 h-4 text-accent" />
-            
+            <span>{currentMessage.text}</span>
           </div>
 
           {/* Separator and phones - desktop only */}
@@ -55,7 +55,14 @@ export function AnnouncementBar() {
 
           {/* Progress dots */}
           <div className="hidden sm:flex items-center gap-1.5 ml-4">
-            {messages.map((_, i) => {})}
+            {messages.map((_, i) => (
+              <div
+                key={i}
+                className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                  i === currentIndex ? "bg-accent" : "bg-white/30"
+                }`}
+              />
+            ))}
           </div>
         </div>
       </div>

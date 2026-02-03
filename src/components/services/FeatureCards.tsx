@@ -49,7 +49,6 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   'Re-felting Available': Layers,
   'Heavy-Duty Equipment': Wrench,
   'Weight Capacity': Shield,
-  'Floor Protection': Shield,
   'Stair Navigation': CheckCircle,
   'Positioning Service': Target,
   'Anchoring Available': Lock,
