@@ -1,9 +1,8 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, memo } from "react";
 import { Header, Footer, Container, Section, SectionHeader } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
-import { TrustIndicators } from "@/components/TrustIndicators";
 import { TrustBadges } from "@/components/TrustBadges";
 import { StickyCTA } from "@/components/StickyCTA";
 
@@ -15,20 +14,26 @@ import {
   Phone, ArrowRight, Star, MapPin,
   Dumbbell, Users, CheckCircle, Building, Home, Zap
 } from "lucide-react";
+
+// Lazy load trust icons - they're decorative and below initial viewport
+const TrustIconsLazy = lazy(() => import("@/components/icons/TrustIcons").then(m => ({ 
+  default: () => (
+    <>
+      {/* These are rendered via the TrustIndicators component */}
+    </>
+  )
+})));
+
+// Trust icons are loaded synchronously only when needed
 import {
   AwardWinningIcon,
   OnTimeGuaranteeIcon,
   FullyInsuredIcon,
   LocalExpertsIcon
 } from "@/components/icons/TrustIcons";
-import { 
-  SocialProofBanner, 
-  AnimatedStats, 
-  MobileStickyCTA,
-  UrgencyBadge 
-} from "@/components/conversion";
 
-// Lazy load below-fold components for better FCP/LCP
+// Lazy load below-fold and non-critical components for better FCP/LCP
+const TrustIndicators = lazy(() => import("@/components/TrustIndicators").then(m => ({ default: m.TrustIndicators })));
 const VoiceAgent = lazy(() => import("@/components/VoiceAgent").then(m => ({ default: m.VoiceAgent })));
 const ChatWidget = lazy(() => import("@/components/ChatWidget/index").then(m => ({ default: m.ChatWidget })));
 const HowItWorks = lazy(() => import("@/components/HowItWorks").then(m => ({ default: m.HowItWorks })));
@@ -36,6 +41,10 @@ const StatsBar = lazy(() => import("@/components/StatsBar").then(m => ({ default
 const PricingDisplay = lazy(() => import("@/components/PricingDisplay").then(m => ({ default: m.PricingDisplay })));
 const Testimonials = lazy(() => import("@/components/Testimonials").then(m => ({ default: m.Testimonials })));
 const ExitIntentModal = lazy(() => import("@/components/ExitIntentModal").then(m => ({ default: m.ExitIntentModal })));
+const SocialProofBanner = lazy(() => import("@/components/conversion/SocialProofBanner").then(m => ({ default: m.SocialProofBanner })));
+const AnimatedStats = lazy(() => import("@/components/conversion/AnimatedStats").then(m => ({ default: m.AnimatedStats })));
+const MobileStickyCTA = lazy(() => import("@/components/conversion/MobileStickyCTA").then(m => ({ default: m.default })));
+const UrgencyBadge = lazy(() => import("@/components/conversion/UrgencyBadge").then(m => ({ default: m.UrgencyBadge })));
 
 
 const services = [
@@ -163,23 +172,25 @@ export default function Index() {
                     <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">Trusted By Denver Families</p>
                     <div className="flex items-center justify-center gap-1 mb-1">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-6 h-6 text-amber-400 fill-amber-400" />
+                        <Star key={i} className="w-6 h-6 text-accent fill-accent" />
                       ))}
                     </div>
                     <p className="text-3xl font-bold text-primary">4.9 out of 5</p>
                     <p className="text-sm text-muted-foreground">Based on 500+ verified reviews</p>
                   </div>
                   
-                  {/* Animated Quick stats grid */}
-                  <AnimatedStats 
-                    stats={[
-                      { value: 500, label: "Damage-Free Days", suffix: "+" },
-                      { value: 0, label: "Hidden Fees", prefix: "$" },
-                      { value: 30, label: "Cities Served", suffix: "+" },
-                      { value: 24, label: "Response Time", suffix: "hr" },
-                    ]}
-                    className="grid grid-cols-2 gap-4"
-                  />
+                  {/* Animated Quick stats grid - lazy loaded */}
+                  <Suspense fallback={<div className="grid grid-cols-2 gap-4 h-32" />}>
+                    <AnimatedStats 
+                      stats={[
+                        { value: 500, label: "Damage-Free Days", suffix: "+" },
+                        { value: 0, label: "Hidden Fees", prefix: "$" },
+                        { value: 30, label: "Cities Served", suffix: "+" },
+                        { value: 24, label: "Response Time", suffix: "hr" },
+                      ]}
+                      className="grid grid-cols-2 gap-4"
+                    />
+                  </Suspense>
                 </div>
                 
                 {/* Floating accent elements */}
@@ -217,12 +228,16 @@ export default function Index() {
                 {/* Urgency badge for first service */}
                 {index === 0 && (
                   <div className="absolute -top-3 right-4">
-                    <UrgencyBadge type="slots_limited" text="Only 3 slots left today" size="sm" />
+                    <Suspense fallback={null}>
+                      <UrgencyBadge type="slots_limited" text="Only 3 slots left today" size="sm" />
+                    </Suspense>
                   </div>
                 )}
                 {index === 3 && (
                   <div className="absolute -top-3 right-4">
-                    <UrgencyBadge type="popular" size="sm" />
+                    <Suspense fallback={null}>
+                      <UrgencyBadge type="popular" size="sm" />
+                    </Suspense>
                   </div>
                 )}
                 <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:shadow-glow-gold transition-shadow">
@@ -248,7 +263,9 @@ export default function Index() {
       </Section>
 
       {/* Trust Indicators - What Makes Us Different */}
-      <TrustIndicators />
+      <Suspense fallback={<div className="py-16" />}>
+        <TrustIndicators />
+      </Suspense>
 
       {/* Pricing Display */}
       <Suspense fallback={<div className="py-20" />}>
