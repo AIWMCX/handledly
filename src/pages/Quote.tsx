@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Header, Footer, Container } from "@/components/layout";
 import { VoiceAgent } from "@/components/VoiceAgent";
-import { ChatWidget } from "@/components/ChatWidget";
+import { ChatWidget } from "@/components/ChatWidget/index";
 import { QuoteConfirmation } from "@/components/QuoteConfirmation";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 
