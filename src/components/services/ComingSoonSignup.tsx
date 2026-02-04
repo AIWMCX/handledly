@@ -37,19 +37,19 @@ export function ComingSoonSignup({ serviceName, serviceSlug, compact = false }: 
     setIsLoading(true);
 
     try {
-      // Store as a lead with special lead_source for service notifications
-      const { error } = await supabase.from("leads").insert({
-        full_name: "Service Interest",
-        email: result.data,
-        phone: "N/A",
-        lead_source: `coming-soon:${serviceSlug}`,
-        notes: `Interested in ${serviceName} - Coming Soon notification signup`,
-        status: "new",
+      // Use edge function to bypass RLS
+      const { error } = await supabase.functions.invoke("capture-lead", {
+        body: {
+          email: result.data,
+          full_name: "Service Interest",
+          notes: `Interested in ${serviceName} - Coming Soon notification signup`,
+          lead_source: `coming-soon:${serviceSlug}`,
+        },
       });
 
       if (error) {
         // Check if it's a rate limit error
-        if (error.message.includes("rate")) {
+        if (error.message?.includes("rate") || error.message?.includes("429")) {
           toast({
             title: "Too many requests",
             description: "Please wait a moment before trying again.",

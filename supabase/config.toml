@@ -1,5 +1,8 @@
 project_id = "spguevrimwpqygvcxrsk"
 
+[functions.capture-lead]
+verify_jwt = false
+
 [functions.elevenlabs-conversation-token]
 verify_jwt = false
 
