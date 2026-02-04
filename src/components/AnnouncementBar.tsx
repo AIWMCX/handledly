@@ -33,7 +33,7 @@ export function AnnouncementBar() {
           {/* Main rotating message */}
           <div className={`flex items-center gap-2 text-sm font-bold transition-all duration-300 ${isAnimating ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"}`}>
             <currentMessage.icon className="w-4 h-4 text-accent" />
-            <span>{currentMessage.text}</span>
+            <span className="text-white">{currentMessage.text}</span>
           </div>
 
           {/* Separator and phones - desktop only */}
