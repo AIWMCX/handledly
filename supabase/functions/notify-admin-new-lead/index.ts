@@ -7,11 +7,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const ADMIN_EMAILS = [
-  "aiwmcsrm@gmail.com",
-  "nevulis22@gmail.com",
-  "saych.88@gmail.com",
-];
+// Parse admin emails from environment variable (comma-separated)
+const ADMIN_EMAILS_RAW = Deno.env.get("ADMIN_NOTIFICATION_EMAILS") || "";
+const ADMIN_EMAILS = ADMIN_EMAILS_RAW
+  .split(",")
+  .map((email) => email.trim())
+  .filter((email) => email.length > 0 && email.includes("@"));
 
 const ADMIN_PHONE = Deno.env.get("ADMIN_PHONE_NUMBER") || "";
 const HIGH_VALUE_THRESHOLD = 1000;
