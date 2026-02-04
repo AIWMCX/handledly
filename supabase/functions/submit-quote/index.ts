@@ -1,11 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { quoteSubmissionSchema, validateRequest } from "../_shared/validation.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { getCorsHeaders } from "../_shared/cors.ts";
+import { calculateQuoteSimple, isIronLawService, HOURLY_RATES } from "../_shared/quote-calculator.ts";
 
 // Validate email format (backup validation)
 function isValidEmail(email: string): boolean {
@@ -39,81 +35,9 @@ function generateQuoteNumber(): string {
   return result;
 }
 
-// Quote calculation (mirror of client-side logic)
-interface QuoteResult {
-  hourlyRate: number;
-  crewSize: number;
-  estimatedHours: number;
-  laborCost: number;
-  specialtyFee: number;
-  total: number;
-}
-
-const IRON_LAW_SERVICES = ['piano-moving', 'safe-moving', 'piano', 'heavy-over-200'];
-const IRON_LAW_RATE = 189;
-const HEAVY_ITEMS_RATE = 169;
-
-const HOURLY_RATES: Record<string, number> = {
-  'labor-2-movers': 139,
-  'labor-3-movers': 169,
-  'labor-4-movers': 239,
-  'moving-2-movers': 159,
-  'moving-3-movers': 189,
-  'moving-3-movers-2-trucks': 209,
-  'moving-4-movers': 259,
-  'heavy-items': 169,
-  'iron-law-minimum': 189,
-};
-
-function isIronLawService(serviceType: string): boolean {
-  return IRON_LAW_SERVICES.includes(serviceType);
-}
-
-function calculateQuote(
-  serviceType: string,
-  bedrooms: number,
-  crewConfig: string,
-  estimatedHours: number
-): QuoteResult {
-  const isIronLaw = isIronLawService(serviceType);
-  
-  // Determine crew size
-  let crewSize: number;
-  if (isIronLaw) {
-    crewSize = 3;
-  } else if (crewConfig.includes('4')) {
-    crewSize = 4;
-  } else if (crewConfig.includes('3')) {
-    crewSize = 3;
-  } else {
-    crewSize = 2;
-  }
-  
-  // Determine hourly rate
-  let hourlyRate: number;
-  if (isIronLaw) {
-    hourlyRate = IRON_LAW_RATE;
-  } else if (serviceType === 'heavy-items' || serviceType === 'pool-table' || serviceType === 'junk-removal') {
-    hourlyRate = HEAVY_ITEMS_RATE;
-  } else {
-    hourlyRate = HOURLY_RATES[crewConfig] || HOURLY_RATES['moving-2-movers'];
-  }
-  
-  const laborCost = hourlyRate * estimatedHours;
-  const specialtyFee = 0; // Calculate separately if specialty items provided
-  const total = laborCost + specialtyFee;
-  
-  return {
-    hourlyRate,
-    crewSize,
-    estimatedHours,
-    laborCost,
-    specialtyFee,
-    total,
-  };
-}
-
 Deno.serve(async (req: Request) => {
+  const corsHeaders = getCorsHeaders(req);
+  
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -207,12 +131,12 @@ Deno.serve(async (req: Request) => {
     const utmContent = validatedData.utm_content || null;
     const utmTerm = validatedData.utm_term || null;
 
-    // Calculate quote server-side
+    // Calculate quote using shared module
     const crewConfig = isIronLawService(serviceType) ? 'moving-3-movers' : 
                        crewSize >= 4 ? 'moving-4-movers' :
                        crewSize >= 3 ? 'moving-3-movers' : 'moving-2-movers';
     
-    const quote = calculateQuote(serviceType, bedrooms, crewConfig, estimatedHours);
+    const quote = calculateQuoteSimple(serviceType, bedrooms, crewConfig, estimatedHours);
 
     // Generate secure server-side tokens
     const leadId = crypto.randomUUID();
@@ -329,7 +253,7 @@ Deno.serve(async (req: Request) => {
     console.error("[submit-quote] Error:", err);
     return new Response(JSON.stringify({ error: "An unexpected error occurred" }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
     });
   }
 });
