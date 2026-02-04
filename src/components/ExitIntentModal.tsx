@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useExitIntent } from "@/hooks/useExitIntent";
 import { ConversionEvents } from "@/lib/analytics";
 import { motion, AnimatePresence } from "framer-motion";
+import { HoneypotField } from "@/components/forms/HoneypotField";
 
 // A/B Test variants
 type OfferVariant = 'discount_10' | 'free_supplies' | 'priority_booking';
@@ -41,6 +42,7 @@ export function ExitIntentModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [countdown, setCountdown] = useState(900); // 15 minutes in seconds
+  const [honeypot, setHoneypot] = useState("");
   const [variant] = useState<OfferVariant>(() => {
     // Random A/B test variant selection
     const variants: OfferVariant[] = ['discount_10', 'free_supplies', 'priority_booking'];
@@ -90,14 +92,24 @@ export function ExitIntentModal() {
     e.preventDefault();
     if (!email.trim()) return;
 
+    // Honeypot check - bot filled hidden field
+    if (honeypot) {
+      toast.success("Discount code sent to your email!");
+      setIsSubmitted(true);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("leads").insert({
-        email: email.trim(),
-        phone: phone.trim() || "",
-        full_name: "Exit Intent Lead",
-        notes: `${currentOffer.value} - Exit Intent capture (Variant: ${variant})`,
-        status: "new",
+      // Use edge function to bypass RLS
+      const { data, error } = await supabase.functions.invoke("capture-lead", {
+        body: {
+          email: email.trim(),
+          phone: phone.trim() || "",
+          full_name: "Exit Intent Lead",
+          notes: `${currentOffer.value} - Exit Intent capture (Variant: ${variant})`,
+          lead_source: `exit-intent:${variant}`,
+        },
       });
 
       if (error) throw error;
@@ -190,6 +202,7 @@ export function ExitIntentModal() {
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
+                    <HoneypotField onHoneypotChange={setHoneypot} />
                     <Input
                       type="email"
                       placeholder="Enter your email"
