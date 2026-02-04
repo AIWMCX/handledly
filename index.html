@@ -4,11 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- Preconnect hints for critical third-party origins -->
-    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
-    <link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
+    <!-- Preconnect to Supabase for faster API calls -->
+    <link rel="preconnect" href="https://spguevrimwpqygvcxrsk.supabase.co" crossorigin />
+    <link rel="dns-prefetch" href="https://spguevrimwpqygvcxrsk.supabase.co" />
+    
+    <!-- Preconnect hints for critical third-party origins - deferred since GA loads after page load -->
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    
+    <!-- Preload critical fonts for faster text rendering (LCP optimization) -->
+    <link rel="preload" href="/assets/poppins-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/assets/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
     
     <!-- Preload critical assets for faster FCP -->
     <link rel="modulepreload" href="/src/main.tsx" />
@@ -44,27 +50,33 @@
     <link rel="canonical" href="https://handledly.com/" />
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     
-    <!-- Google Analytics 4 - Deferred for better FCP -->
+    <!-- Google Analytics 4 - Deferred until after LCP for better performance -->
     <script>
-      // Defer GA loading until after page is interactive
-      window.addEventListener('load', function() {
-        setTimeout(function() {
-          var gaScript = document.createElement('script');
-          gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-QZBNDFDW9Q';
-          gaScript.async = true;
-          document.head.appendChild(gaScript);
-          
-          gaScript.onload = function() {
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            window.gtag = gtag;
-            gtag('js', new Date());
-            gtag('config', 'G-QZBNDFDW9Q', {
-              send_page_view: true,
-              cookie_flags: 'SameSite=None;Secure'
-            });
-          };
-        }, 100);
+      // Defer GA loading until after LCP and user interaction
+      var gaLoaded = false;
+      function loadGA() {
+        if (gaLoaded) return;
+        gaLoaded = true;
+        var gaScript = document.createElement('script');
+        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-QZBNDFDW9Q';
+        gaScript.async = true;
+        document.head.appendChild(gaScript);
+        
+        gaScript.onload = function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          window.gtag = gtag;
+          gtag('js', new Date());
+          gtag('config', 'G-QZBNDFDW9Q', {
+            send_page_view: true,
+            cookie_flags: 'SameSite=None;Secure'
+          });
+        };
+      }
+      // Load GA after 3s or on first interaction, whichever comes first
+      setTimeout(loadGA, 3000);
+      ['mousedown', 'keydown', 'touchstart', 'scroll'].forEach(function(e) {
+        document.addEventListener(e, loadGA, { once: true, passive: true });
       });
     </script>
     

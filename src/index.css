@@ -371,4 +371,30 @@
   .font-sans {
     font-family: var(--font-sans);
   }
+
+  /* Content visibility for below-fold sections - improves initial render */
+  .content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 500px;
+  }
+
+  /* Reduce layout shift by reserving space for lazy content */
+  .lazy-section {
+    min-height: 200px;
+  }
+
+  /* Optimize animations for performance */
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+
+  /* GPU acceleration for smooth animations */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
 }
