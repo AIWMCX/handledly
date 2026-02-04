@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { VoiceAgent } from "@/components/VoiceAgent";
-import { ChatWidget } from "@/components/ChatWidget";
+import { ChatWidget } from "@/components/ChatWidget/index";
 import { StickyCTA } from "@/components/StickyCTA";
 import { TrustBadges } from "@/components/TrustBadges";
 

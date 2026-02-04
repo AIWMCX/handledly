@@ -1,5 +1,5 @@
 import { Header, Footer, Container, Section } from "@/components/layout";
-import { ChatWidget } from "@/components/ChatWidget";
+import { ChatWidget } from "@/components/ChatWidget/index";
 import { VoiceAgent } from "@/components/VoiceAgent";
 import { Testimonials } from "@/components/Testimonials";
 import { TrustBadges } from "@/components/TrustBadges";

@@ -2,7 +2,7 @@ import { Header, Footer, Container, Section, SectionHeader } from "@/components/
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { VoiceAgent } from "@/components/VoiceAgent";
-import { ChatWidget } from "@/components/ChatWidget";
+import { ChatWidget } from "@/components/ChatWidget/index";
 import { StickyCTA } from "@/components/StickyCTA";
 import { TrustBadges } from "@/components/TrustBadges";
 
