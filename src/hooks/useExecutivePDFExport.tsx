@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { pdf } from '@react-pdf/renderer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import ExecutiveSummaryPDF, { type ExecutivePDFData } from '@/components/admin/pdf/ExecutiveSummaryPDF';
 import { toast } from 'sonner';
+import type { ExecutivePDFData } from '@/components/admin/pdf/ExecutiveSummaryPDF';
 
 // Helper to get last 7 days of lead data
 const getLast7DaysLeads = (leads: Array<{ created_at: string }> | null | undefined) => {
@@ -67,6 +66,12 @@ export const useExecutivePDFExport = () => {
     setIsGenerating(true);
     
     try {
+      // Dynamic import to avoid ESM/CJS conflict at module load time
+      const [{ pdf }, { default: ExecutiveSummaryPDF }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('@/components/admin/pdf/ExecutiveSummaryPDF'),
+      ]);
+
       // Calculate metrics
       const totalLeads = leads?.length || 0;
       const totalRevenue = leads?.reduce((sum, lead) => sum + (lead.estimated_quote || 0), 0) || 0;

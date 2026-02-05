@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { pdf } from '@react-pdf/renderer';
-import PricingCheatSheetPDF from '@/components/admin/pdf/PricingCheatSheetPDF';
 import { toast } from 'sonner';
 
 export const usePricingCheatSheetPDF = () => {
@@ -10,6 +8,12 @@ export const usePricingCheatSheetPDF = () => {
     setIsGenerating(true);
     
     try {
+      // Dynamic import to avoid ESM/CJS conflict at module load time
+      const [{ pdf }, { default: PricingCheatSheetPDF }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('@/components/admin/pdf/PricingCheatSheetPDF'),
+      ]);
+
       // Generate PDF blob
       const blob = await pdf(<PricingCheatSheetPDF />).toBlob();
       

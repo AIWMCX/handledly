@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { pdf } from '@react-pdf/renderer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import DeliverablesPDFReport, { type PDFReportData } from '@/components/admin/DeliverablesPDFReport';
 import { toast } from '@/hooks/use-toast';
+import type { PDFReportData } from '@/components/admin/DeliverablesPDFReport';
 
 export const usePDFExport = () => {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -58,6 +57,12 @@ export const usePDFExport = () => {
     setIsGenerating(true);
     
     try {
+      // Dynamic import to avoid ESM/CJS conflict at module load time
+      const [{ pdf }, { default: DeliverablesPDFReport }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('@/components/admin/DeliverablesPDFReport'),
+      ]);
+
       // Calculate metrics
       const today = new Date();
       const totalLeads = leads?.length || 0;
