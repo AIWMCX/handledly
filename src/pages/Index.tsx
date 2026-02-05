@@ -34,7 +34,7 @@ import {
 
 // Lazy load below-fold and non-critical components for better FCP/LCP
 const TrustIndicators = lazy(() => import("@/components/TrustIndicators").then(m => ({ default: m.TrustIndicators })));
-const VoiceAgent = lazy(() => import("@/components/VoiceAgent").then(m => ({ default: m.VoiceAgent })));
+import { DeferredVoiceAgent } from "@/components/DeferredVoiceAgent";
 const ChatWidget = lazy(() => import("@/components/ChatWidget/index").then(m => ({ default: m.ChatWidget })));
 const HowItWorks = lazy(() => import("@/components/HowItWorks").then(m => ({ default: m.HowItWorks })));
 const StatsBar = lazy(() => import("@/components/StatsBar").then(m => ({ default: m.StatsBar })));
@@ -375,11 +375,11 @@ export default function Index() {
       <StickyCTA />
       <Suspense fallback={null}>
         <ChatWidget />
-        <VoiceAgent />
         <ExitIntentModal />
         <SocialProofBanner />
         <MobileStickyCTA />
       </Suspense>
+      <DeferredVoiceAgent />
     </div>
   );
 }
