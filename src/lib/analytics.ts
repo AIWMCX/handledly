@@ -200,6 +200,25 @@ export const ConversionEvents = {
   chatHumanRequested: (messageCount: number) => {
     trackEvent('chat_human_requested', { messages_before_request: messageCount });
   },
+
+  // Phone Click Events - P1 tracking
+  phoneClicked: (location: 'header' | 'sticky_cta' | 'hero' | 'footer' | 'mobile_cta', phoneNumber: string) => {
+    trackEvent('phone_clicked', { 
+      location, 
+      phone_number: phoneNumber,
+      device: window.innerWidth < 768 ? 'mobile' : 'desktop',
+    });
+  },
+
+  // Service Card Events
+  serviceCardClicked: (serviceName: string, source: 'homepage' | 'services_page') => {
+    trackEvent('service_card_clicked', { service_name: serviceName, source });
+  },
+
+  // CTA Click Events
+  ctaClicked: (ctaText: string, location: string, variant?: string) => {
+    trackEvent('cta_clicked', { cta_text: ctaText, location, variant });
+  },
 };
 
 // A/B Test Assignment

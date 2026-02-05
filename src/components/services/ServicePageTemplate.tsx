@@ -105,7 +105,7 @@ export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
       <RelatedServices services={data.relatedServices} />
       
       {/* Show CTA only if service is available */}
-      {!isUnavailable && <ServiceCTA steps={data.ctaSteps} />}
+      {!isUnavailable && <ServiceCTA steps={data.ctaSteps} serviceSlug={data.slug} />}
       
       {/* Show signup CTA for coming soon services */}
       {data.comingSoon && (

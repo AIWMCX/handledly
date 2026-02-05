@@ -2,12 +2,22 @@ import { Link } from "react-router-dom";
 import { ArrowRight, CheckCircle, Shield, Star, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout";
+import { ConversionEvents } from "@/lib/analytics";
 
 interface ServiceCTAProps {
   steps: string[];
+  serviceSlug?: string; // For pre-filling quote form
 }
 
-export function ServiceCTA({ steps }: ServiceCTAProps) {
+export function ServiceCTA({ steps, serviceSlug }: ServiceCTAProps) {
+  const quoteUrl = serviceSlug ? `/quote?service=${serviceSlug}` : '/quote';
+
+  const handleQuoteClick = () => {
+    if (serviceSlug) {
+      ConversionEvents.ctaClicked('Get Your Free Quote', `service_page_${serviceSlug}`, 'service_cta');
+    }
+  };
+
   return (
     <section className="py-16 lg:py-24 bg-card relative overflow-hidden">
       {/* Background decoration */}
@@ -48,8 +58,9 @@ export function ServiceCTA({ steps }: ServiceCTAProps) {
                 asChild 
                 size="lg" 
                 className="gradient-gold text-primary-foreground shadow-gold hover:opacity-90 animate-glow-pulse"
+                onClick={handleQuoteClick}
               >
-                <Link to="/quote">
+                <Link to={quoteUrl}>
                   Get Your Free Quote
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>

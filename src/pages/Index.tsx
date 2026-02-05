@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { MeshGradientHero } from "@/components/ui/BackgroundEffects";
 import { HOURLY_RATES } from "@/lib/quoteCalculator";
 import { SEO } from "@/components/SEO";
+import { ConversionEvents } from "@/lib/analytics";
 import { 
   Phone, ArrowRight, Star, MapPin,
   Dumbbell, Users, CheckCircle, Building, Home, Zap
@@ -36,6 +37,7 @@ const AnimatedStats = lazy(() => import("@/components/conversion/AnimatedStats")
 const MobileStickyCTA = lazy(() => import("@/components/conversion/MobileStickyCTA").then(m => ({ default: m.default })));
 const UrgencyBadge = lazy(() => import("@/components/conversion/UrgencyBadge").then(m => ({ default: m.UrgencyBadge })));
 const StickyCTA = lazy(() => import("@/components/StickyCTA").then(m => ({ default: m.StickyCTA })));
+const InlineQuotePreview = lazy(() => import("@/components/home/InlineQuotePreview"));
 
 
 const services = [
@@ -135,10 +137,14 @@ export default function Index() {
                   <Link to="/quote">Get Instant Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="h-14 px-8 border-primary text-primary hover:bg-primary hover:text-white glass-card">
-                  <a href="tel:+18782187397"><Phone className="mr-2 w-5 h-5" />(878) 218-7397</a>
+                  <a href="tel:+18782187397" onClick={() => ConversionEvents.phoneClicked('hero', '8782187397')}>
+                    <Phone className="mr-2 w-5 h-5" />(878) 218-7397
+                  </a>
                 </Button>
                 <Button asChild variant="ghost" size="lg" className="h-14 px-6 text-muted-foreground hover:text-primary">
-                  <a href="tel:+17199203282">(719) 920-3282</a>
+                  <a href="tel:+17199203282" onClick={() => ConversionEvents.phoneClicked('hero', '7199203282')}>
+                    (719) 920-3282
+                  </a>
                 </Button>
               </div>
 
@@ -261,6 +267,11 @@ export default function Index() {
       {/* Pricing Display */}
       <Suspense fallback={<div className="py-20" />}>
         <PricingDisplay />
+      </Suspense>
+
+      {/* Inline Quote Preview - P0 CRO Optimization */}
+      <Suspense fallback={<div className="py-20" />}>
+        <InlineQuotePreview />
       </Suspense>
 
       {/* How It Works */}

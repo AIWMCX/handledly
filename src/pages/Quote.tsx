@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Header, Footer, Container } from "@/components/layout";
 import { VoiceAgent } from "@/components/VoiceAgent";
 import { ChatWidget } from "@/components/ChatWidget/index";
@@ -11,12 +12,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { CheckCircle, Shield, Clock, MapPin } from "lucide-react";
 import { SocialProofBanner, MobileStickyCTA, QuoteFormWizard } from "@/components/conversion";
-import { QuoteFormData } from "@/types/conversion";
+import { QuoteFormData, ServiceType } from "@/types/conversion";
 import { ConversionEvents } from "@/lib/analytics";
 import { withRetry, classifyError, validateQuoteData } from "@/lib/apiUtils";
 
-
 export default function Quote() {
+  const [searchParams] = useSearchParams();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [callScheduled, setCallScheduled] = useState(false);
@@ -28,6 +29,19 @@ export default function Quote() {
     preferEmailOnly: boolean;
     quoteNumber: string;
   } | null>(null);
+
+  // Parse pre-fill params from URL (from service pages or inline quote preview)
+  const initialServiceType = useMemo(() => {
+    const serviceParam = searchParams.get('service');
+    const validServices: ServiceType[] = [
+      'local-moving', 'long-distance', 'residential', 'piano-moving',
+      'pool-table', 'safe-moving', 'heavy-items', 'same-day', 'junk-removal', 'moving-help'
+    ];
+    if (serviceParam && validServices.includes(serviceParam as ServiceType)) {
+      return serviceParam as ServiceType;
+    }
+    return undefined;
+  }, [searchParams]);
 
   const handleWizardSubmit = async (data: QuoteFormData) => {
     // Pre-submission validation (client-side for UX)
@@ -267,7 +281,10 @@ export default function Quote() {
 
               {/* Multi-Step Quote Wizard */}
               <div className="glass-card border border-border rounded-2xl p-8 shadow-depth-3">
-                <QuoteFormWizard onSubmit={handleWizardSubmit} />
+                <QuoteFormWizard 
+                  onSubmit={handleWizardSubmit} 
+                  initialServiceType={initialServiceType}
+                />
               </div>
 
               {/* Bottom trust text */}
