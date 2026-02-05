@@ -1,7 +1,4 @@
-import { lazy, Suspense } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -11,6 +8,17 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 // Core pages - loaded immediately
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+
+// Lazy load Radix UI providers to defer ui-feedback chunk and reduce forced reflows
+const TooltipProvider = lazy(() => 
+  import("@/components/ui/tooltip").then(m => ({ default: m.TooltipProvider }))
+);
+const Toaster = lazy(() => 
+  import("@/components/ui/toaster").then(m => ({ default: m.Toaster }))
+);
+const Sonner = lazy(() => 
+  import("@/components/ui/sonner").then(m => ({ default: m.Toaster }))
+);
 
 // Lazy-loaded pages - reduces initial bundle by ~400KB
 const Services = lazy(() => import("./pages/Services"));
@@ -49,6 +57,33 @@ const AIQuality = lazy(() => import("./pages/admin/AIQuality"));
 
 const queryClient = new QueryClient();
 
+// Deferred providers component - loads after initial paint
+function DeferredProviders({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    // Defer loading until after first paint to reduce initial reflow
+    const id = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(id);
+  }, []);
+  
+  return (
+    <Suspense fallback={<>{children}</>}>
+      {mounted ? (
+        <TooltipProvider>
+          {children}
+          <Toaster />
+          <Sonner />
+        </TooltipProvider>
+      ) : (
+        children
+      )}
+    </Suspense>
+  );
+}
+
 // Page loading component - smooth transition between routes
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
@@ -63,9 +98,7 @@ const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
+        <DeferredProviders>
           <BrowserRouter>
             <ScrollToTop />
             <Suspense fallback={<PageLoader />}>
@@ -108,7 +141,7 @@ const App = () => (
               </Routes>
             </Suspense>
           </BrowserRouter>
-        </TooltipProvider>
+        </DeferredProviders>
       </AuthProvider>
     </QueryClientProvider>
   </ErrorBoundary>
