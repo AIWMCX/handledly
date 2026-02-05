@@ -1,5 +1,5 @@
 import { useConversation } from "@elevenlabs/react";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Phone, PhoneOff, Mic } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -31,7 +31,7 @@ interface CheckAvailabilityParams {
   date: string;
 }
 
-export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps) {
+export const VoiceAgent = forwardRef<HTMLDivElement, VoiceAgentProps>(function VoiceAgent({ className, variant = "floating" }, ref) {
   const [isConnecting, setIsConnecting] = useState(false);
   const [micPermission, setMicPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
   const retryCountRef = useRef(0);
@@ -169,7 +169,7 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
 
   if (variant === "floating") {
     return (
-      <div className={cn("fixed bottom-[7.5rem] md:bottom-6 right-6 z-40", className)}>
+      <div ref={ref} className={cn("fixed bottom-[7.5rem] md:bottom-6 right-6 z-40", className)}>
         {/* Pulse ring when connected */}
         {isConnected && (
           <div className="absolute inset-0 rounded-full animate-pulse-gold" />
@@ -233,7 +233,7 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
 
   // Inline variant for the contact page
   return (
-    <div className={cn("space-y-4", className)}>
+    <div ref={ref} className={cn("space-y-4", className)}>
       <div className="flex items-center gap-4">
         <Button
           onClick={isConnected ? stopConversation : startConversation}
@@ -292,4 +292,6 @@ export function VoiceAgent({ className, variant = "floating" }: VoiceAgentProps)
       </p>
     </div>
   );
-}
+});
+
+export default VoiceAgent;
