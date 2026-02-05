@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { TrustBadges } from "@/components/TrustBadges";
-import { StickyCTA } from "@/components/StickyCTA";
 
 import { Badge } from "@/components/ui/badge";
 import { MeshGradientHero } from "@/components/ui/BackgroundEffects";
@@ -15,16 +14,7 @@ import {
   Dumbbell, Users, CheckCircle, Building, Home, Zap
 } from "lucide-react";
 
-// Lazy load trust icons - they're decorative and below initial viewport
-const TrustIconsLazy = lazy(() => import("@/components/icons/TrustIcons").then(m => ({ 
-  default: () => (
-    <>
-      {/* These are rendered via the TrustIndicators component */}
-    </>
-  )
-})));
-
-// Trust icons are loaded synchronously only when needed
+// Trust icons - used below fold in "Why Choose Us" section
 import {
   AwardWinningIcon,
   OnTimeGuaranteeIcon,
@@ -45,6 +35,7 @@ const SocialProofBanner = lazy(() => import("@/components/conversion/SocialProof
 const AnimatedStats = lazy(() => import("@/components/conversion/AnimatedStats").then(m => ({ default: m.AnimatedStats })));
 const MobileStickyCTA = lazy(() => import("@/components/conversion/MobileStickyCTA").then(m => ({ default: m.default })));
 const UrgencyBadge = lazy(() => import("@/components/conversion/UrgencyBadge").then(m => ({ default: m.UrgencyBadge })));
+const StickyCTA = lazy(() => import("@/components/StickyCTA").then(m => ({ default: m.StickyCTA })));
 
 
 const services = [
@@ -372,8 +363,8 @@ export default function Index() {
       </main>
 
       <Footer />
-      <StickyCTA />
       <Suspense fallback={null}>
+        <StickyCTA />
         <ChatWidget />
         <ExitIntentModal />
         <SocialProofBanner />
