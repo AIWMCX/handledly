@@ -31,24 +31,26 @@ export function useScrollProgress(options: UseScrollProgressOptions = {}): UseSc
   // Calculate scroll progress with cached height
   // Uses RAF-safe reads to avoid forced reflows
   const calculateProgress = useCallback(() => {
-    const now = Date.now();
+    // scrollY is a simple property read that doesn't trigger reflow
     const scrollTop = window.scrollY;
     
-    // Only recalculate doc height every 1000ms to minimize forced reflows
-    // and only if we're not in the initial render phase
-    if (now - lastDocHeightUpdateRef.current > 1000 || docHeightRef.current === 0) {
-      // Schedule the expensive read for next frame to batch with other reads
-      const scrollHeight = document.documentElement.scrollHeight;
-      const innerHeight = window.innerHeight;
-      docHeightRef.current = scrollHeight - innerHeight;
-      lastDocHeightUpdateRef.current = now;
-    }
-    
+    // Use cached docHeight - only update via separate RAF to avoid sync reflow
     const docHeight = docHeightRef.current;
     if (docHeight <= 0) return 0;
     
     const currentProgress = Math.min(100, Math.max(0, (scrollTop / docHeight) * 100));
     return Math.round(currentProgress);
+  }, []);
+
+  // Separate function to update doc height - called less frequently
+  const updateDocHeight = useCallback(() => {
+    // These reads trigger reflow, so batch them in a single RAF
+    rafRef.current = requestAnimationFrame(() => {
+      const scrollHeight = document.documentElement.scrollHeight;
+      const innerHeight = window.innerHeight;
+      docHeightRef.current = scrollHeight - innerHeight;
+      lastDocHeightUpdateRef.current = Date.now();
+    });
   }, []);
 
   // Handle scroll with throttling
@@ -90,32 +92,44 @@ export function useScrollProgress(options: UseScrollProgressOptions = {}): UseSc
     });
   }, [calculateProgress, throttleMs, trackMilestones]);
 
-  // Set up scroll listener
+  // Set up scroll listener and doc height updates
   useEffect(() => {
-    // Defer initial progress calculation to avoid forced reflow during render
-    // Use requestIdleCallback if available, otherwise setTimeout
-    const scheduleInitialRead = (callback: () => void) => {
+    // Use requestIdleCallback for non-critical geometry reads
+    const scheduleIdleRead = (callback: () => void) => {
       if ('requestIdleCallback' in window) {
-        (window as any).requestIdleCallback(callback, { timeout: 100 });
-      } else {
-        setTimeout(callback, 0);
+        return (window as any).requestIdleCallback(callback, { timeout: 200 });
       }
+      return setTimeout(callback, 50);
     };
 
-    scheduleInitialRead(() => {
-      rafRef.current = requestAnimationFrame(() => {
-        setProgress(calculateProgress());
-      });
+    // Initial doc height calculation - deferred to idle time
+    const idleId = scheduleIdleRead(() => {
+      updateDocHeight();
+      // After doc height is set, calculate initial progress
+      setTimeout(() => setProgress(calculateProgress()), 0);
     });
 
+    // Periodically update doc height (content may change)
+    const heightInterval = setInterval(() => {
+      scheduleIdleRead(updateDocHeight);
+    }, 2000);
+
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', updateDocHeight, { passive: true });
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updateDocHeight);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      clearInterval(heightInterval);
+      if ('cancelIdleCallback' in window) {
+        (window as any).cancelIdleCallback(idleId);
+      } else {
+        clearTimeout(idleId);
+      }
     };
-  }, [handleScroll, calculateProgress]);
+  }, [handleScroll, calculateProgress, updateDocHeight]);
 
   // Check if passed threshold
   const hasPassedThreshold = useCallback(
