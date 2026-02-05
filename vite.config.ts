@@ -28,10 +28,18 @@ export default defineConfig(({ mode }) => ({
           // Core vendor chunks - smallest possible for initial load
           'react-vendor': ['react', 'react-dom'],
           'router': ['react-router-dom'],
-          // UI components split by usage pattern - deferred loading
-          'ui-core': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-slot'],
+          // Radix Slot is tiny and used by Button - keep it in core
+          'ui-slot': ['@radix-ui/react-slot'],
+          // Dialog and dropdown are heavy - defer loading
+          'ui-dialog': ['@radix-ui/react-dialog'],
+          'ui-dropdown': ['@radix-ui/react-dropdown-menu'],
+          // Forms - only loaded on form pages
           'ui-forms': ['@radix-ui/react-checkbox', '@radix-ui/react-label', '@radix-ui/react-select', '@radix-ui/react-radio-group'],
-          'ui-feedback': ['@radix-ui/react-tooltip', '@radix-ui/react-toast', '@radix-ui/react-popover'],
+          // Feedback components - deferred after first paint
+          'ui-tooltip': ['@radix-ui/react-tooltip'],
+          'ui-toast': ['@radix-ui/react-toast'],
+          'ui-popover': ['@radix-ui/react-popover'],
+          // Layout components - loaded on demand
           'ui-layout': ['@radix-ui/react-tabs', '@radix-ui/react-accordion', '@radix-ui/react-collapsible'],
           // Heavy dependencies in separate chunks - loaded on demand
           'query-vendor': ['@tanstack/react-query'],
