@@ -134,7 +134,11 @@ export type ConversionEventType =
   | 'chat_quote_submitted'
   | 'chat_ended'
   | 'chat_quick_action_used'
-  | 'chat_human_requested';
+  | 'chat_human_requested'
+  // P1: Phone & CTA Tracking
+  | 'phone_clicked'
+  | 'service_card_clicked'
+  | 'cta_clicked';
 
 export interface ConversionEventPayload {
   event: ConversionEventType;

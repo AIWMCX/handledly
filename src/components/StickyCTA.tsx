@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Phone, ArrowRight, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ConversionEvents } from "@/lib/analytics";
 
 export function StickyCTA() {
   const [isVisible, setIsVisible] = useState(false);
@@ -60,6 +61,7 @@ export function StickyCTA() {
             <div className="flex items-center gap-3">
               <a
                 href="tel:+18782187397"
+                onClick={() => ConversionEvents.phoneClicked('sticky_cta', '8782187397')}
                 className="flex items-center gap-2 text-white/90 hover:text-white transition-colors text-sm font-medium group"
               >
                 {/* Pulsing phone icon */}
@@ -72,6 +74,7 @@ export function StickyCTA() {
               </a>
               <a
                 href="tel:+17199203282"
+                onClick={() => ConversionEvents.phoneClicked('sticky_cta', '7199203282')}
                 className="hidden lg:flex items-center text-white/70 hover:text-white transition-colors text-sm"
               >
                 (719) 920-3282

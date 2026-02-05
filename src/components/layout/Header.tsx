@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Phone, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollProgress } from "@/components/conversion/ScrollProgress";
+import { ConversionEvents } from "@/lib/analytics";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -84,6 +85,7 @@ export function Header() {
             <div className="hidden md:flex items-center gap-2">
               <a
                 href="tel:+18782187397"
+                onClick={() => ConversionEvents.phoneClicked('header', '8782187397')}
                 className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
               >
                 <Phone className="w-4 h-4" />
@@ -92,6 +94,7 @@ export function Header() {
               <span className="text-muted-foreground/50">|</span>
               <a
                 href="tel:+17199203282"
+                onClick={() => ConversionEvents.phoneClicked('header', '7199203282')}
                 className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
               >
                 (719) 920-3282
@@ -134,6 +137,7 @@ export function Header() {
               <div className="space-y-2 py-2">
                 <a
                   href="tel:+18782187397"
+                  onClick={() => ConversionEvents.phoneClicked('header', '8782187397')}
                   className="flex items-center gap-2 text-base font-medium text-primary"
                 >
                   <Phone className="w-5 h-5" />
@@ -142,6 +146,7 @@ export function Header() {
                 </a>
                 <a
                   href="tel:+17199203282"
+                  onClick={() => ConversionEvents.phoneClicked('header', '7199203282')}
                   className="flex items-center gap-2 text-base font-medium text-primary"
                 >
                   <Phone className="w-5 h-5" />
