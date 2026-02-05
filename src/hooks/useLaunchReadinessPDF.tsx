@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { pdf } from '@react-pdf/renderer';
-import LaunchReadinessChecklistPDF from '@/components/admin/pdf/LaunchReadinessChecklistPDF';
 import { toast } from 'sonner';
 
 export const useLaunchReadinessPDF = () => {
@@ -10,6 +8,12 @@ export const useLaunchReadinessPDF = () => {
     setIsGenerating(true);
     
     try {
+      // Dynamic import to avoid ESM/CJS conflict at module load time
+      const [{ pdf }, { default: LaunchReadinessChecklistPDF }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('@/components/admin/pdf/LaunchReadinessChecklistPDF'),
+      ]);
+
       // Generate PDF blob
       const blob = await pdf(<LaunchReadinessChecklistPDF />).toBlob();
       
