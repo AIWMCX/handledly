@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          action: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_quality_reviews: {
         Row: {
           accuracy_score: number | null
@@ -419,6 +452,140 @@ export type Database = {
           },
         ]
       }
+      crew_members: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string
+          hourly_rate: number | null
+          id: string
+          phone: string | null
+          role: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name: string
+          hourly_rate?: number | null
+          id?: string
+          phone?: string | null
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          hourly_rate?: number | null
+          id?: string
+          phone?: string | null
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      digital_agreements: {
+        Row: {
+          agreement_type: string
+          created_at: string
+          customer_email: string
+          customer_name: string
+          id: string
+          ip_address: string | null
+          job_id: string | null
+          lead_id: string | null
+          signature_url: string | null
+          signed_at: string | null
+        }
+        Insert: {
+          agreement_type: string
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          id?: string
+          ip_address?: string | null
+          job_id?: string | null
+          lead_id?: string | null
+          signature_url?: string | null
+          signed_at?: string | null
+        }
+        Update: {
+          agreement_type?: string
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          id?: string
+          ip_address?: string | null
+          job_id?: string | null
+          lead_id?: string | null
+          signature_url?: string | null
+          signed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "digital_agreements_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "digital_agreements_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equipment: {
+        Row: {
+          assigned_job_id: string | null
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_job_id?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_job_id?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_assigned_job_id_fkey"
+            columns: ["assigned_job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       honeypot_detections: {
         Row: {
           blocked: boolean | null
@@ -448,6 +615,268 @@ export type Database = {
           page?: string | null
         }
         Relationships: []
+      }
+      job_checklists: {
+        Row: {
+          category: string
+          completed: boolean
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          id: string
+          item_text: string
+          job_id: string
+          sort_order: number | null
+        }
+        Insert: {
+          category?: string
+          completed?: boolean
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          id?: string
+          item_text: string
+          job_id: string
+          sort_order?: number | null
+        }
+        Update: {
+          category?: string
+          completed?: boolean
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          id?: string
+          item_text?: string
+          job_id?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_checklists_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "crew_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_checklists_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_crew_assignments: {
+        Row: {
+          check_in_time: string | null
+          check_out_time: string | null
+          created_at: string
+          crew_member_id: string
+          hours_worked: number | null
+          id: string
+          job_id: string
+          role: string | null
+        }
+        Insert: {
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string
+          crew_member_id: string
+          hours_worked?: number | null
+          id?: string
+          job_id: string
+          role?: string | null
+        }
+        Update: {
+          check_in_time?: string | null
+          check_out_time?: string | null
+          created_at?: string
+          crew_member_id?: string
+          hours_worked?: number | null
+          id?: string
+          job_id?: string
+          role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_crew_assignments_crew_member_id_fkey"
+            columns: ["crew_member_id"]
+            isOneToOne: false
+            referencedRelation: "crew_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_crew_assignments_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_financials: {
+        Row: {
+          created_at: string
+          equipment_cost: number
+          fuel_cost: number
+          id: string
+          insurance_allocation: number
+          job_id: string
+          labor_cost: number
+          margin_percentage: number | null
+          net_profit: number | null
+          revenue: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          equipment_cost?: number
+          fuel_cost?: number
+          id?: string
+          insurance_allocation?: number
+          job_id: string
+          labor_cost?: number
+          margin_percentage?: number | null
+          net_profit?: number | null
+          revenue?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          equipment_cost?: number
+          fuel_cost?: number
+          id?: string
+          insurance_allocation?: number
+          job_id?: string
+          labor_cost?: number
+          margin_percentage?: number | null
+          net_profit?: number | null
+          revenue?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_financials_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: true
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_photos: {
+        Row: {
+          created_at: string
+          crew_member_id: string | null
+          id: string
+          job_id: string
+          notes: string | null
+          photo_type: string
+          photo_url: string
+        }
+        Insert: {
+          created_at?: string
+          crew_member_id?: string | null
+          id?: string
+          job_id: string
+          notes?: string | null
+          photo_type?: string
+          photo_url: string
+        }
+        Update: {
+          created_at?: string
+          crew_member_id?: string | null
+          id?: string
+          job_id?: string
+          notes?: string | null
+          photo_type?: string
+          photo_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_photos_crew_member_id_fkey"
+            columns: ["crew_member_id"]
+            isOneToOne: false
+            referencedRelation: "crew_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_photos_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          actual_duration: number | null
+          bedrooms: number | null
+          created_at: string
+          deposit_amount: number | null
+          distance_miles: number | null
+          estimated_duration: number | null
+          id: string
+          lead_id: string | null
+          move_from_address: string | null
+          move_to_address: string | null
+          property_type: string | null
+          scheduled_date: string | null
+          scheduled_time: string | null
+          special_instructions: string | null
+          status: string
+          total_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          actual_duration?: number | null
+          bedrooms?: number | null
+          created_at?: string
+          deposit_amount?: number | null
+          distance_miles?: number | null
+          estimated_duration?: number | null
+          id?: string
+          lead_id?: string | null
+          move_from_address?: string | null
+          move_to_address?: string | null
+          property_type?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          special_instructions?: string | null
+          status?: string
+          total_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          actual_duration?: number | null
+          bedrooms?: number | null
+          created_at?: string
+          deposit_amount?: number | null
+          distance_miles?: number | null
+          estimated_duration?: number | null
+          id?: string
+          lead_id?: string | null
+          move_from_address?: string | null
+          move_to_address?: string | null
+          property_type?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          special_instructions?: string | null
+          status?: string
+          total_price?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jobs_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       leads: {
         Row: {
