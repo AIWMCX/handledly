@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 interface StatItem {
@@ -91,19 +90,17 @@ function AnimatedStatItem({
   );
 
   return (
-    <motion.div
+    <div
       className={cn(
         'flex flex-col items-center text-center p-4 rounded-xl',
         'bg-background/50 backdrop-blur-sm border border-border/50',
         'hover:border-accent/50 hover:shadow-lg transition-all duration-300',
         className
       )}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ 
-        duration: 0.5, 
-        delay: index * staggerDelay / 1000,
-        ease: 'easeOut'
+      style={{
+        opacity: isInView ? 1 : 0,
+        transform: isInView ? 'translateY(0)' : 'translateY(20px)',
+        transition: `opacity 0.5s ease-out ${index * staggerDelay / 1000}s, transform 0.5s ease-out ${index * staggerDelay / 1000}s`,
       }}
     >
       {stat.icon && (
@@ -131,7 +128,7 @@ function AnimatedStatItem({
       <p className="text-sm text-muted-foreground mt-1">
         {stat.label}
       </p>
-    </motion.div>
+    </div>
   );
 }
 
@@ -144,7 +141,25 @@ export function AnimatedStats({
   itemClassName,
 }: AnimatedStatsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(containerRef, { once: true, margin: '-50px' });
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '-50px' }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div
