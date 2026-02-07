@@ -79,7 +79,7 @@ export default function InlineQuotePreview() {
                     value={bedrooms.toString()} 
                     onValueChange={(v) => { setBedrooms(parseInt(v)); handleInteraction(); }}
                   >
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger className="h-12" aria-label="Select home size">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -101,7 +101,7 @@ export default function InlineQuotePreview() {
                     value={crewConfig} 
                     onValueChange={(v) => { setCrewConfig(v); handleInteraction(); }}
                   >
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger className="h-12" aria-label="Select crew and truck option">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
