@@ -16,7 +16,7 @@ function formatTime(date: Date) {
 
 export function ChatMessages({ messages, isLoading, messagesEndRef, compact = false }: ChatMessagesProps) {
   return (
-    <>
+    <div aria-live="polite" aria-relevant="additions" role="log" aria-label="Chat messages">
       {/* Empty state */}
       {messages.length === 0 && !isLoading && (
         <div className={cn("text-center", compact ? "py-6" : "py-8")}>
@@ -92,6 +92,6 @@ export function ChatMessages({ messages, isLoading, messagesEndRef, compact = fa
       )}
       
       <div ref={messagesEndRef} />
-    </>
+    </div>
   );
 }

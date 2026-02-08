@@ -46,12 +46,23 @@
     <link rel="canonical" href="https://handledly.com/" />
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     
-    <!-- Google Analytics 4 - Deferred until after LCP for better performance -->
+    <!-- Google Analytics 4 - Deferred and respects cookie consent -->
     <script>
       // Defer GA loading until after LCP and user interaction
       var gaLoaded = false;
       function loadGA() {
         if (gaLoaded) return;
+        // Check cookie consent before loading GA
+        try {
+          var consent = localStorage.getItem('cookie_consent');
+          if (consent) {
+            var parsed = JSON.parse(consent);
+            if (parsed.status === 'declined') {
+              window['ga-disable-G-QZBNDFDW9Q'] = true;
+              return;
+            }
+          }
+        } catch(e) {}
         gaLoaded = true;
         var gaScript = document.createElement('script');
         gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-QZBNDFDW9Q';
@@ -65,7 +76,8 @@
           gtag('js', new Date());
           gtag('config', 'G-QZBNDFDW9Q', {
             send_page_view: true,
-            cookie_flags: 'SameSite=None;Secure'
+            cookie_flags: 'SameSite=None;Secure',
+            anonymize_ip: true
           });
         };
       }

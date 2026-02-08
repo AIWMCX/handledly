@@ -38,6 +38,7 @@ export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
       
       <Header />
       
+      <main id="main-content">
       {/* Closed Service Alert */}
       {data.closed && !data.comingSoon && (
         <Container className="pt-24 lg:pt-28">
@@ -135,6 +136,7 @@ export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
       {/* General testimonials */}
       <Testimonials />
       
+      </main>
       <Footer />
       <StickyCTA />
       <ChatWidget />

@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { DeferredAuthProvider } from "@/contexts/DeferredAuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { SkipToContent } from "@/components/SkipToContent";
+import { CookieConsent } from "@/components/CookieConsent";
 
 // Core pages - loaded immediately
 import Index from "./pages/Index";
@@ -100,7 +102,9 @@ const App = () => (
       <DeferredAuthProvider>
         <DeferredProviders>
           <BrowserRouter>
+            <SkipToContent />
             <ScrollToTop />
+            <CookieConsent />
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
