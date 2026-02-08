@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { Calculator, Shield, TrendingDown, Info } from 'lucide-react';
 import { ServiceType, QuotePreview, QuoteBreakdown } from '@/types/conversion';
 import { ConversionEvents } from '@/lib/analytics';
@@ -40,7 +39,6 @@ export function InstantQuotePreview({
   const quote = useMemo((): QuotePreview => {
     const hours = estimatedHours || BEDROOM_HOURS[bedrooms] || 3;
     
-    // Map service type to calculator format
     const mapToCalcServiceType = (type: ServiceType): 'local-moving' | 'heavy-items' => {
       if (['piano-moving', 'pool-table', 'safe-moving', 'heavy-items'].includes(type)) {
         return 'heavy-items';
@@ -48,7 +46,6 @@ export function InstantQuotePreview({
       return 'local-moving';
     };
     
-    // Get crew config based on crew size
     const getCrewConfig = (size: number, type: ServiceType): string | undefined => {
       if (isIronLawService(type)) return undefined;
       if (size <= 2) return 'moving-2-movers';
@@ -56,7 +53,6 @@ export function InstantQuotePreview({
       return 'moving-4-movers';
     };
 
-    // Use centralized calculator - matches email/database exactly
     const calcResult = calculateQuote({
       serviceType: mapToCalcServiceType(serviceType),
       subType: serviceType,
@@ -65,7 +61,6 @@ export function InstantQuotePreview({
       estimatedHours: hours,
     });
     
-    // Range is ±10%
     const low = Math.round(calcResult.total * 0.9);
     const high = Math.round(calcResult.total * 1.1);
 
@@ -73,12 +68,11 @@ export function InstantQuotePreview({
       baseRate: calcResult.hourlyRate,
       estimatedHours: calcResult.estimatedHours,
       crewCost: calcResult.laborCost,
-      travelFee: 0, // No hidden fees in our pricing model
+      travelFee: 0,
       specialtyFees: calcResult.specialtyFee,
       total: calcResult.total,
     };
 
-    // Track quote preview
     ConversionEvents.quotePreviewed(serviceType, calcResult.total);
 
     return {
@@ -86,22 +80,20 @@ export function InstantQuotePreview({
       estimatedHigh: high,
       confidence: 94.6,
       breakdown,
-      validUntil: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+      validUntil: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
   }, [serviceType, bedrooms, crewSize, estimatedHours]);
 
   return (
-    <motion.div
+    <div
       className={cn(
         'p-6 rounded-2xl',
         'bg-gradient-to-br from-accent/5 via-accent/10 to-accent/5',
         'border border-accent/20',
         'shadow-lg shadow-accent/5',
+        'animate-fade-in-up',
         className
       )}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
@@ -121,24 +113,14 @@ export function InstantQuotePreview({
       <div className="text-center mb-4">
         <div className="flex items-baseline justify-center gap-1">
           <span className="text-lg text-muted-foreground">$</span>
-          <motion.span
-            className="text-4xl font-bold text-foreground"
-            key={quote.estimatedLow}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <span className="text-4xl font-bold text-foreground">
             {quote.estimatedLow}
-          </motion.span>
+          </span>
           <span className="text-lg text-muted-foreground mx-1">-</span>
           <span className="text-lg text-muted-foreground">$</span>
-          <motion.span
-            className="text-4xl font-bold text-foreground"
-            key={quote.estimatedHigh}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <span className="text-4xl font-bold text-foreground">
             {quote.estimatedHigh}
-          </motion.span>
+          </span>
         </div>
         <p className="text-sm text-muted-foreground mt-1">
           Estimated total for your move
@@ -186,19 +168,18 @@ export function InstantQuotePreview({
       </div>
 
       {/* CTA */}
-      <motion.button
+      <button
         className={cn(
           'w-full mt-4 py-3 rounded-xl font-semibold',
           'bg-accent text-accent-foreground',
-          'hover:bg-accent/90 transition-colors',
+          'hover:bg-accent/90 hover:scale-[1.02] active:scale-[0.98]',
+          'transition-all duration-200',
           'shadow-lg shadow-accent/20'
         )}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
       >
         Lock In This Rate
-      </motion.button>
-    </motion.div>
+      </button>
+    </div>
   );
 }
 

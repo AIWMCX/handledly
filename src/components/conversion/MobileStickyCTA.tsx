@@ -1,6 +1,5 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Phone, FileText, MessageCircle, PhoneCall } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useScrollProgress } from '@/hooks/useScrollProgress';
@@ -12,7 +11,7 @@ interface MobileStickyCTAProps {
   phoneNumber?: string;
   primaryAction?: MobileCTAAction;
   secondaryAction?: MobileCTAAction;
-  showAfterScroll?: number; // pixels
+  showAfterScroll?: number;
   className?: string;
 }
 
@@ -46,11 +45,25 @@ export const MobileStickyCTA = forwardRef<HTMLDivElement, MobileStickyCTAProps>(
   const { hasPassedThreshold } = useScrollProgress();
   const location = useLocation();
   
-  // Hide on quote page - user is already there!
   const isQuotePage = location.pathname === '/quote';
-  
-  // Show after scrolling past threshold (convert pixels to approximate percentage)
-  const isVisible = isMobile && hasPassedThreshold(15) && !isQuotePage;
+  const shouldShow = isMobile && hasPassedThreshold(15) && !isQuotePage;
+
+  // Manage render + visibility for CSS transition
+  const [shouldRender, setShouldRender] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (shouldShow) {
+      setShouldRender(true);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setIsVisible(true));
+      });
+    } else {
+      setIsVisible(false);
+      const timeout = setTimeout(() => setShouldRender(false), 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [shouldShow]);
 
   const handleActionClick = (action: MobileCTAAction) => {
     ConversionEvents.mobileCTAClicked(action, window.location.pathname);
@@ -60,75 +73,67 @@ export const MobileStickyCTA = forwardRef<HTMLDivElement, MobileStickyCTAProps>(
     } else if (action === 'quote') {
       window.location.href = '/quote';
     }
-    // Chat and callback would trigger modals/widgets
   };
 
   const PrimaryIcon = ACTION_CONFIG[primaryAction].icon;
   const SecondaryIcon = secondaryAction ? ACTION_CONFIG[secondaryAction].icon : null;
 
-  if (!isMobile) return null;
+  if (!isMobile || !shouldRender) return null;
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+    <div
+      className={cn(
+        'fixed bottom-0 left-0 right-0 z-50 safe-area-inset-bottom',
+        'transition-all duration-300 ease-out',
+        isVisible
+          ? 'translate-y-0 opacity-100'
+          : 'translate-y-full opacity-0',
+        className
+      )}
+    >
+      {/* Glass background */}
+      <div className="absolute inset-0 bg-background/95 backdrop-blur-lg border-t border-border/50" />
+      
+      {/* Content */}
+      <div className="relative flex items-center gap-3 p-4 max-w-md mx-auto">
+        {/* Primary CTA */}
+        <button
+          onClick={() => handleActionClick(primaryAction)}
           className={cn(
-            'fixed bottom-0 left-0 right-0 z-50',
-            'safe-area-inset-bottom',
-            className
+            'flex-1 flex items-center justify-center gap-2',
+            'py-4 px-6 rounded-xl',
+            'bg-accent text-accent-foreground',
+            'font-semibold text-lg',
+            'shadow-lg shadow-accent/30',
+            'active:scale-95 transition-transform'
           )}
         >
-          {/* Glass background */}
-          <div className="absolute inset-0 bg-background/95 backdrop-blur-lg border-t border-border/50" />
-          
-          {/* Content */}
-          <div className="relative flex items-center gap-3 p-4 max-w-md mx-auto">
-            {/* Primary CTA */}
-            <motion.button
-              onClick={() => handleActionClick(primaryAction)}
-              className={cn(
-                'flex-1 flex items-center justify-center gap-2',
-                'py-4 px-6 rounded-xl',
-                'bg-accent text-accent-foreground',
-                'font-semibold text-lg',
-                'shadow-lg shadow-accent/30',
-                'active:scale-95 transition-transform'
-              )}
-              whileTap={{ scale: 0.95 }}
-            >
-              <PrimaryIcon className="w-5 h-5" />
-              <span>{ACTION_CONFIG[primaryAction].label}</span>
-            </motion.button>
+          <PrimaryIcon className="w-5 h-5" />
+          <span>{ACTION_CONFIG[primaryAction].label}</span>
+        </button>
 
-            {/* Secondary CTA */}
-            {secondaryAction && SecondaryIcon && (
-              <motion.button
-                onClick={() => handleActionClick(secondaryAction)}
-                className={cn(
-                  'flex items-center justify-center gap-2',
-                  'py-4 px-6 rounded-xl',
-                  'bg-muted text-foreground',
-                  'font-semibold',
-                  'border border-border',
-                  'active:scale-95 transition-transform'
-                )}
-                whileTap={{ scale: 0.95 }}
-              >
-                <SecondaryIcon className="w-5 h-5" />
-                <span>{ACTION_CONFIG[secondaryAction].label}</span>
-              </motion.button>
+        {/* Secondary CTA */}
+        {secondaryAction && SecondaryIcon && (
+          <button
+            onClick={() => handleActionClick(secondaryAction)}
+            className={cn(
+              'flex items-center justify-center gap-2',
+              'py-4 px-6 rounded-xl',
+              'bg-muted text-foreground',
+              'font-semibold',
+              'border border-border',
+              'active:scale-95 transition-transform'
             )}
-          </div>
+          >
+            <SecondaryIcon className="w-5 h-5" />
+            <span>{ACTION_CONFIG[secondaryAction].label}</span>
+          </button>
+        )}
+      </div>
 
-          {/* Safe area spacer for iOS */}
-          <div className="h-[env(safe-area-inset-bottom)]" />
-        </motion.div>
-      )}
-    </AnimatePresence>
+      {/* Safe area spacer for iOS */}
+      <div className="h-[env(safe-area-inset-bottom)]" />
+    </div>
   );
 });
 

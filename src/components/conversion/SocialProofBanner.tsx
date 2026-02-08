@@ -1,5 +1,4 @@
-import React, { forwardRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { X, Users, Clock, MapPin, Sparkles } from 'lucide-react';
 import { useSocialProof } from '@/hooks/useSocialProof';
 import { cn } from '@/lib/utils';
@@ -17,11 +16,30 @@ export const SocialProofBanner = forwardRef<HTMLDivElement, SocialProofBannerPro
 }, ref) {
   const { currentNotification, liveViewers, dismissNotification, pauseNotifications } = useSocialProof({
     enabled,
-    intervalMin: 60, // Less aggressive - 60-90 seconds
+    intervalMin: 60,
     intervalMax: 90,
     autoHideDuration: 6,
-    maxNotifications: 8, // Fewer per session
+    maxNotifications: 8,
   });
+
+  const [isVisible, setIsVisible] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
+
+  // Handle enter/exit transitions
+  useEffect(() => {
+    if (currentNotification) {
+      setShouldRender(true);
+      // Trigger enter animation on next frame
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setIsVisible(true));
+      });
+    } else {
+      setIsVisible(false);
+      // Wait for exit transition to complete before unmounting
+      const timeout = setTimeout(() => setShouldRender(false), 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [currentNotification]);
 
   const positionClasses = {
     'bottom-left': 'bottom-4 left-4',
@@ -56,80 +74,79 @@ export const SocialProofBanner = forwardRef<HTMLDivElement, SocialProofBannerPro
     }
   };
 
-  if (!enabled) return null;
+  if (!enabled || !shouldRender) return null;
 
   return (
     <div ref={ref}>
-      <AnimatePresence>
-        {currentNotification && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 20, scale: 0.95 }}
-          transition={{ 
-            type: 'spring', 
-            stiffness: 400, 
-            damping: 25 
-          }}
+      <div
+        className={cn(
+          'fixed z-50 max-w-sm transition-all duration-300 ease-out',
+          positionClasses[position],
+          isVisible
+            ? 'opacity-100 translate-y-0 scale-100'
+            : 'opacity-0 translate-y-12 scale-95',
+          className
+        )}
+      >
+        <div
           className={cn(
-            'fixed z-50 max-w-sm',
-            positionClasses[position],
-            className
+            'relative flex items-start gap-3 p-4 rounded-xl border shadow-lg backdrop-blur-sm',
+            getBackgroundClass()
           )}
         >
-          <div
-            className={cn(
-              'relative flex items-start gap-3 p-4 rounded-xl border shadow-lg backdrop-blur-sm',
-              getBackgroundClass()
-            )}
+          {/* Dismiss button */}
+          <button
+            onClick={(e) => {
+              if (e.detail === 2) {
+                localStorage.setItem('socialProofDismissed', 'true');
+                pauseNotifications();
+              } else {
+                dismissNotification();
+              }
+            }}
+            className="absolute top-2 right-2 p-1 rounded-full hover:bg-muted/50 transition-colors"
+            aria-label="Dismiss notification (double-click to hide permanently)"
+            title="Click to dismiss, double-click to hide permanently"
           >
-            {/* Dismiss button with "don't show again" on double-click */}
-            <button
-              onClick={(e) => {
-                if (e.detail === 2) {
-                  // Double-click to dismiss permanently
-                  localStorage.setItem('socialProofDismissed', 'true');
-                  pauseNotifications();
-                } else {
-                  dismissNotification();
-                }
-              }}
-              className="absolute top-2 right-2 p-1 rounded-full hover:bg-muted/50 transition-colors"
-              aria-label="Dismiss notification (double-click to hide permanently)"
-              title="Click to dismiss, double-click to hide permanently"
-            >
-              <X className="w-3 h-3 text-muted-foreground" />
-            </button>
+            <X className="w-3 h-3 text-muted-foreground" />
+          </button>
 
-            {/* Icon */}
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-background flex items-center justify-center shadow-sm">
-              {getIcon()}
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 pr-4">
-              <p className="text-sm font-medium text-foreground leading-snug">
-                {currentNotification.message}
-              </p>
-              {currentNotification.type === 'booking' && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Just now
-                </p>
-              )}
-            </div>
-
-            {/* Decorative elements */}
-            <motion.div
-              className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-accent/50 via-accent to-accent/50 rounded-b-xl"
-              initial={{ scaleX: 1 }}
-              animate={{ scaleX: 0 }}
-              transition={{ duration: 5, ease: 'linear' }}
-              style={{ transformOrigin: 'left' }}
-            />
+          {/* Icon */}
+          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-background flex items-center justify-center shadow-sm">
+            {getIcon()}
           </div>
-        </motion.div>
-      )}
-      </AnimatePresence>
+
+          {/* Content */}
+          <div className="flex-1 pr-4">
+            <p className="text-sm font-medium text-foreground leading-snug">
+              {currentNotification?.message}
+            </p>
+            {currentNotification?.type === 'booking' && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Just now
+              </p>
+            )}
+          </div>
+
+          {/* Progress bar - CSS animation replacing framer-motion */}
+          {isVisible && (
+            <div
+              className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-accent/50 via-accent to-accent/50 rounded-b-xl origin-left"
+              style={{
+                animation: 'shrinkX 5s linear forwards',
+              }}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Inject keyframes for progress bar */}
+      <style>{`
+        @keyframes shrinkX {
+          from { transform: scaleX(1); }
+          to { transform: scaleX(0); }
+        }
+      `}</style>
     </div>
   );
 });
