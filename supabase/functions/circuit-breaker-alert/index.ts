@@ -1,12 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
 
 // Admin emails to notify
 const ADMIN_EMAILS = [
@@ -73,31 +69,18 @@ function generateAlertEmail(data: CircuitBreakerAlertRequest): string {
                       📊 ALERT DETAILS
                     </h3>
                     
-                    <!-- Service Name -->
                     <div style="margin-bottom: 18px;">
-                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">
-                        🔧 SERVICE
-                      </p>
-                      <p style="margin: 0; font-size: 18px; color: #FAFAF9; font-weight: 600;">
-                        ${data.serviceName}
-                      </p>
+                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">🔧 SERVICE</p>
+                      <p style="margin: 0; font-size: 18px; color: #FAFAF9; font-weight: 600;">${data.serviceName}</p>
                     </div>
                     
-                    <!-- Trip Reason -->
                     <div style="margin-bottom: 18px;">
-                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">
-                        ⚠️ REASON
-                      </p>
-                      <p style="margin: 0; font-size: 16px; color: #DC2626; font-weight: 500;">
-                        ${data.tripReason}
-                      </p>
+                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">⚠️ REASON</p>
+                      <p style="margin: 0; font-size: 16px; color: #DC2626; font-weight: 500;">${data.tripReason}</p>
                     </div>
                     
-                    <!-- Spend vs Limit -->
                     <div style="margin-bottom: 18px;">
-                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">
-                        ${emoji} ${limitTypeLabel.toUpperCase()} SPEND
-                      </p>
+                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">${emoji} ${limitTypeLabel.toUpperCase()} SPEND</p>
                       <p style="margin: 0; font-size: 20px; color: #FAFAF9;">
                         <span style="color: #DC2626; font-weight: 700;">$${data.currentSpend.toFixed(2)}</span>
                         <span style="color: #78716C;"> / </span>
@@ -106,20 +89,12 @@ function generateAlertEmail(data: CircuitBreakerAlertRequest): string {
                       </p>
                     </div>
                     
-                    <!-- Tripped At -->
                     <div>
-                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">
-                        🕐 TRIGGERED AT
-                      </p>
+                      <p style="margin: 0 0 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #78716C; font-weight: 600;">🕐 TRIGGERED AT</p>
                       <p style="margin: 0; font-size: 16px; color: #FAFAF9;">
                         ${new Date(data.trippedAt).toLocaleString("en-US", { 
-                          weekday: "long",
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          timeZoneName: "short"
+                          weekday: "long", year: "numeric", month: "long", day: "numeric",
+                          hour: "2-digit", minute: "2-digit", timeZoneName: "short"
                         })}
                       </p>
                     </div>
@@ -129,9 +104,7 @@ function generateAlertEmail(data: CircuitBreakerAlertRequest): string {
               
               <!-- What This Means -->
               <div style="margin-bottom: 30px; padding: 20px; background-color: #0C0A09; border-radius: 8px; border-left: 4px solid #F59E0B;">
-                <h3 style="margin: 0 0 10px; font-size: 14px; color: #F59E0B; text-transform: uppercase;">
-                  What This Means
-                </h3>
+                <h3 style="margin: 0 0 10px; font-size: 14px; color: #F59E0B; text-transform: uppercase;">What This Means</h3>
                 <ul style="margin: 0; padding-left: 20px; color: #A8A29E; line-height: 1.8;">
                   <li>The <strong style="color: #FAFAF9;">${data.serviceName}</strong> service has been <strong style="color: #DC2626;">automatically disabled</strong></li>
                   <li>New requests to this service will be blocked until limits reset</li>
@@ -151,19 +124,6 @@ function generateAlertEmail(data: CircuitBreakerAlertRequest): string {
                   </td>
                 </tr>
               </table>
-              
-              <!-- Next Steps -->
-              <div style="margin-top: 30px;">
-                <h3 style="margin: 0 0 15px; font-size: 14px; color: #D4AF37; text-transform: uppercase;">
-                  Recommended Actions:
-                </h3>
-                <table role="presentation" cellspacing="0" cellpadding="0">
-                  <tr><td style="padding: 5px 0; color: #A8A29E;">1. Check for unusual traffic patterns or spam attacks</td></tr>
-                  <tr><td style="padding: 5px 0; color: #A8A29E;">2. Review the Cost Monitoring dashboard for trends</td></tr>
-                  <tr><td style="padding: 5px 0; color: #A8A29E;">3. Adjust limits if current settings are too restrictive</td></tr>
-                  <tr><td style="padding: 5px 0; color: #A8A29E;">4. Consider enabling stricter bot protection if abuse detected</td></tr>
-                </table>
-              </div>
               
             </td>
           </tr>
@@ -190,14 +150,35 @@ function generateAlertEmail(data: CircuitBreakerAlertRequest): string {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = getCorsHeaders(req);
+
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // AUTH: Only allow internal calls (database triggers via pg_net)
+  const authHeader = req.headers.get('Authorization');
+  const expectedAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+  if (!authHeader || !expectedAnonKey || !authHeader.includes(expectedAnonKey)) {
+    console.warn('[circuit-breaker-alert] Unauthorized request rejected');
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized' }),
+      { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
   try {
     const data: CircuitBreakerAlertRequest = await req.json();
     
+    // Validate required fields
+    if (!data.serviceName || !data.tripReason || data.currentSpend === undefined || data.limit === undefined) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     console.log("[circuit-breaker-alert] Sending alert for:", data.serviceName);
     
     // Send email to all admins
@@ -237,10 +218,9 @@ const handler = async (req: Request): Promise<Response> => {
     );
   } catch (error: unknown) {
     console.error("[circuit-breaker-alert] Error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    
+    // Sanitized error response
     return new Response(
-      JSON.stringify({ success: false, error: errorMessage }),
+      JSON.stringify({ success: false, error: 'Alert delivery failed' }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

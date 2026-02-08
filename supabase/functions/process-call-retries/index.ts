@@ -1,9 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { getCorsHeaders } from '../_shared/cors.ts';
 
 interface RetryQueueItem {
   id: string;
@@ -12,45 +8,49 @@ interface RetryQueueItem {
   scheduled_for: string;
 }
 
-interface Lead {
-  id: string;
-  full_name: string;
-  email: string;
-  phone: string;
-  estimated_quote: number | null;
-  move_date: string | null;
-  move_from_address: string | null;
-  move_to_address: string | null;
-  verification_token: string | null;
-}
-
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // AUTH: Only allow internal calls (cron jobs / admin triggers)
+  const authHeader = req.headers.get('Authorization');
+  const expectedAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+  if (!authHeader || !expectedAnonKey || !authHeader.includes(expectedAnonKey)) {
+    console.warn('[process-call-retries] Unauthorized request rejected');
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized' }),
+      { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  }
+
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { persistSession: false }
+    });
 
     console.log('[process-call-retries] Starting retry processing...');
 
-    // Get scheduled retries that are due
-    const { data: retries, error: fetchError } = await supabase
+    // Get scheduled retries that are due - use row-level locking to prevent concurrent processing
+    // First, get candidate IDs
+    const { data: candidates, error: fetchError } = await supabase
       .from('call_retry_queue')
-      .select('*')
+      .select('id')
       .eq('status', 'scheduled')
       .lte('scheduled_for', new Date().toISOString())
       .order('scheduled_for', { ascending: true })
-      .limit(10); // Process in batches
+      .limit(10);
 
     if (fetchError) {
       throw new Error(`Failed to fetch retries: ${fetchError.message}`);
     }
 
-    if (!retries || retries.length === 0) {
+    if (!candidates || candidates.length === 0) {
       console.log('[process-call-retries] No pending retries');
       return new Response(
         JSON.stringify({ success: true, processed: 0 }),
@@ -58,20 +58,36 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log(`[process-call-retries] Found ${retries.length} pending retries`);
+    // Atomically claim retries by updating status from 'scheduled' to 'processing'
+    // Only items still in 'scheduled' status will be claimed (prevents double-processing)
+    const candidateIds = candidates.map(c => c.id);
+    const { data: claimedRetries, error: claimError } = await supabase
+      .from('call_retry_queue')
+      .update({ status: 'processing' })
+      .in('id', candidateIds)
+      .eq('status', 'scheduled') // Only claim items still scheduled (atomic)
+      .select('*');
+
+    if (claimError) {
+      throw new Error(`Failed to claim retries: ${claimError.message}`);
+    }
+
+    if (!claimedRetries || claimedRetries.length === 0) {
+      console.log('[process-call-retries] All candidates already claimed by another worker');
+      return new Response(
+        JSON.stringify({ success: true, processed: 0 }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`[process-call-retries] Claimed ${claimedRetries.length} retries for processing`);
 
     let processedCount = 0;
     let successCount = 0;
     let failedCount = 0;
 
-    for (const retry of retries as RetryQueueItem[]) {
+    for (const retry of claimedRetries as RetryQueueItem[]) {
       try {
-        // Mark as processing
-        await supabase
-          .from('call_retry_queue')
-          .update({ status: 'processing' })
-          .eq('id', retry.id);
-
         // Get lead data
         const { data: lead, error: leadError } = await supabase
           .from('leads')
@@ -80,7 +96,7 @@ Deno.serve(async (req) => {
           .single();
 
         if (leadError || !lead) {
-          throw new Error(`Lead not found: ${leadError?.message || 'Unknown'}`);
+          throw new Error('Lead not found');
         }
 
         // Check if lead already has a successful call
@@ -121,8 +137,7 @@ Deno.serve(async (req) => {
         });
 
         if (!callResponse.ok) {
-          const errorText = await callResponse.text();
-          throw new Error(`Call trigger failed: ${errorText}`);
+          throw new Error('Call trigger failed');
         }
 
         // Mark retry as completed
@@ -145,8 +160,9 @@ Deno.serve(async (req) => {
         successCount++;
         console.log(`[process-call-retries] Retry ${retry.id} processed successfully`);
 
-      } catch (retryError: any) {
-        console.error(`[process-call-retries] Retry ${retry.id} failed:`, retryError.message);
+      } catch (retryError: unknown) {
+        const errorMsg = retryError instanceof Error ? retryError.message : 'Unknown error';
+        console.error(`[process-call-retries] Retry ${retry.id} failed:`, errorMsg);
         
         // Check if max retries reached
         if (retry.retry_attempt >= 3) {
@@ -154,7 +170,7 @@ Deno.serve(async (req) => {
             .from('call_retry_queue')
             .update({ 
               status: 'exhausted', 
-              last_error: retryError.message,
+              last_error: errorMsg,
               processed_at: new Date().toISOString() 
             })
             .eq('id', retry.id);
@@ -163,7 +179,7 @@ Deno.serve(async (req) => {
           await supabase
             .from('leads')
             .update({
-              call_notes: `All 3 retry attempts exhausted. Last error: ${retryError.message}`,
+              call_notes: 'All 3 retry attempts exhausted',
               next_retry_at: null,
             })
             .eq('id', retry.lead_id);
@@ -173,7 +189,7 @@ Deno.serve(async (req) => {
             .from('call_retry_queue')
             .update({ 
               status: 'completed', 
-              last_error: retryError.message,
+              last_error: errorMsg,
               processed_at: new Date().toISOString() 
             })
             .eq('id', retry.id);
@@ -197,10 +213,12 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error: any) {
-    console.error('[process-call-retries] Error:', error.message);
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[process-call-retries] Error:', errorMsg);
+    // Sanitized error response - no internal details
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ success: false, error: 'Retry processing failed' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

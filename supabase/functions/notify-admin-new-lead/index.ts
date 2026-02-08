@@ -2,10 +2,8 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { getCorsHeaders } from "../_shared/cors.ts";
+
 
 // Parse admin emails from environment variable (comma-separated)
 const ADMIN_EMAILS_RAW = Deno.env.get("ADMIN_NOTIFICATION_EMAILS") || "";
@@ -246,21 +244,39 @@ async function sendSMS(phone: string, message: string): Promise<boolean> {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // AUTH: Only allow internal calls (database triggers via pg_net)
+  const authHeader = req.headers.get('Authorization');
+  const expectedAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+  if (!authHeader || !expectedAnonKey || !authHeader.includes(expectedAnonKey)) {
+    console.warn('[notify-admin-new-lead] Unauthorized request rejected');
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized' }),
+      { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
 
   try {
     const { leadId } = await req.json();
 
     if (!leadId) {
-      throw new Error("leadId is required");
+      return new Response(
+        JSON.stringify({ error: 'Invalid request' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Initialize Supabase client with service role
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    const supabase = createClient(supabaseUrl, serviceRoleKey, {
+      auth: { persistSession: false }
+    });
 
     // Fetch full lead data
     const { data: lead, error: fetchError } = await supabase
@@ -319,10 +335,11 @@ const handler = async (req: Request): Promise<Response> => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
-  } catch (error: any) {
-    console.error("Notification error:", error);
+  } catch (error: unknown) {
+    console.error("[notify-admin-new-lead] Error:", error);
+    // Sanitized error response - no internal details
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'Notification delivery failed' }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
