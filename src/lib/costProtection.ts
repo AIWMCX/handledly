@@ -235,7 +235,8 @@ export async function checkServiceAvailable(
 // ============================================
 
 /**
- * Logs a honeypot detection to the database
+ * Logs a honeypot detection to the database via Supabase client.
+ * Uses the typed client to insert into honeypot_detections table.
  */
 export async function logHoneypotDetection(
   detectionType: string,
@@ -245,26 +246,15 @@ export async function logHoneypotDetection(
   try {
     const ipHash = await createClientFingerprint();
     
-    // Use fetch to bypass TypeScript since table isn't in generated types yet
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-    
-    await fetch(`${supabaseUrl}/rest/v1/honeypot_detections`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": supabaseKey,
-        "Authorization": `Bearer ${supabaseKey}`,
-        "Prefer": "return=minimal",
-      },
-      body: JSON.stringify({
+    await supabase
+      .from('honeypot_detections')
+      .insert([{
         ip_hash: ipHash,
         page: window.location.pathname,
         detection_type: detectionType,
-        detection_data: detectionData,
+        detection_data: detectionData as unknown as import('@/integrations/supabase/types').Json,
         blocked,
-      }),
-    });
+      }]);
   } catch (err) {
     // Silent fail - don't break user experience
     console.warn("[CostProtection] Failed to log detection:", err);
