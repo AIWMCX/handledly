@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, Flame, Zap, TrendingUp, CalendarClock } from 'lucide-react';
 import { UrgencyType, UrgencyBadgeConfig } from '@/types/conversion';
 import { ConversionEvents } from '@/lib/analytics';
@@ -94,7 +93,7 @@ export function UrgencyBadge({
     };
 
     updateTimer();
-    const interval = setInterval(updateTimer, 60000); // Update every minute
+    const interval = setInterval(updateTimer, 60000);
 
     return () => clearInterval(interval);
   }, [expiryTime]);
@@ -133,18 +132,16 @@ export function UrgencyBadge({
   };
 
   return (
-    <motion.button
+    <button
       onClick={handleClick}
       className={cn(
         'inline-flex items-center font-medium rounded-full border',
         'transition-all duration-200 cursor-pointer',
-        'hover:shadow-md hover:scale-105',
+        'hover:shadow-md hover:scale-105 active:scale-[0.98]',
         sizeClasses[size],
         colorClasses[type],
         className
       )}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.98 }}
     >
       {/* Pulse animation */}
       {shouldPulse && (
@@ -162,13 +159,13 @@ export function UrgencyBadge({
           <span className="ml-1 opacity-80">• {timeRemaining}</span>
         )}
       </span>
-    </motion.button>
+    </button>
   );
 }
 
 // Convenience components for common urgency types
 export function SlotsLimitedBadge(props: Omit<UrgencyBadgeProps, 'type'>) {
-  const slots = Math.floor(Math.random() * 3) + 2; // 2-4 slots
+  const slots = Math.floor(Math.random() * 3) + 2;
   return (
     <UrgencyBadge
       type="slots_limited"

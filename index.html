@@ -85,7 +85,7 @@
         };
       }
       // Load GA after 3s or on first interaction, whichever comes first
-      setTimeout(loadGA, 3000);
+      setTimeout(loadGA, 5000);
       ['mousedown', 'keydown', 'touchstart', 'scroll'].forEach(function(e) {
         document.addEventListener(e, loadGA, { once: true, passive: true });
       });
