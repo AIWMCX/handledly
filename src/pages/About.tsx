@@ -73,6 +73,7 @@ export default function About() {
       
       <Header />
       
+      <main id="main-content">
       {/* Hero with Mesh Gradient */}
       <section className="relative pt-40 pb-16 lg:pt-48 lg:pb-20 overflow-hidden">
         <MeshGradientHero />
@@ -302,6 +303,7 @@ export default function About() {
         </Container>
       </Section>
 
+      </main>
       <Footer />
       <StickyCTA />
       <ChatWidget />

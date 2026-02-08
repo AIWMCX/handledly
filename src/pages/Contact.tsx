@@ -105,6 +105,7 @@ export default function Contact() {
         keywords={["contact Denver movers", "moving quote Denver", "Denver moving company phone", "Handledly Moving Services contact"]}
       />
       
+      <main id="main-content">
       {/* Hero */}
       <section className="pt-40 pb-16 lg:pt-48 lg:pb-20 bg-background relative overflow-hidden">
         {/* Background decoration */}
@@ -334,6 +335,7 @@ export default function Contact() {
         </Container>
       </Section>
 
+      </main>
       <Footer />
       <StickyCTA />
       <ChatWidget />

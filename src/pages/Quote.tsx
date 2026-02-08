@@ -226,6 +226,7 @@ export default function Quote() {
       <AnnouncementBar />
       <Header />
       
+      <main id="main-content">
       <section className="pt-40 pb-20 lg:pt-48 lg:pb-28 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 pointer-events-none">
@@ -312,6 +313,7 @@ export default function Quote() {
         </Container>
       </section>
 
+      </main>
       <Footer />
       <VoiceAgent />
       <ChatWidget />

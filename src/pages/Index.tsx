@@ -94,7 +94,7 @@ export default function Index() {
       <AnnouncementBar />
       <Header />
       
-      <main>
+      <main id="main-content">
         {/* Hero Section with Mesh Gradient */}
         <section className="relative pt-40 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
         <MeshGradientHero />

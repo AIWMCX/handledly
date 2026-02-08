@@ -118,6 +118,7 @@ export default function Services() {
         keywords={["Denver moving services", "local movers Denver", "heavy item movers", "piano moving Denver", "pool table movers", "same day moving Denver"]}
       />
       
+      <main id="main-content">
       {/* Hero */}
       <section className="pt-40 pb-16 lg:pt-48 lg:pb-20 bg-background relative overflow-hidden">
         {/* Background decoration */}
@@ -481,6 +482,7 @@ export default function Services() {
         </Container>
       </Section>
 
+      </main>
       <Footer />
       <StickyCTA />
       <ChatWidget />
