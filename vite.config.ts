@@ -59,7 +59,22 @@ export default defineConfig(({ mode }) => ({
     include: ['react', 'react-dom', 'react-router-dom'],
     exclude: ['@react-pdf/renderer'], // Heavy, only load when needed
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    react(),
+    mode === "development" && componentTagger(),
+    // Make CSS non-render-blocking in production (critical CSS is inlined in index.html skeleton)
+    mode === "production" && {
+      name: 'async-css',
+      enforce: 'post' as const,
+      transformIndexHtml(html: string) {
+        return html.replace(
+          /<link rel="stylesheet" crossorigin href="(\/assets\/[^"]+\.css)">/g,
+          '<link rel="stylesheet" href="$1" media="print" onload="this.media=\'all\'">' +
+          '<noscript><link rel="stylesheet" href="$1"></noscript>'
+        );
+      },
+    },
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
