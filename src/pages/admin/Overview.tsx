@@ -65,61 +65,96 @@ const Overview = () => {
     toast.success('Markdown report copied to clipboard!');
     setTimeout(() => setCopied(false), 2000);
   };
-  // Fetch leads data
+  // Fetch leads data - only columns needed for stats + recent leads display
   const { data: leads, isLoading: leadsLoading } = useQuery({
     queryKey: ['admin-leads-stats'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('leads')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('id, full_name, email, phone, status, estimated_quote, created_at, confirmation_call_status, confirmation_call_time')
+        .order('created_at', { ascending: false })
+        .limit(200);
       if (error) throw error;
       return data;
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
   });
 
-  // Fetch appointments data
+  // Fetch total leads count separately for accurate stats
+  const { data: leadsCount } = useQuery({
+    queryKey: ['admin-leads-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('leads')
+        .select('*', { count: 'exact', head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Fetch appointments data - only needed columns
   const { data: appointments, isLoading: appointmentsLoading } = useQuery({
     queryKey: ['admin-appointments-stats'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('appointments')
-        .select('*')
-        .order('scheduled_date', { ascending: true });
+        .select('id, status, scheduled_date')
+        .order('scheduled_date', { ascending: true })
+        .limit(100);
       if (error) throw error;
       return data;
     },
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Fetch conversations data
+  // Fetch conversations data - only needed columns
   const { data: conversations, isLoading: conversationsLoading } = useQuery({
     queryKey: ['admin-conversations-stats'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('chat_conversations')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('id, created_at, lead_id')
+        .order('created_at', { ascending: false })
+        .limit(200);
       if (error) throw error;
       return data;
     },
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Fetch chat messages data for analytics
+  // Fetch total conversations count for accurate stats
+  const { data: conversationsCount } = useQuery({
+    queryKey: ['admin-conversations-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('chat_conversations')
+        .select('*', { count: 'exact', head: true });
+      if (error) throw error;
+      return count || 0;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Fetch chat messages - only role and created_at for analytics, limited
   const { data: chatMessages, isLoading: messagesLoading } = useQuery({
     queryKey: ['admin-chat-messages-stats'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('chat_messages')
-        .select('id, conversation_id, role, created_at');
+        .select('id, role, created_at')
+        .order('created_at', { ascending: false })
+        .limit(500);
       if (error) throw error;
       return data;
     },
+    staleTime: 5 * 60 * 1000,
   });
 
   const isLoading = leadsLoading || appointmentsLoading || conversationsLoading || messagesLoading;
 
-  // Calculate stats
-  const totalLeads = leads?.length || 0;
+  // Calculate stats - use count queries for accurate totals, fetched data for recent/filtered
+  const totalLeads = leadsCount || leads?.length || 0;
   const newLeadsToday = leads?.filter(lead => {
     const today = new Date();
     const leadDate = new Date(lead.created_at);
@@ -130,14 +165,14 @@ const Overview = () => {
   const completedCalls = leads?.filter(lead => lead.confirmation_call_status === 'completed').length || 0;
 
   const upcomingAppointments = appointments?.filter(apt => apt.status === 'scheduled').length || 0;
-  const totalConversations = conversations?.length || 0;
+  const totalConversations = conversationsCount || conversations?.length || 0;
 
   const totalRevenue = leads?.reduce((sum, lead) => sum + (lead.estimated_quote || 0), 0) || 0;
 
   const recentLeads = leads?.slice(0, 5) || [];
 
   // Chat Analytics Calculations
-  const totalChats = conversations?.length || 0;
+  const totalChats = conversationsCount || conversations?.length || 0;
   const chatsToday = conversations?.filter(c => {
     const today = new Date();
     const chatDate = new Date(c.created_at);
