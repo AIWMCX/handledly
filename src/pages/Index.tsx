@@ -1,5 +1,5 @@
 import { lazy, Suspense, memo } from "react";
-import { Header, Footer, Container, Section, SectionHeader } from "@/components/layout";
+import { Header, Container, Section, SectionHeader } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
@@ -38,7 +38,7 @@ const MobileStickyCTA = lazy(() => import("@/components/conversion/MobileStickyC
 const UrgencyBadge = lazy(() => import("@/components/conversion/UrgencyBadge").then(m => ({ default: m.UrgencyBadge })));
 const StickyCTA = lazy(() => import("@/components/StickyCTA").then(m => ({ default: m.StickyCTA })));
 const InlineQuotePreview = lazy(() => import("@/components/home/InlineQuotePreview"));
-
+const Footer = lazy(() => import("@/components/layout/Footer").then(m => ({ default: m.Footer })));
 
 const services = [
   { 
@@ -373,7 +373,9 @@ export default function Index() {
       </Section>
       </main>
 
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
       <Suspense fallback={null}>
         <StickyCTA />
         <ChatWidget />

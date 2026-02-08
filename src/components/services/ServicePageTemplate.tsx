@@ -1,6 +1,6 @@
 import { Header, Footer, Container, Section } from "@/components/layout";
 import { ChatWidget } from "@/components/ChatWidget/index";
-import { VoiceAgent } from "@/components/VoiceAgent";
+import { DeferredVoiceAgent } from "@/components/DeferredVoiceAgent";
 import { Testimonials } from "@/components/Testimonials";
 import { TrustBadges } from "@/components/TrustBadges";
 import { StickyCTA } from "@/components/StickyCTA";
@@ -138,7 +138,7 @@ export function ServicePageTemplate({ data }: ServicePageTemplateProps) {
       <Footer />
       <StickyCTA />
       <ChatWidget />
-      <VoiceAgent />
+      <DeferredVoiceAgent />
       <ExitIntentModal />
       <SocialProofBanner />
       <MobileStickyCTA />
