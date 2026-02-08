@@ -11,3 +11,8 @@ createRoot(document.getElementById("root")!).render(
     </HelmetProvider>
   </React.StrictMode>
 );
+
+// Load non-critical CSS after first paint to reduce unused CSS in initial load
+requestAnimationFrame(() => {
+  import("./styles/deferred.css");
+});
