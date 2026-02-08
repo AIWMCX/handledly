@@ -173,6 +173,39 @@ Deno.serve(async (req: Request) => {
       table_name: "leads",
     });
 
+    // IDEMPOTENCY CHECK: Prevent duplicate leads from same email + service + date
+    const moveKey = `${email}|${serviceType}|${moveDate || 'no-date'}`;
+    const { data: existingLead } = await supabaseAdmin
+      .from("leads")
+      .select("id, estimated_quote")
+      .eq("email", email)
+      .eq("property_type", serviceType)
+      .gte("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString()) // Within last hour
+      .limit(1)
+      .maybeSingle();
+
+    if (existingLead) {
+      console.log(`[submit-quote] Duplicate submission detected for ${email}, returning existing quote`);
+      const quoteNumber = generateQuoteNumber();
+      const nameParts = fullName.trim().split(" ");
+      return new Response(JSON.stringify({
+        success: true,
+        quoteNumber: quoteNumber,
+        firstName: nameParts[0] || "Friend",
+        lastName: nameParts.slice(1).join(" ") || "",
+        total: existingLead.estimated_quote || quote.total,
+        crewSize: quote.crewSize,
+        hourlyRate: quote.hourlyRate,
+        estimatedHours: quote.estimatedHours,
+        laborCost: quote.laborCost,
+        specialtyFee: quote.specialtyFee,
+        isDuplicate: true,
+      }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Insert lead with service role (bypasses RLS)
     const { error: leadError } = await supabaseAdmin.from("leads").insert({
       id: leadId,
@@ -231,6 +264,7 @@ Deno.serve(async (req: Request) => {
     console.log(`[submit-quote] Quote submitted: ${quoteNumber} for ${firstName} - $${quote.total}`);
 
     // Return success with quote details (for client-side use)
+    // NOTE: quoteNumber used as external reference instead of internal leadId
     return new Response(JSON.stringify({
       success: true,
       leadId: leadId,
