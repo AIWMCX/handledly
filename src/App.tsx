@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { DeferredAuthProvider } from "@/contexts/DeferredAuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ScrollToTop } from "@/components/ScrollToTop";
 
@@ -97,7 +97,7 @@ const PageLoader = () => (
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
+      <DeferredAuthProvider>
         <DeferredProviders>
           <BrowserRouter>
             <ScrollToTop />
@@ -142,7 +142,7 @@ const App = () => (
             </Suspense>
           </BrowserRouter>
         </DeferredProviders>
-      </AuthProvider>
+      </DeferredAuthProvider>
     </QueryClientProvider>
   </ErrorBoundary>
 );

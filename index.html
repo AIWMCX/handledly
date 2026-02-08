@@ -103,7 +103,44 @@
     -->
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Inline skeleton for instant FCP — React replaces this on mount -->
+      <style>
+        .skeleton-page{min-height:100vh;background:#fff;font-family:system-ui,-apple-system,sans-serif}
+        .skeleton-bar{position:fixed;top:0;left:0;right:0;z-index:60;background:#1E3A5F;height:42px;display:flex;align-items:center;justify-content:center}
+        .skeleton-bar span{color:#fff;font-size:13px;font-weight:700;letter-spacing:.5px}
+        .skeleton-header{position:fixed;top:42px;left:0;right:0;z-index:50;background:rgba(255,255,255,.9);border-bottom:1px solid #e5e7eb;height:80px;display:flex;align-items:center;padding:0 1rem}
+        .skeleton-logo{width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#F9B233,#e6a020);margin-right:12px}
+        .skeleton-logo-text{display:flex;flex-direction:column;gap:2px}
+        .skeleton-logo-text span:first-child{font-size:18px;font-weight:600;color:#1E3A5F}
+        .skeleton-logo-text span:last-child{font-size:11px;color:#F9B233;font-weight:500}
+        .skeleton-hero{padding-top:170px;padding-bottom:80px;max-width:680px;margin:0 auto;padding-left:1rem;padding-right:1rem}
+        .skeleton-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:9999px;background:rgba(245,247,250,.8);border:1px solid #e5e7eb;margin-bottom:24px;font-size:14px;font-weight:500;color:#2D3748}
+        .skeleton-h1{font-size:clamp(2.25rem,5vw,4.5rem);font-weight:600;line-height:1.1;color:#1E3A5F;margin-bottom:24px}
+        .skeleton-h1 .accent{color:#F9B233}
+        .skeleton-p{font-size:clamp(1rem,2vw,1.25rem);color:#4A5568;line-height:1.6;margin-bottom:24px;max-width:560px}
+        .skeleton-cta{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:8px;background:linear-gradient(135deg,#F9B233,#e6a020);color:#fff;font-size:18px;font-weight:600;text-decoration:none;box-shadow:0 4px 14px rgba(249,178,51,.3)}
+        @media(min-width:1024px){.skeleton-hero{max-width:1200px;padding-top:200px}}
+      </style>
+      <div class="skeleton-page">
+        <div class="skeleton-bar"><span>NO HIDDEN FEES — FLAT HOURLY RATE</span></div>
+        <div class="skeleton-header">
+          <div style="max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center">
+            <div class="skeleton-logo"></div>
+            <div class="skeleton-logo-text">
+              <span>Handledly</span>
+              <span>America's First AI-Powered Moving SaaS</span>
+            </div>
+          </div>
+        </div>
+        <div class="skeleton-hero">
+          <div class="skeleton-badge">⚡ America's First Moving AI SaaS Platform</div>
+          <h1 class="skeleton-h1">Denver's<br><span class="accent">Top-Rated Movers.</span><br>Flat Rates. No Surprises.</h1>
+          <p class="skeleton-p">The future of moving operations is here. AI-powered scheduling, instant quotes, and 24/7 customer communication.</p>
+          <a href="/quote" class="skeleton-cta">Get Instant Quote →</a>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
