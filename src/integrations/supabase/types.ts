@@ -878,6 +878,47 @@ export type Database = {
           },
         ]
       }
+      lead_follow_ups: {
+        Row: {
+          created_at: string
+          email_status: string
+          error_message: string | null
+          id: string
+          lead_id: string
+          scheduled_for: string
+          sent_at: string | null
+          touch_number: number
+        }
+        Insert: {
+          created_at?: string
+          email_status?: string
+          error_message?: string | null
+          id?: string
+          lead_id: string
+          scheduled_for: string
+          sent_at?: string | null
+          touch_number: number
+        }
+        Update: {
+          created_at?: string
+          email_status?: string
+          error_message?: string | null
+          id?: string
+          lead_id?: string
+          scheduled_for?: string
+          sent_at?: string | null
+          touch_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_follow_ups_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           bedrooms: number | null
