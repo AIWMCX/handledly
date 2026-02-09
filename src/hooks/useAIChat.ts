@@ -229,7 +229,7 @@ export function useAIChat({ onError, onQuoteSubmitted }: UseAIChatOptions = {}) 
       const greetingMessage: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
-        content: "Hi! I'm Jack, the Handledly moving assistant. How can I help you today? I can provide instant quotes, answer questions about our services, or help schedule your move.",
+        content: "Hey! I'm Jack with Handledly. What can I help you with?",
         timestamp: new Date(),
       };
       
