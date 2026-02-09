@@ -27,7 +27,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Search, Filter, Eye, Phone, Mail, RefreshCw } from 'lucide-react';
+import { Search, Filter, Eye, Phone, Mail, RefreshCw, Briefcase } from 'lucide-react';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
@@ -35,12 +35,14 @@ import { usePaginatedLeads } from '@/hooks/usePaginatedQuery';
 import PaginationControls from '@/components/admin/PaginationControls';
 import ExportDropdown from '@/components/admin/ExportDropdown';
 import { useDataExport } from '@/hooks/useDataExport';
+import CreateJobDialog from '@/components/admin/CreateJobDialog';
 
 const Leads = () => {
   const { exportLeads, isExporting } = useDataExport();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedLead, setSelectedLead] = useState<any>(null);
+  const [createJobLead, setCreateJobLead] = useState<any>(null);
   const queryClient = useQueryClient();
 
   const {
@@ -215,13 +217,24 @@ const Leads = () => {
                             {format(new Date(lead.created_at), 'MMM d, h:mm a')}
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => setSelectedLead(lead)}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
+                            <div className="flex justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Create Job"
+                                onClick={() => setCreateJobLead(lead)}
+                              >
+                                <Briefcase className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                title="View Details"
+                                onClick={() => setSelectedLead(lead)}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))
@@ -383,6 +396,12 @@ const Leads = () => {
           )}
         </SheetContent>
       </Sheet>
+      {/* Create Job Dialog */}
+      <CreateJobDialog
+        lead={createJobLead}
+        open={!!createJobLead}
+        onOpenChange={(open) => !open && setCreateJobLead(null)}
+      />
     </div>
   );
 };
