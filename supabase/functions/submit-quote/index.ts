@@ -177,7 +177,7 @@ Deno.serve(async (req: Request) => {
     const moveKey = `${email}|${serviceType}|${moveDate || 'no-date'}`;
     const { data: existingLead } = await supabaseAdmin
       .from("leads")
-      .select("id, estimated_quote")
+      .select("id, estimated_quote, verification_token, phone")
       .eq("email", email)
       .eq("property_type", serviceType)
       .gte("created_at", new Date(Date.now() - 60 * 60 * 1000).toISOString()) // Within last hour
@@ -185,14 +185,64 @@ Deno.serve(async (req: Request) => {
       .maybeSingle();
 
     if (existingLead) {
-      console.log(`[submit-quote] Duplicate submission detected for ${email}, returning existing quote`);
-      const quoteNumber = generateQuoteNumber();
+      console.log(`[submit-quote] Duplicate detected for ${email}, re-triggering outreach for lead ${existingLead.id}`);
+      const dupeQuoteNumber = generateQuoteNumber();
       const nameParts = fullName.trim().split(" ");
+      const firstName = nameParts[0] || "Friend";
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      // Re-trigger email (fire-and-forget)
+      fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-quote-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+        },
+        body: JSON.stringify({
+          leadId: existingLead.id,
+          verificationToken: existingLead.verification_token,
+          firstName, lastName,
+          customerName: fullName,
+          email, phone: existingLead.phone,
+          serviceType, crewSize: quote.crewSize,
+          hourlyRate: quote.hourlyRate,
+          estimatedHours: quote.estimatedHours,
+          laborCost: quote.laborCost,
+          specialtyFee: quote.specialtyFee,
+          totalQuote: existingLead.estimated_quote || quote.total,
+          quoteNumber: dupeQuoteNumber,
+          moveDate, moveFrom: moveFromAddress, moveTo: moveToAddress,
+        }),
+      }).catch(e => console.error("[submit-quote] Re-trigger email failed:", e));
+
+      // Re-trigger call if not preferEmailOnly (fire-and-forget)
+      if (!preferEmailOnly) {
+        fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/trigger-confirmation-call`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+          },
+          body: JSON.stringify({
+            leadId: existingLead.id,
+            verificationToken: existingLead.verification_token,
+            firstName, lastName,
+            customerName: fullName,
+            phone: existingLead.phone, email,
+            serviceType,
+            totalQuote: existingLead.estimated_quote || quote.total,
+            crewSize: quote.crewSize,
+            estimatedHours: quote.estimatedHours,
+            moveDate, moveFrom: moveFromAddress, moveTo: moveToAddress,
+          }),
+        }).catch(e => console.error("[submit-quote] Re-trigger call failed:", e));
+      }
+
       return new Response(JSON.stringify({
         success: true,
-        quoteNumber: quoteNumber,
-        firstName: nameParts[0] || "Friend",
-        lastName: nameParts.slice(1).join(" ") || "",
+        quoteNumber: dupeQuoteNumber,
+        firstName,
+        lastName,
         total: existingLead.estimated_quote || quote.total,
         crewSize: quote.crewSize,
         hourlyRate: quote.hourlyRate,
