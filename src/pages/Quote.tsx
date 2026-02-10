@@ -112,7 +112,7 @@ export default function Quote() {
           currency: 'USD',
           items: [{
             item_id: data.serviceType,
-            item_name: data.serviceType.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            item_name: data.serviceType.replace(/-/g, l => l.toUpperCase()),
             price: response.total,
             quantity: 1
           }]
@@ -144,6 +144,15 @@ export default function Quote() {
       }));
       
       setIsSubmitted(true);
+
+      // Handle duplicate submissions — server already re-triggered email + call
+      if (response.isDuplicate) {
+        toast.info("We already have your quote! Resending confirmation email and scheduling a call.");
+        setEmailSent(true);
+        if (!data.preferEmailOnly) setCallScheduled(true);
+        return;
+      }
+
       toast.success("Quote submitted! Check your email.");
 
       // Send email quote via edge function (uses returned verification token)
