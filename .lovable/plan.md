@@ -1,90 +1,137 @@
 
-
-# Jack Anti-Rambling Fix: Short, Natural Speech Bursts
+# Fix: Duplicate Quote Submissions Should Still Trigger Email and Call
 
 ## Problem
-Jack is dumping all information at once -- 100-150 words per turn, 5 questions stacked together, monologue-style. Customers feel overwhelmed instead of having a natural conversation.
+When a customer submits the same quote twice within 1 hour (same email + service type), the system silently returns the old quote data without sending an email or making a call. The customer sees a confirmation screen but receives nothing.
 
-## Goal
-Jack speaks 5-15 words per turn, asks ONE question at a time, waits for a response, and sounds like a quick phone call -- not a lecture.
+This is the exact scenario that happened: Attempt 1 worked (email + call to voicemail). Attempt 2 was blocked by the 1-hour idempotency window -- no new lead, no email, no call.
 
-## What Changes
+## Solution
+Two changes:
 
-### 1. ElevenLabs Voice Jack -- System Prompt Update
-**File:** `docs/elevenlabs/SYSTEM-PROMPT.md`
+### 1. Re-trigger email and call on duplicate submissions
+**File:** `supabase/functions/submit-quote/index.ts`
 
-Add a new top-priority section at the very beginning (right after the identity line) with anti-rambling rules:
-- Maximum 30 words per turn (most turns should be 5-15 words)
-- ONE question per turn, then stop
-- Wait for the customer to respond before continuing
-- Never info-dump or list multiple questions
-- "One-breath test" -- if Jack cannot say it in one breath, it is too long
+When a duplicate is detected (lines 187-207), instead of just returning the old data silently:
+- Fetch the existing lead's full data (id, verification_token, name, phone, etc.)
+- Re-invoke `send-quote-email` and `trigger-confirmation-call` for that existing lead (same as the original submission flow does)
+- Return the response with `isDuplicate: true` AND `leadId` and `verificationToken` so the frontend can track it
+- Add a log: `"Duplicate detected, re-triggering email and call for lead X"`
 
-Rewrite the PERSONALITY section to remove "Keep responses to 1-2 sentences maximum" and replace with the tighter rule: "Speak in short bursts. 5-15 words per turn. ONE question at a time."
+This way, if a customer submits again because they didn't get the email or missed the call, they get another email and another call attempt.
 
-Rewrite the DISCOVERY FLOW section to explicitly mark each step as a separate turn with "[wait for response]" markers between them.
+### 2. Show user-friendly message on frontend for duplicates
+**File:** `src/pages/Quote.tsx`
 
-Rewrite the IRON LAW EXPLANATION SCRIPT to be shorter (under 30 words).
+After receiving the response from `submit-quote`, check if `response.isDuplicate === true`:
+- Show a toast: "We already have your quote! Resending confirmation email and scheduling a call."
+- Still navigate to confirmation screen as normal
 
-Rewrite the 6-POINT CONFIRMATION to be a single compressed sentence instead of listing each point separately.
+This gives the customer clear feedback that their info was already received.
 
-Add speaking length limits:
-- Opening greeting: 10 words max
-- Follow-up questions: 5-10 words max
-- Explanations: 20-30 words max
-- Pricing quotes: 15-20 words max
+## Technical Details
 
-Add explicit BAD vs GOOD examples showing the difference.
+### submit-quote/index.ts changes (lines 187-207)
+Replace the early return block with:
+```typescript
+if (existingLead) {
+  console.log(`[submit-quote] Duplicate detected for ${email}, re-triggering outreach for lead ${existingLead.id}`);
+  
+  // Fetch full lead data for re-triggering
+  const { data: fullLead } = await supabaseAdmin
+    .from("leads")
+    .select("*")
+    .eq("id", existingLead.id)
+    .single();
 
-### 2. Chat Jack -- Edge Function System Prompt Update
-**File:** `supabase/functions/ai-chat/index.ts`
+  if (fullLead) {
+    const nameParts = fullName.trim().split(" ");
+    const firstName = nameParts[0] || "Friend";
+    const lastName = nameParts.slice(1).join(" ") || "";
 
-Update the `SYSTEM_PROMPT` constant (line 65-192) with the same anti-rambling rules adapted for text chat:
-- Maximum 2 short sentences per message
-- Ask ONE thing at a time
-- Never stack 3+ questions in one message
-- Remove the instruction "Try to collect multiple pieces in single questions" (line 151) -- this directly causes rambling
-- Remove "Keep responses SHORT (2-3 sentences max)" and replace with "1-2 short sentences max, under 40 words"
-- Add explicit examples of good vs bad responses
+    // Re-trigger email (fire-and-forget)
+    fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-quote-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+      },
+      body: JSON.stringify({
+        leadId: fullLead.id,
+        verificationToken: fullLead.verification_token,
+        firstName, lastName,
+        customerName: fullName,
+        email, phone: fullLead.phone,
+        serviceType, crewSize: quote.crewSize,
+        hourlyRate: quote.hourlyRate,
+        estimatedHours: quote.estimatedHours,
+        laborCost: quote.laborCost,
+        specialtyFee: quote.specialtyFee,
+        totalQuote: fullLead.estimated_quote || quote.total,
+        quoteNumber: fullLead.verification_token ? generateQuoteNumber() : generateQuoteNumber(),
+        moveDate, moveFrom: moveFromAddress, moveTo: moveToAddress,
+        specialtyItems: specialtyItems || [],
+      }),
+    }).catch(e => console.error("[submit-quote] Re-trigger email failed:", e));
 
-Key changes to the chat prompt:
-- Remove: "PROACTIVE about gathering quote information" (encourages over-eagerness)
-- Remove: "Try to collect multiple pieces in single questions to speed up the process" (causes question stacking)
-- Add: "Ask ONE question per message. Wait for the answer before asking the next."
-- Shorten the CONVERSION STRATEGY section -- keep the intent but remove aggressive multi-sentence scripts
-- Reduce `max_tokens` from 800 to 300 to physically prevent long responses
+    // Re-trigger call if not preferEmailOnly (fire-and-forget)
+    if (!preferEmailOnly) {
+      fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/trigger-confirmation-call`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+        },
+        body: JSON.stringify({
+          leadId: fullLead.id,
+          verificationToken: fullLead.verification_token,
+          firstName, lastName,
+          customerName: fullName,
+          phone: fullLead.phone, email,
+          serviceType,
+          totalQuote: fullLead.estimated_quote || quote.total,
+          crewSize: quote.crewSize,
+          estimatedHours: quote.estimatedHours,
+          moveDate, moveFrom: moveFromAddress, moveTo: moveToAddress,
+        }),
+      }).catch(e => console.error("[submit-quote] Re-trigger call failed:", e));
+    }
+  }
 
-### 3. RAG Knowledge Base Update
-**File:** `docs/elevenlabs/RAG-KNOWLEDGE-BASE.md`
+  return new Response(JSON.stringify({
+    success: true,
+    quoteNumber: generateQuoteNumber(),
+    firstName: nameParts[0] || "Friend",
+    lastName: nameParts.slice(1).join(" ") || "",
+    total: existingLead.estimated_quote || quote.total,
+    crewSize: quote.crewSize, hourlyRate: quote.hourlyRate,
+    estimatedHours: quote.estimatedHours,
+    laborCost: quote.laborCost, specialtyFee: quote.specialtyFee,
+    isDuplicate: true,
+  }), {
+    status: 200,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+```
 
-Update Section 1 (Agent Identity) communication style to reinforce short bursts.
-
-Update Section 7 (Discovery Flow) to add "[wait for response]" between each step.
-
-Add a new Section (between current Section 1 and Section 2) titled "ANTI-RAMBLING RULES" with:
-- Word count limits per turn type
-- Good vs bad examples
-- The one-breath rule
-- Conversation rhythm pattern (ping-pong, not monologue)
-
-### 4. No UI Changes
-The chat widget and voice agent components remain exactly the same. This is purely a prompt/behavior fix -- no frontend code changes needed except the edge function prompt.
+### Quote.tsx changes (after line 102)
+Add after receiving response:
+```typescript
+if (response.isDuplicate) {
+  toast.info("We already have your quote! Resending confirmation email and scheduling a call.");
+}
+```
 
 ## Files Modified
 
-| File | What Changes |
-|------|-------------|
-| `docs/elevenlabs/SYSTEM-PROMPT.md` | Anti-rambling rules added at top, discovery flow rewritten with turn markers, scripts shortened |
-| `supabase/functions/ai-chat/index.ts` | System prompt rewritten with short-burst rules, removed "collect multiple pieces" instruction, max_tokens reduced to 300 |
-| `docs/elevenlabs/RAG-KNOWLEDGE-BASE.md` | New anti-rambling section added, discovery flow updated with turn markers |
+| File | Change |
+|------|--------|
+| `supabase/functions/submit-quote/index.ts` | Re-trigger email + call on duplicate instead of silent return |
+| `src/pages/Quote.tsx` | Show toast when duplicate detected |
 
-## Important Note
-After these code changes are deployed:
-- The **chat Jack** (text widget) will immediately use the new prompt
-- The **voice Jack** (ElevenLabs) requires a manual step: you must copy the updated `SYSTEM-PROMPT.md` content into the ElevenLabs dashboard and click "Publish" for the changes to take effect on live calls
-
-## Expected Result
-
-Before: Jack speaks 100-150 words, asks 5 questions at once, customers feel overwhelmed.
-
-After: Jack speaks 5-15 words per turn, asks one question, waits, creates a natural back-and-forth conversation like texting or a quick phone call.
+## What This Fixes
+- Customer submits twice -> gets email and call both times
+- Customer sees clear message that their quote was already received
+- No duplicate leads created (idempotency preserved)
+- Call and email are re-triggered safely via fire-and-forget
