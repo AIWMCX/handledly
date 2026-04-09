@@ -1,137 +1,145 @@
 
-# Fix: Duplicate Quote Submissions Should Still Trigger Email and Call
+# Handledly Marketplace Rebuild Plan
+## "eBay for Moving" — Two-Sided Marketplace
 
-## Problem
-When a customer submits the same quote twice within 1 hour (same email + service type), the system silently returns the old quote data without sending an email or making a call. The customer sees a confirmation screen but receives nothing.
+**Strategy:** Replace current single-company site with multi-tenant marketplace. No payments initially (Stripe Connect later).
 
-This is the exact scenario that happened: Attempt 1 worked (email + call to voicemail). Attempt 2 was blocked by the 1-hour idempotency window -- no new lead, no email, no call.
+---
 
-## Solution
-Two changes:
+## Phase 1: Database Foundation (Week 1)
+Build the multi-tenant database schema on top of existing Lovable Cloud.
 
-### 1. Re-trigger email and call on duplicate submissions
-**File:** `supabase/functions/submit-quote/index.ts`
+**New Tables:**
+- `moving_companies` — Company profiles, licensing (DOT/MC), service areas, rates, ratings, verification status
+- `moving_company_users` — Links auth users to companies (multi-user per company)
+- `customers` — Customer profiles linked to auth users
+- `move_requests` — Customer move details (origin, destination, size, date, inventory, specialty items)
+- `quotes` — Mover responses with pricing breakdown, availability, expiration
+- `bookings` — Accepted quotes = confirmed transactions with booking numbers (HND-YYYYMMDD-XXX)
+- `reviews` — Verified post-move reviews with multi-category ratings (professionalism, care, communication, value)
+- `disputes` — Issue tracking with evidence, resolution workflow
 
-When a duplicate is detected (lines 187-207), instead of just returning the old data silently:
-- Fetch the existing lead's full data (id, verification_token, name, phone, etc.)
-- Re-invoke `send-quote-email` and `trigger-confirmation-call` for that existing lead (same as the original submission flow does)
-- Return the response with `isDuplicate: true` AND `leadId` and `verificationToken` so the frontend can track it
-- Add a log: `"Duplicate detected, re-triggering email and call for lead X"`
+**CRM Tables (Free for Movers):**
+- `crm_contacts` — Mover's customer database
+- `crm_tasks` — Follow-ups, calls, reminders
+- `crm_communications` — Email/SMS/call log
 
-This way, if a customer submits again because they didn't get the email or missed the call, they get another email and another call attempt.
+**RLS Policies:**
+- Customers see only their own data + public company profiles
+- Movers see only their own company data + all move requests (for quoting)
+- Platform admins see everything
+- Multi-tenant isolation via `moving_company_users` join
 
-### 2. Show user-friendly message on frontend for duplicates
-**File:** `src/pages/Quote.tsx`
+**Keep Existing:** `user_roles`, `rate_limit_tracker`, `activity_logs`, `business_settings` (repurposed for platform settings)
 
-After receiving the response from `submit-quote`, check if `response.isDuplicate === true`:
-- Show a toast: "We already have your quote! Resending confirmation email and scheduling a call."
-- Still navigate to confirmation screen as normal
+**Remove/Archive:** Current `leads`, `quote_requests`, `appointments`, `jobs` tables (archive data, then deprecate)
 
-This gives the customer clear feedback that their info was already received.
+---
 
-## Technical Details
+## Phase 2: Authentication & Roles (Week 1-2)
+Extend auth system for three user types.
 
-### submit-quote/index.ts changes (lines 187-207)
-Replace the early return block with:
-```typescript
-if (existingLead) {
-  console.log(`[submit-quote] Duplicate detected for ${email}, re-triggering outreach for lead ${existingLead.id}`);
-  
-  // Fetch full lead data for re-triggering
-  const { data: fullLead } = await supabaseAdmin
-    .from("leads")
-    .select("*")
-    .eq("id", existingLead.id)
-    .single();
+- **Customer signup/login** — Email + Google OAuth
+- **Mover signup/login** — Email + company registration flow
+- **Platform admin** — Existing admin role
+- Update `app_role` enum: add `'mover'` role
+- Mover onboarding wizard: company details → licensing → service areas → rates
 
-  if (fullLead) {
-    const nameParts = fullName.trim().split(" ");
-    const firstName = nameParts[0] || "Friend";
-    const lastName = nameParts.slice(1).join(" ") || "";
+---
 
-    // Re-trigger email (fire-and-forget)
-    fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-quote-email`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
-      },
-      body: JSON.stringify({
-        leadId: fullLead.id,
-        verificationToken: fullLead.verification_token,
-        firstName, lastName,
-        customerName: fullName,
-        email, phone: fullLead.phone,
-        serviceType, crewSize: quote.crewSize,
-        hourlyRate: quote.hourlyRate,
-        estimatedHours: quote.estimatedHours,
-        laborCost: quote.laborCost,
-        specialtyFee: quote.specialtyFee,
-        totalQuote: fullLead.estimated_quote || quote.total,
-        quoteNumber: fullLead.verification_token ? generateQuoteNumber() : generateQuoteNumber(),
-        moveDate, moveFrom: moveFromAddress, moveTo: moveToAddress,
-        specialtyItems: specialtyItems || [],
-      }),
-    }).catch(e => console.error("[submit-quote] Re-trigger email failed:", e));
+## Phase 3: Mover Dashboard & CRM (Week 2-3)
+Build the supply side — moving company portal.
 
-    // Re-trigger call if not preferEmailOnly (fire-and-forget)
-    if (!preferEmailOnly) {
-      fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/trigger-confirmation-call`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
-        },
-        body: JSON.stringify({
-          leadId: fullLead.id,
-          verificationToken: fullLead.verification_token,
-          firstName, lastName,
-          customerName: fullName,
-          phone: fullLead.phone, email,
-          serviceType,
-          totalQuote: fullLead.estimated_quote || quote.total,
-          crewSize: quote.crewSize,
-          estimatedHours: quote.estimatedHours,
-          moveDate, moveFrom: moveFromAddress, moveTo: moveToAddress,
-        }),
-      }).catch(e => console.error("[submit-quote] Re-trigger call failed:", e));
-    }
-  }
+**Pages:**
+- `/mover/dashboard` — Overview (leads, bookings, revenue, ratings)
+- `/mover/quotes` — Incoming move requests, create/send quotes
+- `/mover/bookings` — Manage confirmed bookings, status updates
+- `/mover/crm` — Contact management, tasks, communication log
+- `/mover/profile` — Company profile editor (public-facing)
+- `/mover/settings` — Account, team members, notifications
 
-  return new Response(JSON.stringify({
-    success: true,
-    quoteNumber: generateQuoteNumber(),
-    firstName: nameParts[0] || "Friend",
-    lastName: nameParts.slice(1).join(" ") || "",
-    total: existingLead.estimated_quote || quote.total,
-    crewSize: quote.crewSize, hourlyRate: quote.hourlyRate,
-    estimatedHours: quote.estimatedHours,
-    laborCost: quote.laborCost, specialtyFee: quote.specialtyFee,
-    isDuplicate: true,
-  }), {
-    status: 200,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-```
+---
 
-### Quote.tsx changes (after line 102)
-Add after receiving response:
-```typescript
-if (response.isDuplicate) {
-  toast.info("We already have your quote! Resending confirmation email and scheduling a call.");
-}
-```
+## Phase 4: Customer-Facing Marketplace (Week 3-4)
+Build the demand side — compare and book.
 
-## Files Modified
+**Pages:**
+- `/` — Marketplace homepage (search bar, top movers, how it works)
+- `/search` — Enter move details → see matching companies
+- `/compare` — Side-by-side quote comparison from multiple movers
+- `/company/:id` — Public company profile (reviews, ratings, services, pricing)
+- `/booking/:id` — Booking confirmation & tracking
+- `/my-moves` — Customer dashboard (active/past moves, reviews)
+- `/write-review/:bookingId` — Post-move review form
 
-| File | Change |
-|------|--------|
-| `supabase/functions/submit-quote/index.ts` | Re-trigger email + call on duplicate instead of silent return |
-| `src/pages/Quote.tsx` | Show toast when duplicate detected |
+**Core Flow:**
+1. Customer enters move details (origin, dest, size, date, inventory)
+2. System matches to movers in service area
+3. Movers receive notification, submit quotes
+4. Customer compares quotes side-by-side
+5. Customer accepts quote → Booking created
+6. Move happens → Customer leaves review
 
-## What This Fixes
-- Customer submits twice -> gets email and call both times
-- Customer sees clear message that their quote was already received
-- No duplicate leads created (idempotency preserved)
-- Call and email are re-triggered safely via fire-and-forget
+---
+
+## Phase 5: Trust & Safety (Week 4-5)
+- DOT number verification (manual initially, API later)
+- Insurance verification workflow
+- Review moderation system
+- Dispute resolution flow (open → review → resolve)
+- Company suspension/banning system
+
+---
+
+## Phase 6: Communications & Notifications (Week 5-6)
+- Email notifications (new quote request, quote received, booking confirmed)
+- SMS notifications (booking reminders, status updates)
+- In-app notification center
+- Mover ↔ Customer messaging (pre-move communication)
+
+---
+
+## Phase 7: Analytics & Admin (Week 6-7)
+- Platform admin dashboard (GMV, bookings, active users, disputes)
+- Mover analytics (conversion rates, response times, ratings trends)
+- Customer analytics (retention, repeat bookings)
+- Daily metrics aggregation
+
+---
+
+## Phase 8: Payments — Stripe Connect (Future)
+- Mover onboarding to Stripe Connect
+- Customer payment flow (deposit + balance)
+- Escrow until move completion
+- 24-48hr mover payout
+- Platform commission (1-2%) auto-deduction
+- Refund & dispute handling
+
+---
+
+## What Gets Removed
+- Current single-company quote form (`/quote`)
+- AI chat widget (Jack) — repurposed later for marketplace support
+- Voice agent integration — paused
+- Current admin dashboard — rebuilt for marketplace
+- Single-company service pages — replaced with marketplace search
+
+## What Gets Kept
+- Design system (Tailwind + shadcn/ui)
+- Auth infrastructure (Supabase Auth)
+- Rate limiting & security infrastructure
+- Email sending (Resend)
+- SMS (Twilio)
+- Domain & hosting
+
+---
+
+## Success Criteria for MVP Launch
+- [ ] 20+ mover profiles with service areas
+- [ ] Customer can submit move request in <3 minutes
+- [ ] Movers receive and respond to quotes
+- [ ] Customer can compare 3+ quotes side-by-side
+- [ ] Booking confirmation flow works end-to-end
+- [ ] Review system functional
+- [ ] Mobile responsive
+- [ ] SEO-optimized marketplace pages
