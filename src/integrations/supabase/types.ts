@@ -147,6 +147,119 @@ export type Database = {
           },
         ]
       }
+      bookings: {
+        Row: {
+          actual_duration_minutes: number | null
+          balance_due: number | null
+          booking_number: string
+          check_in_time: string | null
+          check_out_time: string | null
+          completion_confirmed_at: string | null
+          created_at: string
+          crew_size: number | null
+          customer_id: string
+          deposit_amount: number | null
+          estimated_duration_hours: number | null
+          id: string
+          move_date: string
+          move_request_id: string
+          move_time: string | null
+          moving_company_id: string
+          payment_method: string | null
+          payment_status: string | null
+          payout_completed_at: string | null
+          platform_commission_amount: number | null
+          platform_commission_rate: number | null
+          quote_id: string
+          status: string
+          total_price: number
+          updated_at: string
+        }
+        Insert: {
+          actual_duration_minutes?: number | null
+          balance_due?: number | null
+          booking_number: string
+          check_in_time?: string | null
+          check_out_time?: string | null
+          completion_confirmed_at?: string | null
+          created_at?: string
+          crew_size?: number | null
+          customer_id: string
+          deposit_amount?: number | null
+          estimated_duration_hours?: number | null
+          id?: string
+          move_date: string
+          move_request_id: string
+          move_time?: string | null
+          moving_company_id: string
+          payment_method?: string | null
+          payment_status?: string | null
+          payout_completed_at?: string | null
+          platform_commission_amount?: number | null
+          platform_commission_rate?: number | null
+          quote_id: string
+          status?: string
+          total_price: number
+          updated_at?: string
+        }
+        Update: {
+          actual_duration_minutes?: number | null
+          balance_due?: number | null
+          booking_number?: string
+          check_in_time?: string | null
+          check_out_time?: string | null
+          completion_confirmed_at?: string | null
+          created_at?: string
+          crew_size?: number | null
+          customer_id?: string
+          deposit_amount?: number | null
+          estimated_duration_hours?: number | null
+          id?: string
+          move_date?: string
+          move_request_id?: string
+          move_time?: string | null
+          moving_company_id?: string
+          payment_method?: string | null
+          payment_status?: string | null
+          payout_completed_at?: string | null
+          platform_commission_amount?: number | null
+          platform_commission_rate?: number | null
+          quote_id?: string
+          status?: string
+          total_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_move_request_id_fkey"
+            columns: ["move_request_id"]
+            isOneToOne: false
+            referencedRelation: "move_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_moving_company_id_fkey"
+            columns: ["moving_company_id"]
+            isOneToOne: false
+            referencedRelation: "moving_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       business_settings: {
         Row: {
           address: string | null
@@ -491,6 +604,244 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_communications: {
+        Row: {
+          body: string | null
+          booking_id: string | null
+          contact_id: string | null
+          created_at: string
+          delivered_at: string | null
+          direction: string
+          id: string
+          moving_company_id: string
+          opened_at: string | null
+          sent_at: string | null
+          subject: string | null
+          type: string
+        }
+        Insert: {
+          body?: string | null
+          booking_id?: string | null
+          contact_id?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          direction: string
+          id?: string
+          moving_company_id: string
+          opened_at?: string | null
+          sent_at?: string | null
+          subject?: string | null
+          type: string
+        }
+        Update: {
+          body?: string | null
+          booking_id?: string | null
+          contact_id?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          direction?: string
+          id?: string
+          moving_company_id?: string
+          opened_at?: string | null
+          sent_at?: string | null
+          subject?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_communications_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_communications_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "crm_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_communications_moving_company_id_fkey"
+            columns: ["moving_company_id"]
+            isOneToOne: false
+            referencedRelation: "moving_companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_contacts: {
+        Row: {
+          created_at: string
+          email: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          moving_company_id: string
+          notes: string | null
+          phone: string | null
+          source: string | null
+          stage: string | null
+          tags: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          moving_company_id: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+          stage?: string | null
+          tags?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          moving_company_id?: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+          stage?: string | null
+          tags?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_contacts_moving_company_id_fkey"
+            columns: ["moving_company_id"]
+            isOneToOne: false
+            referencedRelation: "moving_companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_tasks: {
+        Row: {
+          assigned_to: string | null
+          booking_id: string | null
+          completed_at: string | null
+          contact_id: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          moving_company_id: string
+          priority: string | null
+          status: string | null
+          task_type: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          booking_id?: string | null
+          completed_at?: string | null
+          contact_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          moving_company_id: string
+          priority?: string | null
+          status?: string | null
+          task_type?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          booking_id?: string | null
+          completed_at?: string | null
+          contact_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          moving_company_id?: string
+          priority?: string | null
+          status?: string | null
+          task_type?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_tasks_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_tasks_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "crm_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_tasks_moving_company_id_fkey"
+            columns: ["moving_company_id"]
+            isOneToOne: false
+            referencedRelation: "moving_companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customers: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          phone: string | null
+          referral_code: string | null
+          updated_at: string
+          user_id: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          referral_code?: string | null
+          updated_at?: string
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          referral_code?: string | null
+          updated_at?: string
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: []
+      }
       digital_agreements: {
         Row: {
           agreement_type: string
@@ -541,6 +892,77 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      disputes: {
+        Row: {
+          against_id: string
+          against_type: string
+          amount_disputed: number | null
+          booking_id: string
+          category: string
+          created_at: string
+          description: string
+          evidence: Json | null
+          filed_by_id: string
+          filed_by_type: string
+          id: string
+          resolution_amount: number | null
+          resolution_notes: string | null
+          resolution_type: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          against_id: string
+          against_type: string
+          amount_disputed?: number | null
+          booking_id: string
+          category: string
+          created_at?: string
+          description: string
+          evidence?: Json | null
+          filed_by_id: string
+          filed_by_type: string
+          id?: string
+          resolution_amount?: number | null
+          resolution_notes?: string | null
+          resolution_type?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          against_id?: string
+          against_type?: string
+          amount_disputed?: number | null
+          booking_id?: string
+          category?: string
+          created_at?: string
+          description?: string
+          evidence?: Json | null
+          filed_by_id?: string
+          filed_by_type?: string
+          id?: string
+          resolution_amount?: number | null
+          resolution_notes?: string | null
+          resolution_type?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disputes_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
         ]
@@ -1162,6 +1584,307 @@ export type Database = {
         }
         Relationships: []
       }
+      move_requests: {
+        Row: {
+          created_at: string
+          customer_id: string
+          date_range_end: string | null
+          date_range_start: string | null
+          dest_city: string | null
+          dest_elevator: boolean | null
+          dest_floor: number | null
+          dest_lat: number | null
+          dest_lng: number | null
+          dest_state: string | null
+          dest_street: string | null
+          dest_zip: string | null
+          distance_miles: number | null
+          estimated_drive_minutes: number | null
+          estimated_volume_cuft: number | null
+          estimated_weight_lbs: number | null
+          expires_at: string | null
+          flexible_dates: boolean | null
+          id: string
+          inventory_items: Json | null
+          move_size: string
+          move_type: string
+          notes: string | null
+          origin_city: string | null
+          origin_elevator: boolean | null
+          origin_floor: number | null
+          origin_lat: number | null
+          origin_lng: number | null
+          origin_state: string | null
+          origin_street: string | null
+          origin_zip: string | null
+          packing_required: boolean | null
+          preferred_move_date: string | null
+          specialty_items: Json | null
+          status: string
+          storage_duration_days: number | null
+          storage_required: boolean | null
+          unpacking_required: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          date_range_end?: string | null
+          date_range_start?: string | null
+          dest_city?: string | null
+          dest_elevator?: boolean | null
+          dest_floor?: number | null
+          dest_lat?: number | null
+          dest_lng?: number | null
+          dest_state?: string | null
+          dest_street?: string | null
+          dest_zip?: string | null
+          distance_miles?: number | null
+          estimated_drive_minutes?: number | null
+          estimated_volume_cuft?: number | null
+          estimated_weight_lbs?: number | null
+          expires_at?: string | null
+          flexible_dates?: boolean | null
+          id?: string
+          inventory_items?: Json | null
+          move_size: string
+          move_type: string
+          notes?: string | null
+          origin_city?: string | null
+          origin_elevator?: boolean | null
+          origin_floor?: number | null
+          origin_lat?: number | null
+          origin_lng?: number | null
+          origin_state?: string | null
+          origin_street?: string | null
+          origin_zip?: string | null
+          packing_required?: boolean | null
+          preferred_move_date?: string | null
+          specialty_items?: Json | null
+          status?: string
+          storage_duration_days?: number | null
+          storage_required?: boolean | null
+          unpacking_required?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          date_range_end?: string | null
+          date_range_start?: string | null
+          dest_city?: string | null
+          dest_elevator?: boolean | null
+          dest_floor?: number | null
+          dest_lat?: number | null
+          dest_lng?: number | null
+          dest_state?: string | null
+          dest_street?: string | null
+          dest_zip?: string | null
+          distance_miles?: number | null
+          estimated_drive_minutes?: number | null
+          estimated_volume_cuft?: number | null
+          estimated_weight_lbs?: number | null
+          expires_at?: string | null
+          flexible_dates?: boolean | null
+          id?: string
+          inventory_items?: Json | null
+          move_size?: string
+          move_type?: string
+          notes?: string | null
+          origin_city?: string | null
+          origin_elevator?: boolean | null
+          origin_floor?: number | null
+          origin_lat?: number | null
+          origin_lng?: number | null
+          origin_state?: string | null
+          origin_street?: string | null
+          origin_zip?: string | null
+          packing_required?: boolean | null
+          preferred_move_date?: string | null
+          specialty_items?: Json | null
+          status?: string
+          storage_duration_days?: number | null
+          storage_required?: boolean | null
+          unpacking_required?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "move_requests_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      moving_companies: {
+        Row: {
+          acceptance_rate: number | null
+          address_city: string | null
+          address_lat: number | null
+          address_lng: number | null
+          address_state: string | null
+          address_street: string | null
+          address_zip: string | null
+          average_rating: number | null
+          base_rate_local: number | null
+          base_rate_long_distance: number | null
+          bbb_rating: string | null
+          cancellation_rate: number | null
+          company_name: string
+          created_at: string
+          description: string | null
+          dot_number: string | null
+          id: string
+          insurance_expires_at: string | null
+          insurance_policy: string | null
+          insurance_verified: boolean | null
+          legal_name: string | null
+          logo_url: string | null
+          mc_number: string | null
+          minimum_charge: number | null
+          on_time_rate: number | null
+          onboarding_completed: boolean | null
+          primary_email: string
+          primary_phone: string
+          service_radius_miles: number | null
+          service_states: string[] | null
+          service_zip_codes: string[] | null
+          slug: string | null
+          state_license: string | null
+          status: string
+          stripe_connect_account_id: string | null
+          stripe_onboarding_complete: boolean | null
+          total_moves_completed: number | null
+          total_reviews: number | null
+          updated_at: string
+          verified_at: string | null
+          website: string | null
+          year_founded: number | null
+        }
+        Insert: {
+          acceptance_rate?: number | null
+          address_city?: string | null
+          address_lat?: number | null
+          address_lng?: number | null
+          address_state?: string | null
+          address_street?: string | null
+          address_zip?: string | null
+          average_rating?: number | null
+          base_rate_local?: number | null
+          base_rate_long_distance?: number | null
+          bbb_rating?: string | null
+          cancellation_rate?: number | null
+          company_name: string
+          created_at?: string
+          description?: string | null
+          dot_number?: string | null
+          id?: string
+          insurance_expires_at?: string | null
+          insurance_policy?: string | null
+          insurance_verified?: boolean | null
+          legal_name?: string | null
+          logo_url?: string | null
+          mc_number?: string | null
+          minimum_charge?: number | null
+          on_time_rate?: number | null
+          onboarding_completed?: boolean | null
+          primary_email: string
+          primary_phone: string
+          service_radius_miles?: number | null
+          service_states?: string[] | null
+          service_zip_codes?: string[] | null
+          slug?: string | null
+          state_license?: string | null
+          status?: string
+          stripe_connect_account_id?: string | null
+          stripe_onboarding_complete?: boolean | null
+          total_moves_completed?: number | null
+          total_reviews?: number | null
+          updated_at?: string
+          verified_at?: string | null
+          website?: string | null
+          year_founded?: number | null
+        }
+        Update: {
+          acceptance_rate?: number | null
+          address_city?: string | null
+          address_lat?: number | null
+          address_lng?: number | null
+          address_state?: string | null
+          address_street?: string | null
+          address_zip?: string | null
+          average_rating?: number | null
+          base_rate_local?: number | null
+          base_rate_long_distance?: number | null
+          bbb_rating?: string | null
+          cancellation_rate?: number | null
+          company_name?: string
+          created_at?: string
+          description?: string | null
+          dot_number?: string | null
+          id?: string
+          insurance_expires_at?: string | null
+          insurance_policy?: string | null
+          insurance_verified?: boolean | null
+          legal_name?: string | null
+          logo_url?: string | null
+          mc_number?: string | null
+          minimum_charge?: number | null
+          on_time_rate?: number | null
+          onboarding_completed?: boolean | null
+          primary_email?: string
+          primary_phone?: string
+          service_radius_miles?: number | null
+          service_states?: string[] | null
+          service_zip_codes?: string[] | null
+          slug?: string | null
+          state_license?: string | null
+          status?: string
+          stripe_connect_account_id?: string | null
+          stripe_onboarding_complete?: boolean | null
+          total_moves_completed?: number | null
+          total_reviews?: number | null
+          updated_at?: string
+          verified_at?: string | null
+          website?: string | null
+          year_founded?: number | null
+        }
+        Relationships: []
+      }
+      moving_company_users: {
+        Row: {
+          created_at: string
+          id: string
+          moving_company_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          moving_company_id: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          moving_company_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "moving_company_users_moving_company_id_fkey"
+            columns: ["moving_company_id"]
+            isOneToOne: false
+            referencedRelation: "moving_companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quote_requests: {
         Row: {
           base_price: number | null
@@ -1227,6 +1950,102 @@ export type Database = {
           },
         ]
       }
+      quotes: {
+        Row: {
+          accepted_at: string | null
+          available_dates: Json | null
+          base_price: number
+          cancellation_policy: string | null
+          created_at: string
+          crew_size: number | null
+          deposit_required: number | null
+          estimated_hours: number | null
+          expires_at: string | null
+          fuel_surcharge: number | null
+          id: string
+          move_request_id: string
+          moving_company_id: string
+          notes: string | null
+          packing_price: number | null
+          quote_type: string | null
+          rejected_at: string | null
+          specialty_items_price: number | null
+          status: string
+          storage_price: number | null
+          total_price: number
+          unpacking_price: number | null
+          updated_at: string
+          viewed_at: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          available_dates?: Json | null
+          base_price: number
+          cancellation_policy?: string | null
+          created_at?: string
+          crew_size?: number | null
+          deposit_required?: number | null
+          estimated_hours?: number | null
+          expires_at?: string | null
+          fuel_surcharge?: number | null
+          id?: string
+          move_request_id: string
+          moving_company_id: string
+          notes?: string | null
+          packing_price?: number | null
+          quote_type?: string | null
+          rejected_at?: string | null
+          specialty_items_price?: number | null
+          status?: string
+          storage_price?: number | null
+          total_price: number
+          unpacking_price?: number | null
+          updated_at?: string
+          viewed_at?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          available_dates?: Json | null
+          base_price?: number
+          cancellation_policy?: string | null
+          created_at?: string
+          crew_size?: number | null
+          deposit_required?: number | null
+          estimated_hours?: number | null
+          expires_at?: string | null
+          fuel_surcharge?: number | null
+          id?: string
+          move_request_id?: string
+          moving_company_id?: string
+          notes?: string | null
+          packing_price?: number | null
+          quote_type?: string | null
+          rejected_at?: string | null
+          specialty_items_price?: number | null
+          status?: string
+          storage_price?: number | null
+          total_price?: number
+          unpacking_price?: number | null
+          updated_at?: string
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_move_request_id_fkey"
+            columns: ["move_request_id"]
+            isOneToOne: false
+            referencedRelation: "move_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotes_moving_company_id_fkey"
+            columns: ["moving_company_id"]
+            isOneToOne: false
+            referencedRelation: "moving_companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rate_limit_tracker: {
         Row: {
           created_at: string
@@ -1247,6 +2066,88 @@ export type Database = {
           table_name?: string
         }
         Relationships: []
+      }
+      reviews: {
+        Row: {
+          booking_id: string
+          care_of_items_rating: number | null
+          communication_rating: number | null
+          company_responded_at: string | null
+          company_response: string | null
+          created_at: string
+          customer_id: string
+          flagged_reason: string | null
+          id: string
+          moving_company_id: string
+          overall_rating: number
+          photos: Json | null
+          professionalism_rating: number | null
+          review_text: string | null
+          status: string
+          updated_at: string
+          value_rating: number | null
+        }
+        Insert: {
+          booking_id: string
+          care_of_items_rating?: number | null
+          communication_rating?: number | null
+          company_responded_at?: string | null
+          company_response?: string | null
+          created_at?: string
+          customer_id: string
+          flagged_reason?: string | null
+          id?: string
+          moving_company_id: string
+          overall_rating: number
+          photos?: Json | null
+          professionalism_rating?: number | null
+          review_text?: string | null
+          status?: string
+          updated_at?: string
+          value_rating?: number | null
+        }
+        Update: {
+          booking_id?: string
+          care_of_items_rating?: number | null
+          communication_rating?: number | null
+          company_responded_at?: string | null
+          company_response?: string | null
+          created_at?: string
+          customer_id?: string
+          flagged_reason?: string | null
+          id?: string
+          moving_company_id?: string
+          overall_rating?: number
+          photos?: Json | null
+          professionalism_rating?: number | null
+          review_text?: string | null
+          status?: string
+          updated_at?: string
+          value_rating?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: true
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_moving_company_id_fkey"
+            columns: ["moving_company_id"]
+            isOneToOne: false
+            referencedRelation: "moving_companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -1332,6 +2233,7 @@ export type Database = {
         Args: { p_base_limit?: number; p_identifier: string }
         Returns: number
       }
+      get_user_company_id: { Args: { _user_id: string }; Returns: string }
       get_user_id_by_email: { Args: { email_input: string }; Returns: string }
       has_role: {
         Args: {
@@ -1363,7 +2265,7 @@ export type Database = {
       timeout_stale_calls: { Args: never; Returns: number }
     }
     Enums: {
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "mover"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1491,7 +2393,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "mover"],
     },
   },
 } as const
