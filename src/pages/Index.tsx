@@ -249,7 +249,7 @@ export default function Index() {
                 Sample profiles shown. Live mover network launching soon.
               </p>
               <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-white">
-                <Link to="/auth">
+                <Link to="/auth?mode=signup&role=mover">
                   Are you a moving company? Join free
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
@@ -303,7 +303,7 @@ export default function Index() {
                   </p>
                   <div className="flex flex-wrap gap-3">
                     <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90">
-                      <Link to="/auth">
+                      <Link to="/auth?mode=signup&role=mover">
                         List your company free
                         <ArrowRight className="ml-2 w-5 h-5" />
                       </Link>
