@@ -2,18 +2,29 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-// SECURITY: Authorization is now SOLELY based on database roles (user_roles table)
-// The client-side email whitelist has been removed - RLS policies are the security boundary
-// Admin access is controlled by: has_role(auth.uid(), 'admin') in database policies
+// SECURITY: Authorization is based on database roles (user_roles table) and tenant
+// membership (moving_company_users / customers). RLS policies are the security boundary.
+
+export type AccountRole = 'customer' | 'mover';
+
+interface SignUpExtras {
+  role: AccountRole;
+  fullName?: string;
+  phone?: string;
+  companyName?: string;
+}
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   isAdmin: boolean;
-  isAuthorized: boolean; // Now derived from isAdmin (database role)
+  isMover: boolean;
+  isCustomer: boolean;
+  isAuthorized: boolean; // Derived from isAdmin (database role)
+  companyId: string | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, extras?: SignUpExtras) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -31,62 +42,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isMover, setIsMover] = useState(false);
+  const [isCustomer, setIsCustomer] = useState(false);
+  const [companyId, setCompanyId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // SECURITY: isAuthorized now derived from database role (isAdmin)
-  // No client-side email whitelist - RLS policies are the actual security boundary
   const isAuthorized = isAdmin;
 
-  const checkAdminRole = async (userId: string) => {
+  const loadRoles = async (userId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .eq('role', 'admin')
-        .maybeSingle();
+      const [rolesRes, companyRes, customerRes] = await Promise.all([
+        supabase.from('user_roles').select('role').eq('user_id', userId),
+        supabase.from('moving_company_users').select('moving_company_id').eq('user_id', userId).maybeSingle(),
+        supabase.from('customers').select('id').eq('user_id', userId).maybeSingle(),
+      ]);
 
-      if (error) {
-        console.error('Error checking admin role:', error);
-        return false;
-      }
-
-      return !!data;
+      const roles = (rolesRes.data ?? []).map((r: { role: string }) => r.role);
+      setIsAdmin(roles.includes('admin'));
+      setIsMover(!!companyRes.data);
+      setCompanyId(companyRes.data?.moving_company_id ?? null);
+      setIsCustomer(!!customerRes.data || (!companyRes.data && !roles.includes('admin')));
     } catch (err) {
-      console.error('Error checking admin role:', err);
-      return false;
+      console.error('Error loading roles:', err);
     }
   };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-
-        // Defer admin check to avoid Supabase deadlock
-        if (session?.user) {
-          setTimeout(async () => {
-            const adminStatus = await checkAdminRole(session.user.id);
-            setIsAdmin(adminStatus);
-            setIsLoading(false);
-          }, 0);
-        } else {
-          setIsAdmin(false);
-          setIsLoading(false);
-        }
-      }
-    );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        const adminStatus = await checkAdminRole(session.user.id);
-        setIsAdmin(adminStatus);
+        setTimeout(async () => {
+          await loadRoles(session.user.id);
+          setIsLoading(false);
+        }, 0);
+      } else {
+        setIsAdmin(false);
+        setIsMover(false);
+        setIsCustomer(false);
+        setCompanyId(null);
+        setIsLoading(false);
+      }
+    });
+
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        await loadRoles(session.user.id);
       }
       setIsLoading(false);
     });
@@ -99,23 +103,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error: error as Error | null };
   };
 
-  const signUp = async (email: string, password: string) => {
-    const redirectUrl = `${window.location.origin}/admin`;
-    const { error } = await supabase.auth.signUp({
+  const signUp = async (email: string, password: string, extras?: SignUpExtras) => {
+    const role = extras?.role ?? 'customer';
+    const redirectUrl = `${window.location.origin}/auth`;
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: redirectUrl }
+      options: { emailRedirectTo: redirectUrl, data: { role, full_name: extras?.fullName } },
     });
-    return { error: error as Error | null };
+
+    if (error) return { error: error as Error };
+
+    const newUserId = data.user?.id;
+    if (!newUserId) return { error: null };
+
+    // Create role-specific records (best-effort; will retry on first sign-in if blocked)
+    try {
+      if (role === 'customer') {
+        const [firstName, ...rest] = (extras?.fullName ?? '').trim().split(' ');
+        await supabase.from('customers').insert({
+          user_id: newUserId,
+          email,
+          first_name: firstName || null,
+          last_name: rest.join(' ') || null,
+          phone: extras?.phone || null,
+        });
+      }
+      // Mover company creation happens during onboarding wizard, not here.
+    } catch (err) {
+      console.warn('Post-signup profile creation deferred:', err);
+    }
+
+    return { error: null };
   };
 
   const signOut = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
+    setIsMover(false);
+    setIsCustomer(false);
+    setCompanyId(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, isAdmin, isAuthorized, isLoading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{
+      user, session, isAdmin, isMover, isCustomer, isAuthorized, companyId, isLoading,
+      signIn, signUp, signOut,
+    }}>
       {children}
     </AuthContext.Provider>
   );

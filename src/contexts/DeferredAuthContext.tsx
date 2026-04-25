@@ -6,14 +6,26 @@ import type { User, Session } from '@supabase/supabase-js';
  * until after initial render, reducing main bundle JS and improving FCP.
  */
 
+export type AccountRole = 'customer' | 'mover';
+
+interface SignUpExtras {
+  role: AccountRole;
+  fullName?: string;
+  phone?: string;
+  companyName?: string;
+}
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   isAdmin: boolean;
+  isMover: boolean;
+  isCustomer: boolean;
   isAuthorized: boolean;
+  companyId: string | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, extras?: SignUpExtras) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -50,19 +62,23 @@ export function DeferredAuthProvider({ children }: { children: React.ReactNode }
     return () => cancelAnimationFrame(id);
   }, []);
 
+  const noopValue: AuthContextType = {
+    user: null,
+    session: null,
+    isAdmin: false,
+    isMover: false,
+    isCustomer: false,
+    isAuthorized: false,
+    companyId: null,
+    isLoading: true,
+    signIn: async () => ({ error: new Error('Auth not loaded yet') }),
+    signUp: async () => ({ error: new Error('Auth not loaded yet') }),
+    signOut: async () => {},
+  };
+
   if (!shouldLoad) {
-    // Provide a minimal no-op auth context while the real one loads
     return (
-      <AuthContext.Provider value={{
-        user: null,
-        session: null,
-        isAdmin: false,
-        isAuthorized: false,
-        isLoading: true,
-        signIn: async () => ({ error: new Error('Auth not loaded yet') }),
-        signUp: async () => ({ error: new Error('Auth not loaded yet') }),
-        signOut: async () => {},
-      }}>
+      <AuthContext.Provider value={noopValue}>
         {children}
       </AuthContext.Provider>
     );
@@ -70,16 +86,7 @@ export function DeferredAuthProvider({ children }: { children: React.ReactNode }
 
   return (
     <Suspense fallback={
-      <AuthContext.Provider value={{
-        user: null,
-        session: null,
-        isAdmin: false,
-        isAuthorized: false,
-        isLoading: true,
-        signIn: async () => ({ error: new Error('Auth not loaded yet') }),
-        signUp: async () => ({ error: new Error('Auth not loaded yet') }),
-        signOut: async () => {},
-      }}>
+      <AuthContext.Provider value={noopValue}>
         {children}
       </AuthContext.Provider>
     }>

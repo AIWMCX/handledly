@@ -32,6 +32,8 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const ClientPortal = lazy(() => import("./pages/ClientPortal"));
 const ProtectedRoute = lazy(() => import("@/components/ProtectedRoute"));
+const MyMoves = lazy(() => import("./pages/customer/MyMoves"));
+const MoverDashboard = lazy(() => import("./pages/mover/MoverDashboard"));
 
 // Service pages - lazy loaded (only accessed via navigation)
 const LocalMoving = lazy(() => import("./pages/services/LocalMoving"));
@@ -126,6 +128,26 @@ const App = () => (
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsOfService />} />
                 <Route path="/client-portal" element={<ClientPortal />} />
+
+                {/* Customer area */}
+                <Route
+                  path="/my-moves"
+                  element={
+                    <ProtectedRoute requireRole="customer">
+                      <MyMoves />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Mover area */}
+                <Route
+                  path="/mover/dashboard"
+                  element={
+                    <ProtectedRoute requireRole="mover">
+                      <MoverDashboard />
+                    </ProtectedRoute>
+                  }
+                />
                 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -7,164 +7,147 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Mail, Lock, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Loader2, Mail, Lock, ArrowLeft, User as UserIcon, Building2, Phone } from 'lucide-react';
 import { z } from 'zod';
 
-const authSchema = z.object({
+const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-const emailSchema = z.object({
+const customerSignupSchema = z.object({
+  fullName: z.string().min(2, 'Please enter your full name'),
   email: z.string().email('Please enter a valid email address'),
+  phone: z.string().optional(),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-type AuthMode = 'login' | 'signup' | 'reset';
+const moverSignupSchema = z.object({
+  fullName: z.string().min(2, 'Please enter your full name'),
+  companyName: z.string().min(2, 'Please enter your company name'),
+  email: z.string().email('Please enter a valid email address'),
+  phone: z.string().min(7, 'Please enter a phone number'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+const emailSchema = z.object({ email: z.string().email('Please enter a valid email address') });
+
+type Mode = 'login' | 'signup' | 'reset';
+type SignupRole = 'customer' | 'mover';
 
 const Auth = () => {
-  const [mode, setMode] = useState<AuthMode>('login');
+  const [searchParams] = useSearchParams();
+  const initialMode = (searchParams.get('mode') as Mode) || 'login';
+  const initialRole = (searchParams.get('role') as SignupRole) || 'customer';
+  const redirectTo = searchParams.get('redirect') || '';
+
+  const [mode, setMode] = useState<Mode>(initialMode);
+  const [signupRole, setSignupRole] = useState<SignupRole>(initialRole);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [companyName, setCompanyName] = useState('');
 
-  const { signIn, signUp, signOut, user, isAdmin, isLoading } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { signIn, signUp, user, isAdmin, isMover, isCustomer, isLoading } = useAuth();
   const navigate = useNavigate();
 
+  // Role-based redirect after login
   useEffect(() => {
-    // Only redirect if user is logged in AND is admin
-    if (user && isAdmin && !isLoading) {
-      navigate('/admin');
+    if (isLoading || !user) return;
+    if (redirectTo) {
+      navigate(redirectTo);
+      return;
     }
-  }, [user, isAdmin, isLoading, navigate]);
+    if (isAdmin) navigate('/admin');
+    else if (isMover) navigate('/mover/dashboard');
+    else if (isCustomer) navigate('/my-moves');
+  }, [user, isAdmin, isMover, isCustomer, isLoading, redirectTo, navigate]);
 
-  // If user is logged in but not an admin, show a message
-  if (user && !isAdmin && !isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col">
-        <header className="border-b border-border/50 bg-background/80 backdrop-blur-sm">
-          <div className="container mx-auto px-4 py-4">
-            <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Home
-            </Link>
-          </div>
-        </header>
-        <main className="flex-1 flex items-center justify-center p-4">
-          <Card className="w-full max-w-md border-border/50 bg-card/50 backdrop-blur-sm">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-foreground">
-                Access Restricted
-              </CardTitle>
-              <CardDescription className="text-muted-foreground">
-                You're signed in as {user.email}, but you don't have admin privileges.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button
-                onClick={() => navigate('/')}
-                className="w-full"
-              >
-                Return to Home
-              </Button>
-              <Button
-                onClick={() => signOut()}
-                variant="outline"
-                className="w-full"
-              >
-                Sign Out
-              </Button>
-            </CardContent>
-          </Card>
-        </main>
-      </div>
-    );
-  }
+  const switchMode = (m: Mode) => {
+    setMode(m);
+    setError(null);
+    setSuccessMessage(null);
+  };
 
   const handlePasswordReset = async () => {
     setError(null);
     setSuccessMessage(null);
-
-    const validation = emailSchema.safeParse({ email });
-    if (!validation.success) {
-      setError(validation.error.errors[0].message);
-      return;
-    }
-
+    const v = emailSchema.safeParse({ email });
+    if (!v.success) return setError(v.error.errors[0].message);
     setIsSubmitting(true);
-
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/admin`,
+        redirectTo: `${window.location.origin}/reset-password`,
       });
-
-      if (error) {
-        setError(error.message);
-      } else {
-        setSuccessMessage('Password reset email sent! Check your inbox and click the link to set a new password.');
-      }
-    } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      if (error) setError(error.message);
+      else setSuccessMessage('Password reset email sent. Check your inbox.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccessMessage(null);
+    const v = loginSchema.safeParse({ email, password });
+    if (!v.success) return setError(v.error.errors[0].message);
+    setIsSubmitting(true);
+    try {
+      const { error } = await signIn(email, password);
+      if (error) {
+        setError(error.message.includes('Invalid login credentials')
+          ? 'Invalid email or password.'
+          : error.message);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccessMessage(null);
 
-    if (mode === 'reset') {
-      await handlePasswordReset();
-      return;
-    }
-
-    // Validate input
-    const validation = authSchema.safeParse({ email, password });
-    if (!validation.success) {
-      setError(validation.error.errors[0].message);
-      return;
-    }
+    const schema = signupRole === 'mover' ? moverSignupSchema : customerSignupSchema;
+    const payload = signupRole === 'mover'
+      ? { fullName, companyName, email, phone, password }
+      : { fullName, email, phone, password };
+    const v = schema.safeParse(payload);
+    if (!v.success) return setError(v.error.errors[0].message);
 
     setIsSubmitting(true);
-
     try {
-      if (mode === 'login') {
-        const { error } = await signIn(email, password);
-        if (error) {
-          if (error.message.includes('Invalid login credentials')) {
-            setError('Invalid email or password. Please try again.');
-          } else {
-            setError(error.message);
-          }
-        }
-      } else if (mode === 'signup') {
-        const { error } = await signUp(email, password);
-        if (error) {
-          if (error.message.includes('already registered')) {
-            setError('This email is already registered. Please sign in instead.');
-          } else {
-            setError(error.message);
-          }
-        } else {
-          setSuccessMessage('Account created successfully! You can now sign in.');
-          setMode('login');
-        }
+      const { error } = await signUp(email, password, {
+        role: signupRole,
+        fullName,
+        phone,
+        companyName: signupRole === 'mover' ? companyName : undefined,
+      });
+      if (error) {
+        setError(error.message.includes('already registered')
+          ? 'This email is already registered. Please sign in instead.'
+          : error.message);
+      } else {
+        setSuccessMessage(
+          signupRole === 'mover'
+            ? "Account created. Check your email to verify, then we'll walk you through company onboarding."
+            : 'Account created. Check your email to verify, then sign in.'
+        );
+        setMode('login');
+        setPassword('');
       }
-    } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const switchMode = (newMode: AuthMode) => {
-    setMode(newMode);
-    setError(null);
-    setSuccessMessage(null);
   };
 
   if (isLoading) {
@@ -175,41 +158,9 @@ const Auth = () => {
     );
   }
 
-  const getTitle = () => {
-    switch (mode) {
-      case 'login': return 'Admin Login';
-      case 'signup': return 'Create Account';
-      case 'reset': return 'Reset Password';
-    }
-  };
-
-  const getDescription = () => {
-    switch (mode) {
-      case 'login': return 'Sign in to access the admin dashboard';
-      case 'signup': return 'Create an admin account to manage your business';
-      case 'reset': return 'Enter your email to receive a password reset link';
-    }
-  };
-
-  const getButtonText = () => {
-    if (isSubmitting) {
-      switch (mode) {
-        case 'login': return 'Signing in...';
-        case 'signup': return 'Creating account...';
-        case 'reset': return 'Sending reset link...';
-      }
-    }
-    switch (mode) {
-      case 'login': return 'Sign In';
-      case 'signup': return 'Create Account';
-      case 'reset': return 'Send Reset Link';
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="border-b border-border/50 bg-background/80 backdrop-blur-sm">
+      <header className="border-b border-border/50">
         <div className="container mx-auto px-4 py-4">
           <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="h-4 w-4" />
@@ -218,114 +169,92 @@ const Auth = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md border-border/50 bg-card/50 backdrop-blur-sm">
+        <Card className="w-full max-w-md border-border/50">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold text-foreground">
-              {getTitle()}
+            <CardTitle className="text-2xl font-bold">
+              {mode === 'login' ? 'Welcome back' : mode === 'signup' ? 'Create your account' : 'Reset password'}
             </CardTitle>
-            <CardDescription className="text-muted-foreground">
-              {getDescription()}
+            <CardDescription>
+              {mode === 'login'
+                ? 'Sign in to continue to Handledly'
+                : mode === 'signup'
+                ? 'Choose how you want to use Handledly'
+                : 'Enter your email and we\u2019ll send a reset link'}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            {successMessage && (
+              <Alert className="mb-4 border-success/50 bg-success/10">
+                <AlertDescription>{successMessage}</AlertDescription>
+              </Alert>
+            )}
+
+            {mode === 'signup' && (
+              <Tabs value={signupRole} onValueChange={(v) => setSignupRole(v as SignupRole)} className="mb-4">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="customer">I&apos;m moving</TabsTrigger>
+                  <TabsTrigger value="mover">I&apos;m a mover</TabsTrigger>
+                </TabsList>
+                <TabsContent value="customer" className="text-xs text-muted-foreground mt-2">
+                  Get free quotes from verified moving companies.
+                </TabsContent>
+                <TabsContent value="mover" className="text-xs text-muted-foreground mt-2">
+                  Join the marketplace. 1.5% commission, free CRM, 24-48 hr payout.
+                </TabsContent>
+              </Tabs>
+            )}
+
+            <form onSubmit={mode === 'login' ? handleLogin : mode === 'reset' ? (e) => { e.preventDefault(); handlePasswordReset(); } : handleSignup} className="space-y-4">
+              {mode === 'signup' && (
+                <>
+                  <Field icon={UserIcon} id="full-name" label="Full name" placeholder="Jane Doe" value={fullName} onChange={setFullName} disabled={isSubmitting} />
+                  {signupRole === 'mover' && (
+                    <Field icon={Building2} id="company-name" label="Company name" placeholder="Acme Moving Co." value={companyName} onChange={setCompanyName} disabled={isSubmitting} />
+                  )}
+                </>
               )}
 
-              {successMessage && (
-                <Alert className="border-green-500/50 bg-green-500/10">
-                  <AlertDescription className="text-green-400">{successMessage}</AlertDescription>
-                </Alert>
-              )}
+              <Field icon={Mail} id="email" type="email" label="Email" placeholder="you@example.com" value={email} onChange={setEmail} disabled={isSubmitting} />
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-foreground">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="admin@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-background/50 border-border/50"
-                    disabled={isSubmitting}
-                  />
-                </div>
-              </div>
+              {mode === 'signup' && (
+                <Field icon={Phone} id="phone" type="tel" label={signupRole === 'mover' ? 'Business phone' : 'Phone (optional)'} placeholder="(555) 123-4567" value={phone} onChange={setPhone} disabled={isSubmitting} />
+              )}
 
               {mode !== 'reset' && (
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-foreground">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 bg-background/50 border-border/50"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                </div>
+                <Field icon={Lock} id="password" type="password" label="Password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022" value={password} onChange={setPassword} disabled={isSubmitting} />
               )}
 
-              <Button
-                type="submit"
-                className="w-full bg-primary hover:bg-primary/90"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {getButtonText()}
-                  </>
-                ) : (
-                  getButtonText()
-                )}
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {mode === 'login' && (isSubmitting ? 'Signing in...' : 'Sign In')}
+                {mode === 'signup' && (isSubmitting ? 'Creating account...' : signupRole === 'mover' ? 'Create mover account' : 'Create customer account')}
+                {mode === 'reset' && (isSubmitting ? 'Sending...' : 'Send reset link')}
               </Button>
 
-              <div className="text-center space-y-2">
+              <div className="text-center text-sm space-y-2 pt-2">
                 {mode === 'login' && (
                   <>
-                    <button
-                      type="button"
-                      onClick={() => switchMode('reset')}
-                      className="text-sm text-muted-foreground hover:text-primary hover:underline block w-full"
-                    >
+                    <button type="button" onClick={() => switchMode('reset')} className="text-muted-foreground hover:text-primary hover:underline block w-full">
                       Forgot your password?
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => switchMode('signup')}
-                      className="text-sm text-primary hover:underline"
-                    >
-                      Don't have an account? Sign up
+                    <button type="button" onClick={() => switchMode('signup')} className="text-primary hover:underline">
+                      New to Handledly? Create an account
                     </button>
                   </>
                 )}
                 {mode === 'signup' && (
-                  <button
-                    type="button"
-                    onClick={() => switchMode('login')}
-                    className="text-sm text-primary hover:underline"
-                  >
+                  <button type="button" onClick={() => switchMode('login')} className="text-primary hover:underline">
                     Already have an account? Sign in
                   </button>
                 )}
                 {mode === 'reset' && (
-                  <button
-                    type="button"
-                    onClick={() => switchMode('login')}
-                    className="text-sm text-primary hover:underline"
-                  >
+                  <button type="button" onClick={() => switchMode('login')} className="text-primary hover:underline">
                     Back to sign in
                   </button>
                 )}
@@ -337,5 +266,28 @@ const Auth = () => {
     </div>
   );
 };
+
+interface FieldProps {
+  icon: React.ComponentType<{ className?: string }>;
+  id: string;
+  label: string;
+  placeholder?: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  disabled?: boolean;
+}
+
+function Field({ icon: Icon, id, label, placeholder, value, onChange, type = 'text', disabled }: FieldProps) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <div className="relative">
+        <Icon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input id={id} type={type} placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} className="pl-10" disabled={disabled} />
+      </div>
+    </div>
+  );
+}
 
 export default Auth;
