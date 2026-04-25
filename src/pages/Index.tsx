@@ -1,389 +1,371 @@
-import { lazy, Suspense, memo } from "react";
+import { lazy, Suspense } from "react";
+import { Link } from "react-router-dom";
 import { Header, Container, Section, SectionHeader } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { AnnouncementBar } from "@/components/AnnouncementBar";
-import { TrustBadges } from "@/components/TrustBadges";
-
 import { Badge } from "@/components/ui/badge";
 import { MeshGradientHero } from "@/components/ui/BackgroundEffects";
-import { HOURLY_RATES } from "@/lib/quoteCalculator";
 import { SEO } from "@/components/SEO";
-import { ConversionEvents } from "@/lib/analytics";
-import { 
-  Phone, ArrowRight, Star, MapPin,
-  Dumbbell, Users, CheckCircle, Building, Home, Zap
+import { MarketplaceSearch } from "@/components/marketplace/MarketplaceSearch";
+import {
+  ArrowRight,
+  Star,
+  ShieldCheck,
+  BadgeCheck,
+  Clock,
+  DollarSign,
+  Search,
+  ListChecks,
+  CheckCircle2,
+  Truck,
+  Users,
+  Sparkles,
+  Building2,
 } from "lucide-react";
 
-// Trust icons - used below fold in "Why Choose Us" section
-import {
-  AwardWinningIcon,
-  OnTimeGuaranteeIcon,
-  FullyInsuredIcon,
-  LocalExpertsIcon
-} from "@/components/icons/TrustIcons";
-
-// Lazy load below-fold and non-critical components for better FCP/LCP
-const TrustIndicators = lazy(() => import("@/components/TrustIndicators").then(m => ({ default: m.TrustIndicators })));
-import { DeferredVoiceAgent } from "@/components/DeferredVoiceAgent";
-const ChatWidget = lazy(() => import("@/components/ChatWidget/index").then(m => ({ default: m.ChatWidget })));
-const HowItWorks = lazy(() => import("@/components/HowItWorks").then(m => ({ default: m.HowItWorks })));
-const StatsBar = lazy(() => import("@/components/StatsBar").then(m => ({ default: m.StatsBar })));
-const PricingDisplay = lazy(() => import("@/components/PricingDisplay").then(m => ({ default: m.PricingDisplay })));
-const Testimonials = lazy(() => import("@/components/Testimonials").then(m => ({ default: m.Testimonials })));
-const ExitIntentModal = lazy(() => import("@/components/ExitIntentModal").then(m => ({ default: m.ExitIntentModal })));
-const SocialProofBanner = lazy(() => import("@/components/conversion/SocialProofBanner").then(m => ({ default: m.SocialProofBanner })));
-const AnimatedStats = lazy(() => import("@/components/conversion/AnimatedStats").then(m => ({ default: m.AnimatedStats })));
-const MobileStickyCTA = lazy(() => import("@/components/conversion/MobileStickyCTA").then(m => ({ default: m.default })));
-const UrgencyBadge = lazy(() => import("@/components/conversion/UrgencyBadge").then(m => ({ default: m.UrgencyBadge })));
-const StickyCTA = lazy(() => import("@/components/StickyCTA").then(m => ({ default: m.StickyCTA })));
-const InlineQuotePreview = lazy(() => import("@/components/home/InlineQuotePreview"));
 const Footer = lazy(() => import("@/components/layout/Footer").then(m => ({ default: m.Footer })));
 
-const services = [
-  { 
-    icon: Building, 
-    title: "Apartment & Condo", 
-    description: "Studios to 4+ BDR apartments and high-rise condos. No elevator or stair fees.",
-    link: "/services/local-moving",
-    badge: null,
+const howItWorks = [
+  {
+    icon: Search,
+    title: "Tell us about your move",
+    description: "Enter your origin, destination, date, and home size. Takes 60 seconds.",
   },
-  { 
-    icon: Home, 
-    title: "House & Townhouse", 
-    description: "Single-family homes, townhouses, and duplexes. Complete protection included.",
-    link: "/services/local-moving",
-    badge: null,
+  {
+    icon: ListChecks,
+    title: "Compare verified movers",
+    description: "Get quotes from licensed, insured companies — side by side.",
   },
-  { 
-    icon: Users, 
-    title: "Labor-Only Help", 
-    description: "Have your own truck or pod? We provide the professional muscle.",
-    link: "/quote",
-    badge: null,
-  },
-  { 
-    icon: Dumbbell, 
-    title: "Heavy Items", 
-    description: "Pianos, safes, pool tables, appliances, and oversized items.",
-    link: "/services/heavy-items-moving",
-    badge: null,
-    customRate: 169,
+  {
+    icon: CheckCircle2,
+    title: "Book the one you love",
+    description: "Pick by price, reviews, or availability. Confirmed in minutes.",
   },
 ];
 
-const whyChooseUs = [
-  "Flat hourly rates — no hidden fees",
-  "Free packing materials included",
-  "No stair or elevator charges",
-  "Free furniture assembly/disassembly",
-  "500+ damage-free days",
-  "Same-day service available",
+const trustPillars = [
+  {
+    icon: ShieldCheck,
+    title: "Verified & Insured",
+    description: "Every company is DOT-licensed with verified insurance on file.",
+  },
+  {
+    icon: DollarSign,
+    title: "Transparent Pricing",
+    description: "Binding quotes, no hidden fees, no surprise charges on move day.",
+  },
+  {
+    icon: Star,
+    title: "Real Customer Reviews",
+    description: "Only customers who actually booked through Handledly can review.",
+  },
+  {
+    icon: Clock,
+    title: "Fast & Easy",
+    description: "Compare 3+ quotes in minutes instead of calling 5 companies.",
+  },
+];
+
+// Demo featured-mover cards for visual scaffold (replace with live data when seeded)
+const featuredMovers = [
+  {
+    name: "Mile High Movers",
+    city: "Denver, CO",
+    rating: 4.9,
+    reviews: 312,
+    fromPrice: 159,
+    badges: ["Top Rated", "Same-Day"],
+  },
+  {
+    name: "Aurora Pro Moving",
+    city: "Aurora, CO",
+    rating: 4.8,
+    reviews: 187,
+    fromPrice: 149,
+    badges: ["Verified"],
+  },
+  {
+    name: "Front Range Movers",
+    city: "Boulder, CO",
+    rating: 4.9,
+    reviews: 241,
+    fromPrice: 169,
+    badges: ["Long Distance"],
+  },
 ];
 
 export default function Index() {
   return (
     <div className="min-h-screen bg-background">
-      <SEO 
-        title="Denver's Top-Rated Movers | Handledly™ - $159/hr Flat Rate Moving"
-        description="Denver's highest-rated moving company. Flat hourly rates from $159/hr, no hidden fees, free packing materials. 500+ damage-free days. Get your free quote in 60 seconds."
+      <SEO
+        title="Compare Top Movers Near You | Handledly Marketplace"
+        description="Get free quotes from verified, licensed moving companies in 60 seconds. Compare side-by-side, read real reviews, and book the right mover with confidence."
         canonicalUrl="https://handledly.com/"
-        keywords={['Denver movers', 'moving company Denver', 'local movers Denver', 'affordable moving', 'professional movers', 'Denver moving services', 'flat rate movers', 'same day moving']}
+        keywords={[
+          "moving marketplace",
+          "compare movers",
+          "movers near me",
+          "licensed moving companies",
+          "moving quotes",
+          "verified movers",
+        ]}
       />
-      
-      <AnnouncementBar />
+
       <Header />
-      
+
       <main id="main-content">
-        {/* Hero Section with Mesh Gradient */}
-        <section className="relative pt-40 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        <MeshGradientHero />
-        
-        <Container className="relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Content */}
-            <div>
-              {/* First Moving AI SaaS Badge */}
+        {/* Hero with search */}
+        <section className="relative pt-32 pb-16 lg:pt-40 lg:pb-24 overflow-hidden">
+          <MeshGradientHero />
+
+          <Container className="relative z-10">
+            <div className="max-w-3xl mx-auto text-center mb-10">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card mb-6 shadow-depth-1">
-                <Zap className="w-4 h-4 text-accent" />
-                <span className="text-sm font-medium text-foreground">America's First Moving AI SaaS Platform</span>
+                <Sparkles className="w-4 h-4 text-accent" />
+                <span className="text-sm font-medium text-foreground">
+                  The marketplace for licensed moving companies
+                </span>
               </div>
-              
-              <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold leading-tight mb-6">
-                Denver's<br />
-                <span className="text-accent">Top-Rated Movers.</span><br />
-                Flat Rates. No Surprises.
+
+              <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-semibold leading-tight mb-5">
+                Compare top movers.<br />
+                <span className="text-accent">Book with confidence.</span>
               </h1>
-              
-              <p className="text-lg lg:text-xl text-muted-foreground mb-4 max-w-2xl leading-relaxed">
-                The future of moving operations is here. AI-powered scheduling, instant quotes, and 24/7 
-                customer communication — all in one intelligent platform.
+
+              <p className="text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                Get free quotes from verified, insured moving companies in your area —
+                side by side, in under a minute.
               </p>
-
-              <div className="flex flex-wrap items-center gap-4 mb-6 text-sm">
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-card shadow-depth-1">
-                  <Users className="w-4 h-4 text-accent" />
-                  <span className="text-foreground font-medium">2 Movers + Truck: ${HOURLY_RATES['moving-2-movers']}/hr</span>
-                </div>
-                <Badge className="px-3 py-1.5 bg-accent/10 text-accent-text border-accent/30 hover:bg-accent/20 shadow-depth-1">
-                  <Zap className="w-3 h-3 mr-1" />
-                  Same-Day Available
-                </Badge>
-              </div>
-              
-              
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90 h-14 px-8 text-lg hover-lift animate-glow-pulse">
-                  <Link to="/quote">Get Instant Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="h-14 px-8 border-primary text-primary hover:bg-primary hover:text-white glass-card">
-                  <a href="tel:+18782187397" onClick={() => ConversionEvents.phoneClicked('hero', '8782187397')}>
-                    <Phone className="mr-2 w-5 h-5" />(878) 218-7397
-                  </a>
-                </Button>
-                <Button asChild variant="ghost" size="lg" className="h-14 px-6 text-muted-foreground hover:text-primary">
-                  <a href="tel:+17199203282" onClick={() => ConversionEvents.phoneClicked('hero', '7199203282')}>
-                    (719) 920-3282
-                  </a>
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-accent" />
-                  <span>Free quote in 60 seconds</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-accent" />
-                  <span>30+ Denver cities</span>
-                </div>
-              </div>
             </div>
 
-            {/* Right: Trust visual / Quick stats */}
-            <div className="hidden lg:block">
-              <div className="relative">
-                {/* Main trust card */}
-                <div className="relative p-8 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-depth-3">
-                  <div className="text-center mb-6">
-                    <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">Trusted By Denver Families</p>
-                    <div className="flex items-center justify-center gap-1 mb-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-6 h-6 text-accent fill-accent" />
-                      ))}
+            <div className="max-w-5xl mx-auto">
+              <MarketplaceSearch />
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <BadgeCheck className="w-4 h-4 text-accent" />
+                <span>Verified DOT licensed companies</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-accent" />
+                <span>Insurance verified</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Star className="w-4 h-4 text-accent fill-accent" />
+                <span>Real verified reviews</span>
+              </div>
+            </div>
+          </Container>
+        </section>
+
+        {/* How it works */}
+        <Section className="bg-secondary">
+          <Container>
+            <SectionHeader
+              title="How Handledly Works"
+              subtitle="One form. Multiple quotes. Total transparency."
+            />
+            <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+              {howItWorks.map((step, i) => (
+                <div
+                  key={step.title}
+                  className="relative p-8 rounded-3xl bg-card border border-border shadow-depth-2 hover:shadow-depth-3 transition-shadow"
+                >
+                  <div className="absolute -top-4 left-8 w-8 h-8 rounded-full bg-accent text-accent-foreground font-heading font-bold flex items-center justify-center shadow-depth-2">
+                    {i + 1}
+                  </div>
+                  <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
+                    <step.icon className="w-6 h-6 text-accent" />
+                  </div>
+                  <h3 className="font-heading text-xl font-semibold text-primary mb-2">
+                    {step.title}
+                  </h3>
+                  <p className="text-muted-foreground">{step.description}</p>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </Section>
+
+        {/* Featured movers */}
+        <Section>
+          <Container>
+            <SectionHeader
+              title="Featured Moving Companies"
+              subtitle="Top-rated, verified movers ready to quote your next move."
+            />
+            <div className="grid md:grid-cols-3 gap-6">
+              {featuredMovers.map((mover) => (
+                <div
+                  key={mover.name}
+                  className="p-6 rounded-2xl bg-card border border-border shadow-depth-2 hover:shadow-depth-3 hover:border-accent/40 transition-all hover-lift"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-14 h-14 rounded-xl bg-primary/5 flex items-center justify-center">
+                      <Building2 className="w-7 h-7 text-primary" />
                     </div>
-                    <p className="text-3xl font-bold text-primary">4.9 out of 5</p>
-                    <p className="text-sm text-muted-foreground">Based on 500+ verified reviews</p>
+                    <div className="flex items-center gap-1 text-sm">
+                      <Star className="w-4 h-4 text-accent fill-accent" />
+                      <span className="font-semibold text-foreground">{mover.rating}</span>
+                      <span className="text-muted-foreground">({mover.reviews})</span>
+                    </div>
                   </div>
-                  
-                  {/* Animated Quick stats grid - lazy loaded */}
-                  <Suspense fallback={<div className="grid grid-cols-2 gap-4 h-32" />}>
-                    <AnimatedStats 
-                      stats={[
-                        { value: 500, label: "Damage-Free Days", suffix: "+" },
-                        { value: 0, label: "Hidden Fees", prefix: "$" },
-                        { value: 30, label: "Cities Served", suffix: "+" },
-                        { value: 24, label: "Response Time", suffix: "hr" },
-                      ]}
-                      className="grid grid-cols-2 gap-4"
-                    />
-                  </Suspense>
+
+                  <h3 className="font-heading text-lg font-semibold text-primary mb-1">
+                    {mover.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-4">{mover.city}</p>
+
+                  <div className="flex flex-wrap gap-2 mb-5">
+                    {mover.badges.map((b) => (
+                      <Badge
+                        key={b}
+                        variant="secondary"
+                        className="bg-accent/10 text-accent-text border-accent/20"
+                      >
+                        {b}
+                      </Badge>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <div>
+                      <p className="text-xs text-muted-foreground">From</p>
+                      <p className="font-heading text-xl font-semibold text-primary">
+                        ${mover.fromPrice}
+                        <span className="text-sm font-normal text-muted-foreground">/hr</span>
+                      </p>
+                    </div>
+                    <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary hover:text-white">
+                      View profile
+                    </Button>
+                  </div>
                 </div>
-                
-                {/* Floating accent elements */}
-                <div className="absolute -top-4 -right-4 w-24 h-24 rounded-full bg-accent/20 blur-2xl" />
-                <div className="absolute -bottom-6 -left-6 w-32 h-32 rounded-full bg-primary/10 blur-3xl" />
-              </div>
+              ))}
             </div>
-          </div>
-        </Container>
-      </section>
 
-      {/* Trust Badges Strip */}
-      <TrustBadges />
-
-      {/* Stats Bar */}
-      <Suspense fallback={<div className="py-12" />}>
-        <StatsBar />
-      </Suspense>
-
-      {/* Services with mesh background */}
-      <Section className="relative overflow-hidden bg-secondary">
-        <div className="absolute inset-0 bg-mesh-section pointer-events-none" />
-        <Container className="relative z-10">
-          <SectionHeader 
-            title="Our Services" 
-            subtitle="Professional moving solutions with transparent, flat-rate pricing." 
-          />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map((service, index) => (
-              <Link 
-                key={service.title} 
-                to={service.link}
-                className="group relative p-6 rounded-2xl bg-background border border-border hover:border-primary/50 transition-all shadow-depth-2 hover:shadow-depth-3 hover-lift"
-              >
-                {/* Urgency badge for first service */}
-                {index === 0 && (
-                  <div className="absolute -top-3 right-4">
-                    <Suspense fallback={null}>
-                      <UrgencyBadge type="slots_limited" text="Only 3 slots left today" size="sm" />
-                    </Suspense>
-                  </div>
-                )}
-                {index === 3 && (
-                  <div className="absolute -top-3 right-4">
-                    <Suspense fallback={null}>
-                      <UrgencyBadge type="popular" size="sm" />
-                    </Suspense>
-                  </div>
-                )}
-                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:shadow-glow-gold transition-shadow">
-                  <service.icon className="w-6 h-6 text-accent" />
-                </div>
-                <h3 className="font-heading text-xl font-semibold text-primary mb-2">{service.title}</h3>
-                <p className="text-muted-foreground text-sm mb-4">{service.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-accent-text font-medium text-sm group-hover:underline">
-                    Learn More →
-                  </span>
-                  <span className="text-xs text-muted-foreground">From ${service.customRate || HOURLY_RATES['moving-2-movers']}/hr</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-white shadow-depth-1">
-              <Link to="/services">View All Services <ArrowRight className="ml-2 w-4 h-4" /></Link>
-            </Button>
-          </div>
-        </Container>
-      </Section>
-
-      {/* Trust Indicators - What Makes Us Different */}
-      <Suspense fallback={<div className="py-16" />}>
-        <TrustIndicators />
-      </Suspense>
-
-      {/* Pricing Display */}
-      <Suspense fallback={<div className="py-20" />}>
-        <PricingDisplay />
-      </Suspense>
-
-      {/* Inline Quote Preview - P0 CRO Optimization */}
-      <Suspense fallback={<div className="py-20" />}>
-        <InlineQuotePreview />
-      </Suspense>
-
-      {/* How It Works */}
-      <Suspense fallback={<div className="py-20" />}>
-        <HowItWorks />
-      </Suspense>
-
-      {/* Why Choose Us */}
-      <Section className="relative overflow-hidden bg-secondary">
-        <div className="absolute inset-0 bg-mesh-section pointer-events-none" />
-        <Container className="relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <SectionHeader title="Why People Choose Handledly" subtitle="No gimmicks, just honest service at fair prices." align="left" />
-              <ul className="space-y-4">
-                {whyChooseUs.map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-accent mt-0.5 shrink-0" />
-                    <span className="text-foreground">{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <Button asChild size="lg" className="mt-8 gradient-gold text-white shadow-gold hover:opacity-90 hover-lift">
-                <Link to="/quote">Get Your Free Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
-              </Button>
-            </div>
-            <div className="grid grid-cols-2 gap-5">
-              <div className="space-y-5">
-                <div className="group relative p-7 rounded-3xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-depth-2 hover:shadow-depth-3 hover:border-accent/30 transition-all duration-300 hover-lift overflow-hidden">
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center mb-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] group-hover:shadow-glow-gold transition-all duration-300">
-                    <AwardWinningIcon size="list" color="gold" />
-                  </div>
-                  <p className="font-heading text-xl font-bold text-primary tracking-tight">Award Winning</p>
-                  <p className="text-sm text-muted-foreground mt-1">Top-rated Denver movers</p>
-                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-3xl" />
-                </div>
-                <div className="group relative p-7 rounded-3xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-depth-2 hover:shadow-depth-3 hover:border-accent/30 transition-all duration-300 hover-lift overflow-hidden">
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center mb-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] group-hover:shadow-glow-gold transition-all duration-300">
-                    <FullyInsuredIcon size="list" color="gold" />
-                  </div>
-                  <p className="font-heading text-xl font-bold text-primary tracking-tight">Fully Insured</p>
-                  <p className="text-sm text-muted-foreground mt-1">Complete protection</p>
-                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-3xl" />
-                </div>
-              </div>
-              <div className="space-y-5 mt-10">
-                <div className="group relative p-7 rounded-3xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-depth-2 hover:shadow-depth-3 hover:border-accent/30 transition-all duration-300 hover-lift overflow-hidden">
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center mb-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] group-hover:shadow-glow-gold transition-all duration-300">
-                    <OnTimeGuaranteeIcon size="list" color="gold" />
-                  </div>
-                  <p className="font-heading text-xl font-bold text-primary tracking-tight">On Time</p>
-                  <p className="text-sm text-muted-foreground mt-1">Punctuality guaranteed</p>
-                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-3xl" />
-                </div>
-                <div className="group relative p-7 rounded-3xl bg-white/80 backdrop-blur-sm border border-white/50 shadow-depth-2 hover:shadow-depth-3 hover:border-accent/30 transition-all duration-300 hover-lift overflow-hidden">
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center mb-4 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] group-hover:shadow-glow-gold transition-all duration-300">
-                    <LocalExpertsIcon size="list" color="gold" />
-                  </div>
-                  <p className="font-heading text-xl font-bold text-primary tracking-tight">Local Experts</p>
-                  <p className="text-sm text-muted-foreground mt-1">Denver Metro specialists</p>
-                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-3xl" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </Section>
-
-
-      {/* Testimonials */}
-      <Suspense fallback={<div className="py-20" />}>
-        <Testimonials />
-      </Suspense>
-
-      {/* Final CTA */}
-      <Section className="relative overflow-hidden bg-secondary">
-        <div className="absolute inset-0 bg-mesh-section pointer-events-none" />
-        <Container size="narrow" className="relative z-10">
-          <div className="text-center">
-            <h2 className="font-heading text-3xl lg:text-4xl font-semibold text-primary mb-4">Ready to Make Your Move?</h2>
-            <p className="text-muted-foreground mb-8">Get a free quote in minutes. No hidden fees, guaranteed.</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90 hover-lift animate-glow-pulse">
-                <Link to="/quote">Get Free Quote <ArrowRight className="ml-2 w-5 h-5" /></Link>
-              </Button>
+            <div className="text-center mt-10">
+              <p className="text-sm text-muted-foreground mb-4">
+                Sample profiles shown. Live mover network launching soon.
+              </p>
               <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-white">
-                <a href="tel:+18782187397"><Phone className="mr-2 w-5 h-5" />(878) 218-7397</a>
-              </Button>
-              <Button asChild variant="ghost" size="lg" className="text-muted-foreground hover:text-primary">
-                <a href="tel:+17199203282">(719) 920-3282</a>
+                <Link to="/auth">
+                  Are you a moving company? Join free
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Link>
               </Button>
             </div>
-          </div>
-        </Container>
-      </Section>
+          </Container>
+        </Section>
+
+        {/* Why Handledly */}
+        <Section className="bg-secondary">
+          <Container>
+            <SectionHeader
+              title="Why Handledly"
+              subtitle="Trust, transparency, and choice — built for both customers and movers."
+            />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {trustPillars.map((p) => (
+                <div
+                  key={p.title}
+                  className="p-6 rounded-2xl bg-card border border-border shadow-depth-1 hover:shadow-depth-2 transition-shadow"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
+                    <p.icon className="w-6 h-6 text-accent" />
+                  </div>
+                  <h3 className="font-heading text-lg font-semibold text-primary mb-2">
+                    {p.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">{p.description}</p>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </Section>
+
+        {/* For movers CTA */}
+        <Section>
+          <Container>
+            <div className="relative overflow-hidden rounded-3xl bg-primary text-primary-foreground p-10 lg:p-16 shadow-depth-3">
+              <div className="absolute inset-0 bg-mesh-section opacity-20 pointer-events-none" />
+              <div className="relative grid lg:grid-cols-2 gap-10 items-center">
+                <div>
+                  <Badge className="mb-4 bg-accent text-accent-foreground border-0">
+                    For Moving Companies
+                  </Badge>
+                  <h2 className="font-heading text-3xl lg:text-4xl font-semibold mb-4 text-primary-foreground">
+                    Pre-qualified leads. Free CRM. <span className="text-accent">1.5% commission.</span>
+                  </h2>
+                  <p className="text-lg text-primary-foreground/80 mb-6 leading-relaxed">
+                    Join the marketplace built for movers. Get high-intent customers,
+                    manage your pipeline with our free CRM, and keep more of every job.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90">
+                      <Link to="/auth">
+                        List your company free
+                        <ArrowRight className="ml-2 w-5 h-5" />
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="lg"
+                      className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                    >
+                      <Link to="/about">Learn more</Link>
+                    </Button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-5 rounded-2xl bg-primary-foreground/10 border border-primary-foreground/20">
+                    <Truck className="w-6 h-6 text-accent mb-3" />
+                    <p className="font-heading text-2xl font-bold text-primary-foreground">1.5%</p>
+                    <p className="text-sm text-primary-foreground/70">Commission per booking</p>
+                  </div>
+                  <div className="p-5 rounded-2xl bg-primary-foreground/10 border border-primary-foreground/20">
+                    <Users className="w-6 h-6 text-accent mb-3" />
+                    <p className="font-heading text-2xl font-bold text-primary-foreground">$0</p>
+                    <p className="text-sm text-primary-foreground/70">CRM cost — forever free</p>
+                  </div>
+                  <div className="p-5 rounded-2xl bg-primary-foreground/10 border border-primary-foreground/20">
+                    <Clock className="w-6 h-6 text-accent mb-3" />
+                    <p className="font-heading text-2xl font-bold text-primary-foreground">24-48h</p>
+                    <p className="text-sm text-primary-foreground/70">Payout window (coming soon)</p>
+                  </div>
+                  <div className="p-5 rounded-2xl bg-primary-foreground/10 border border-primary-foreground/20">
+                    <BadgeCheck className="w-6 h-6 text-accent mb-3" />
+                    <p className="font-heading text-2xl font-bold text-primary-foreground">Verified</p>
+                    <p className="text-sm text-primary-foreground/70">Customer-ready leads</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Container>
+        </Section>
+
+        {/* Final CTA */}
+        <Section className="bg-secondary">
+          <Container>
+            <div className="max-w-3xl mx-auto text-center">
+              <h2 className="font-heading text-3xl lg:text-4xl font-semibold text-primary mb-4">
+                Ready to find your mover?
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8">
+                Compare verified moving companies in your area — free, in under a minute.
+              </p>
+              <div className="max-w-3xl mx-auto">
+                <MarketplaceSearch variant="compact" />
+              </div>
+            </div>
+          </Container>
+        </Section>
       </main>
 
-      <Suspense fallback={null}>
+      <Suspense fallback={<div className="py-12" />}>
         <Footer />
       </Suspense>
-      <Suspense fallback={null}>
-        <StickyCTA />
-        <ChatWidget />
-        <ExitIntentModal />
-        <SocialProofBanner />
-        <MobileStickyCTA />
-      </Suspense>
-      <DeferredVoiceAgent />
     </div>
   );
 }
