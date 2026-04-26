@@ -527,9 +527,8 @@ async function executeCall(data: CallRequest): Promise<void> {
       const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
       const errorSupabase = createClient(supabaseUrl, supabaseKey);
       
-      await errorSupabase
-        .from('leads')
-        .update({
+      if (data.leadId) {
+        await errorSupabase.from('leads').update({
           confirmation_call_status: smsSent ? 'failed_sms_sent' : 'failed',
           call_notes: JSON.stringify({
             error: errorMessage,
@@ -538,8 +537,8 @@ async function executeCall(data: CallRequest): Promise<void> {
             admin_notified: adminNotified,
             retries_exhausted: true,
           }),
-        })
-        .eq('id', data.leadId);
+        }).eq('id', data.leadId);
+      }
         
       if (smsSent) {
         console.log('[trigger-confirmation-call] Customer notified via SMS fallback');
