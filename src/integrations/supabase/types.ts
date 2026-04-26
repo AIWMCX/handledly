@@ -155,6 +155,11 @@ export type Database = {
           check_in_time: string | null
           check_out_time: string | null
           completion_confirmed_at: string | null
+          confirmation_call_notes: string | null
+          confirmation_call_sid: string | null
+          confirmation_call_status: string | null
+          confirmation_call_summary: string | null
+          confirmation_call_time: string | null
           created_at: string
           crew_size: number | null
           customer_id: string
@@ -182,6 +187,11 @@ export type Database = {
           check_in_time?: string | null
           check_out_time?: string | null
           completion_confirmed_at?: string | null
+          confirmation_call_notes?: string | null
+          confirmation_call_sid?: string | null
+          confirmation_call_status?: string | null
+          confirmation_call_summary?: string | null
+          confirmation_call_time?: string | null
           created_at?: string
           crew_size?: number | null
           customer_id: string
@@ -209,6 +219,11 @@ export type Database = {
           check_in_time?: string | null
           check_out_time?: string | null
           completion_confirmed_at?: string | null
+          confirmation_call_notes?: string | null
+          confirmation_call_sid?: string | null
+          confirmation_call_status?: string | null
+          confirmation_call_summary?: string | null
+          confirmation_call_time?: string | null
           created_at?: string
           crew_size?: number | null
           customer_id?: string
@@ -1586,6 +1601,10 @@ export type Database = {
       }
       move_requests: {
         Row: {
+          broadcast_count: number | null
+          confirmation_call_notes: string | null
+          confirmation_call_status: string | null
+          confirmation_call_time: string | null
           created_at: string
           customer_id: string
           date_range_end: string | null
@@ -1606,6 +1625,7 @@ export type Database = {
           flexible_dates: boolean | null
           id: string
           inventory_items: Json | null
+          last_broadcast_at: string | null
           lead_id: string | null
           move_size: string
           move_type: string
@@ -1628,6 +1648,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          broadcast_count?: number | null
+          confirmation_call_notes?: string | null
+          confirmation_call_status?: string | null
+          confirmation_call_time?: string | null
           created_at?: string
           customer_id: string
           date_range_end?: string | null
@@ -1648,6 +1672,7 @@ export type Database = {
           flexible_dates?: boolean | null
           id?: string
           inventory_items?: Json | null
+          last_broadcast_at?: string | null
           lead_id?: string | null
           move_size: string
           move_type: string
@@ -1670,6 +1695,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          broadcast_count?: number | null
+          confirmation_call_notes?: string | null
+          confirmation_call_status?: string | null
+          confirmation_call_time?: string | null
           created_at?: string
           customer_id?: string
           date_range_end?: string | null
@@ -1690,6 +1719,7 @@ export type Database = {
           flexible_dates?: boolean | null
           id?: string
           inventory_items?: Json | null
+          last_broadcast_at?: string | null
           lead_id?: string | null
           move_size?: string
           move_type?: string
@@ -1724,6 +1754,54 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mover_broadcasts: {
+        Row: {
+          broadcast_at: string
+          created_at: string
+          id: string
+          move_request_id: string
+          moving_company_id: string
+          responded_at: string | null
+          response: string | null
+          viewed_at: string | null
+        }
+        Insert: {
+          broadcast_at?: string
+          created_at?: string
+          id?: string
+          move_request_id: string
+          moving_company_id: string
+          responded_at?: string | null
+          response?: string | null
+          viewed_at?: string | null
+        }
+        Update: {
+          broadcast_at?: string
+          created_at?: string
+          id?: string
+          move_request_id?: string
+          moving_company_id?: string
+          responded_at?: string | null
+          response?: string | null
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mover_broadcasts_move_request_id_fkey"
+            columns: ["move_request_id"]
+            isOneToOne: false
+            referencedRelation: "move_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mover_broadcasts_moving_company_id_fkey"
+            columns: ["moving_company_id"]
+            isOneToOne: false
+            referencedRelation: "moving_companies"
             referencedColumns: ["id"]
           },
         ]
@@ -2189,6 +2267,10 @@ export type Database = {
     }
     Functions: {
       archive_old_leads: { Args: never; Returns: number }
+      broadcast_move_request: {
+        Args: { _move_request_id: string }
+        Returns: number
+      }
       check_circuit_breaker: {
         Args: { p_service_name: string }
         Returns: boolean

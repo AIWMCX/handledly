@@ -34,6 +34,8 @@ const ClientPortal = lazy(() => import("./pages/ClientPortal"));
 const ProtectedRoute = lazy(() => import("@/components/ProtectedRoute"));
 const MyMoves = lazy(() => import("./pages/customer/MyMoves"));
 const MoverDashboard = lazy(() => import("./pages/mover/MoverDashboard"));
+const MoverOnboarding = lazy(() => import("./pages/mover/MoverOnboarding"));
+const MoverInbox = lazy(() => import("./pages/mover/MoverInbox"));
 
 // Service pages - lazy loaded (only accessed via navigation)
 const LocalMoving = lazy(() => import("./pages/services/LocalMoving"));
@@ -58,6 +60,7 @@ const UserManagement = lazy(() => import("./pages/admin/UserManagement"));
 const Settings = lazy(() => import("./pages/admin/Settings"));
 const CostMonitoring = lazy(() => import("./pages/admin/CostMonitoring"));
 const AIQuality = lazy(() => import("./pages/admin/AIQuality"));
+const Command = lazy(() => import("./pages/admin/Command"));
 
 const queryClient = new QueryClient();
 
@@ -148,10 +151,27 @@ const App = () => (
                     </ProtectedRoute>
                   }
                 />
+                <Route
+                  path="/mover/onboarding"
+                  element={
+                    <ProtectedRoute requireRole="mover">
+                      <MoverOnboarding />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/mover/inbox"
+                  element={
+                    <ProtectedRoute requireRole="mover">
+                      <MoverInbox />
+                    </ProtectedRoute>
+                  }
+                />
                 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
                   <Route index element={<Overview />} />
+                  <Route path="command" element={<Command />} />
                   <Route path="leads" element={<Leads />} />
                   <Route path="conversations" element={<Conversations />} />
                   <Route path="calls" element={<CallLogs />} />

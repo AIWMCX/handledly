@@ -37,6 +37,7 @@ interface MoveRequest {
   dest_city: string | null;
   preferred_move_date: string | null;
   created_at: string;
+  confirmation_call_status: string | null;
   quotes: Quote[];
 }
 
@@ -72,6 +73,7 @@ const MyMoves = () => {
       .select(`
         id, status, move_type, move_size, origin_zip, dest_zip,
         origin_city, dest_city, preferred_move_date, created_at,
+        confirmation_call_status,
         quotes (
           id, quote_number, total_price, base_price, estimated_hours,
           crew_size, notes, status, created_at, moving_company_id,
@@ -194,6 +196,11 @@ const MyMoves = () => {
                       </div>
                       <Badge variant={status.tone}>{status.label}</Badge>
                     </div>
+                    {req.confirmation_call_status && req.confirmation_call_status !== 'pending' && (
+                      <div className="text-xs text-muted-foreground mt-2">
+                        AI confirmation call: <span className="font-medium">{req.confirmation_call_status.replace(/_/g, ' ')}</span>
+                      </div>
+                    )}
                   </CardHeader>
                   <CardContent>
                     {req.quotes.length === 0 ? (

@@ -10,7 +10,8 @@ import {
   Truck,
   ShieldCheck,
   DollarSign,
-  UserCog
+  UserCog,
+  Radio
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,7 @@ interface AdminSidebarProps {
 
 const navItems = [
   { to: '/admin', icon: LayoutDashboard, label: 'Overview', end: true },
+  { to: '/admin/command', icon: Radio, label: 'Command Center' },
   { to: '/admin/leads', icon: Users, label: 'Leads' },
   { to: '/admin/conversations', icon: MessageSquare, label: 'Conversations' },
   { to: '/admin/calls', icon: Phone, label: 'Call Logs' },
