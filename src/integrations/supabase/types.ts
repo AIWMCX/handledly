@@ -1606,6 +1606,7 @@ export type Database = {
           flexible_dates: boolean | null
           id: string
           inventory_items: Json | null
+          lead_id: string | null
           move_size: string
           move_type: string
           notes: string | null
@@ -1647,6 +1648,7 @@ export type Database = {
           flexible_dates?: boolean | null
           id?: string
           inventory_items?: Json | null
+          lead_id?: string | null
           move_size: string
           move_type: string
           notes?: string | null
@@ -1688,6 +1690,7 @@ export type Database = {
           flexible_dates?: boolean | null
           id?: string
           inventory_items?: Json | null
+          lead_id?: string | null
           move_size?: string
           move_type?: string
           notes?: string | null
@@ -1714,6 +1717,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "move_requests_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
             referencedColumns: ["id"]
           },
         ]
@@ -1967,6 +1977,7 @@ export type Database = {
           moving_company_id: string
           notes: string | null
           packing_price: number | null
+          quote_number: string | null
           quote_type: string | null
           rejected_at: string | null
           specialty_items_price: number | null
@@ -1993,6 +2004,7 @@ export type Database = {
           moving_company_id: string
           notes?: string | null
           packing_price?: number | null
+          quote_number?: string | null
           quote_type?: string | null
           rejected_at?: string | null
           specialty_items_price?: number | null
@@ -2019,6 +2031,7 @@ export type Database = {
           moving_company_id?: string
           notes?: string | null
           packing_price?: number | null
+          quote_number?: string | null
           quote_type?: string | null
           rejected_at?: string | null
           specialty_items_price?: number | null
