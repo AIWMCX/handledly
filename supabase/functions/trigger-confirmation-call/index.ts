@@ -624,7 +624,7 @@ serve(async (req) => {
     }
 
     // SEC-001: Verify token and lead freshness before initiating call
-    if (data.verificationToken) {
+    if (data.verificationToken && data.leadId) {
       const { data: lead, error: verifyError } = await supabase
         .from('leads')
         .select('id, verification_token, confirmation_call_status, created_at, call_sid, conversation_id')
@@ -673,16 +673,18 @@ serve(async (req) => {
     console.log(`[trigger-confirmation-call] Will call ${data.phone} immediately`);
 
     // Update lead status to "pending" immediately
-    await supabase
-      .from('leads')
-      .update({
-        confirmation_call_status: 'pending',
-        call_notes: JSON.stringify({
-          scheduled_for: new Date().toISOString(),
-          delay_seconds: 0,
-        }),
-      })
-      .eq('id', data.leadId);
+    if (data.leadId) {
+      await supabase
+        .from('leads')
+        .update({
+          confirmation_call_status: 'pending',
+          call_notes: JSON.stringify({
+            scheduled_for: new Date().toISOString(),
+            delay_seconds: 0,
+          }),
+        })
+        .eq('id', data.leadId);
+    }
 
     // Execute call synchronously - waitUntil is unreliable for critical operations
     // The call must complete before returning to ensure it actually happens
