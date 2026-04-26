@@ -154,6 +154,32 @@ export function useAIChat({ onError, onQuoteSubmitted }: UseAIChatOptions = {}) 
     }
   }, [conversationId, onQuoteSubmitted]);
 
+  // Marketplace request: send to submit-move-request edge function (auth required)
+  const processMarketplaceRequest = useCallback(async (mrData: Record<string, unknown>) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        // Anonymous customer asked for marketplace — fall back to a Handledly-direct quote so they still get help now.
+        console.warn('[useAIChat] Marketplace request from anonymous user — falling back to instant quote.');
+        return;
+      }
+
+      const { data: result, error } = await supabase.functions.invoke('submit-move-request', {
+        body: mrData,
+      });
+
+      if (error || !result?.success) {
+        console.error('[useAIChat] submit-move-request failed:', error || result?.error);
+        return;
+      }
+
+      console.log('[useAIChat] Marketplace request created:', result);
+      ConversionEvents.chatQuoteRequested(window.location.pathname);
+    } catch (err) {
+      console.error('[useAIChat] Marketplace request exception:', err);
+    }
+  }, []);
+
   // Create a new conversation in the database
   const createConversation = useCallback(async () => {
     try {
@@ -341,6 +367,11 @@ export function useAIChat({ onError, onQuoteSubmitted }: UseAIChatOptions = {}) 
       // Check if there's a quote action to process
       if (data.action?.type === 'submit_quote' && data.action.data) {
         await processQuoteSubmission(data.action.data);
+      }
+
+      // Marketplace path: Jack triggers a multi-mover broadcast for an authenticated customer.
+      if (data.action?.type === 'submit_marketplace_request' && data.action.data) {
+        await processMarketplaceRequest(data.action.data);
       }
 
       // Add assistant response to UI
