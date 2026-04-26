@@ -238,6 +238,23 @@ interface QuoteData {
   notes?: string;
 }
 
+interface MarketplaceData {
+  fullName: string;
+  email: string;
+  phone: string;
+  originZip: string;
+  destZip: string;
+  originCity?: string;
+  destCity?: string;
+  originState?: string;
+  destState?: string;
+  moveSize: string;
+  moveType: string;
+  preferredMoveDate?: string;
+  flexibleDates?: boolean;
+  notes?: string;
+}
+
 // Extract quote data from AI response if present
 function extractQuoteData(response: string): { cleanResponse: string; quoteData: QuoteData | null } {
   const quoteRegex = /\[QUOTE_READY\]([\s\S]*?)\[\/QUOTE_READY\]/;
@@ -258,6 +275,20 @@ function extractQuoteData(response: string): { cleanResponse: string; quoteData:
   } catch (error) {
     console.error('[ai-chat] Failed to parse quote data:', error);
     return { cleanResponse: response, quoteData: null };
+  }
+}
+
+// Extract marketplace data from AI response if present
+function extractMarketplaceData(response: string): { cleanResponse: string; marketplaceData: MarketplaceData | null } {
+  const re = /\[MARKETPLACE_READY\]([\s\S]*?)\[\/MARKETPLACE_READY\]/;
+  const match = response.match(re);
+  if (!match) return { cleanResponse: response, marketplaceData: null };
+  try {
+    const data = JSON.parse(match[1].trim()) as MarketplaceData;
+    return { cleanResponse: response.replace(re, '').trim(), marketplaceData: data };
+  } catch (e) {
+    console.error('[ai-chat] Failed to parse marketplace data:', e);
+    return { cleanResponse: response, marketplaceData: null };
   }
 }
 
