@@ -443,18 +443,26 @@ serve(async (req) => {
 
     // Extract quote data if present
     const { cleanResponse, quoteData } = extractQuoteData(assistantMessage);
+    const { cleanResponse: finalResponse, marketplaceData } = extractMarketplaceData(cleanResponse);
 
-    console.log(`[ai-chat] Session ${sessionId}: Generated response - "${cleanResponse.substring(0, 50)}..."`);
+    console.log(`[ai-chat] Session ${sessionId}: Generated response - "${finalResponse.substring(0, 50)}..."`);
     
     if (quoteData) {
       console.log(`[ai-chat] Session ${sessionId}: Quote data extracted for ${quoteData.fullName}`);
     }
+    if (marketplaceData) {
+      console.log(`[ai-chat] Session ${sessionId}: Marketplace request extracted for ${marketplaceData.fullName}`);
+    }
 
     return secureJsonResponse(
       { 
-        response: cleanResponse,
+        response: finalResponse,
         sessionId,
-        action: quoteData ? { type: 'submit_quote', data: quoteData } : null,
+        action: marketplaceData
+          ? { type: 'submit_marketplace_request', data: marketplaceData }
+          : quoteData
+          ? { type: 'submit_quote', data: quoteData }
+          : null,
       },
       corsHeaders
     );
