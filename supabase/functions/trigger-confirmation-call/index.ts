@@ -17,7 +17,9 @@ const RATE_LIMIT_MAX = 5; // 5 calls per minute
 const RATE_LIMIT_WINDOW = 1;
 
 interface CallRequest {
-  leadId: string;
+  leadId?: string;
+  moveRequestId?: string;
+  bookingId?: string;
   verificationToken?: string;
   firstName?: string;
   lastName?: string;
@@ -32,6 +34,8 @@ interface CallRequest {
   moveTo?: string;
   crewSize: number;
   estimatedHours: number;
+  /** What the AI should confirm. Affects dynamic variables and post-call write target. */
+  callPurpose?: 'quote_confirmation' | 'booking_confirmation' | 'marketplace_confirmation';
 }
 
 const SERVICE_LABELS: Record<string, string> = {
