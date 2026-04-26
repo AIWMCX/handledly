@@ -306,18 +306,21 @@ async function executeCall(data: CallRequest): Promise<void> {
     const supabase = createClient(supabaseUrl, supabaseKey);
     
     // Update lead status to indicate skipped due to non-US number
-    await supabase
-      .from('leads')
-      .update({
+    const skipNotes = JSON.stringify({
+      skipped_at: new Date().toISOString(),
+      reason: 'non_us_phone_number',
+      phone: data.phone,
+      message: 'Call skipped - international/non-US phone number not supported',
+    });
+    if (data.leadId) {
+      await supabase.from('leads').update({
         confirmation_call_status: 'skipped',
-        call_notes: JSON.stringify({
-          skipped_at: new Date().toISOString(),
-          reason: 'non_us_phone_number',
-          phone: data.phone,
-          message: 'Call skipped - international/non-US phone number not supported',
-        }),
-      })
-      .eq('id', data.leadId);
+        call_notes: skipNotes,
+      }).eq('id', data.leadId);
+    }
+    if (data.bookingId) {
+      await supabase.from('bookings').update({ status: 'confirmation_failed' }).eq('id', data.bookingId);
+    }
     
     return;
   }
