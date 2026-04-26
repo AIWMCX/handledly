@@ -164,7 +164,9 @@ export type QuoteEmailRequest = z.infer<typeof quoteEmailRequestSchema>;
 // ============= Call Request Schema =============
 
 export const callRequestSchema = z.object({
-  leadId: uuidSchema,
+  leadId: uuidSchema.optional(),
+  moveRequestId: uuidSchema.optional(),
+  bookingId: uuidSchema.optional(),
   verificationToken: z.string().optional(),
   firstName: safeTextSchema(100).optional(),
   lastName: safeTextSchema(100).optional(),
@@ -179,6 +181,9 @@ export const callRequestSchema = z.object({
   moveTo: safeTextSchema(500).optional(),
   crewSize: z.number().int().min(1).max(10),
   estimatedHours: z.number().min(1).max(100),
+  callPurpose: z.enum(['quote_confirmation', 'booking_confirmation', 'marketplace_confirmation']).optional(),
+}).refine(d => !!(d.leadId || d.moveRequestId || d.bookingId), {
+  message: 'Either leadId, moveRequestId, or bookingId is required',
 });
 
 export type CallRequest = z.infer<typeof callRequestSchema>;

@@ -17,7 +17,9 @@ const RATE_LIMIT_MAX = 5; // 5 calls per minute
 const RATE_LIMIT_WINDOW = 1;
 
 interface CallRequest {
-  leadId: string;
+  leadId?: string;
+  moveRequestId?: string;
+  bookingId?: string;
   verificationToken?: string;
   firstName?: string;
   lastName?: string;
@@ -32,6 +34,8 @@ interface CallRequest {
   moveTo?: string;
   crewSize: number;
   estimatedHours: number;
+  /** What the AI should confirm. Affects dynamic variables and post-call write target. */
+  callPurpose?: 'quote_confirmation' | 'booking_confirmation' | 'marketplace_confirmation';
 }
 
 const SERVICE_LABELS: Record<string, string> = {
@@ -302,18 +306,21 @@ async function executeCall(data: CallRequest): Promise<void> {
     const supabase = createClient(supabaseUrl, supabaseKey);
     
     // Update lead status to indicate skipped due to non-US number
-    await supabase
-      .from('leads')
-      .update({
+    const skipNotes = JSON.stringify({
+      skipped_at: new Date().toISOString(),
+      reason: 'non_us_phone_number',
+      phone: data.phone,
+      message: 'Call skipped - international/non-US phone number not supported',
+    });
+    if (data.leadId) {
+      await supabase.from('leads').update({
         confirmation_call_status: 'skipped',
-        call_notes: JSON.stringify({
-          skipped_at: new Date().toISOString(),
-          reason: 'non_us_phone_number',
-          phone: data.phone,
-          message: 'Call skipped - international/non-US phone number not supported',
-        }),
-      })
-      .eq('id', data.leadId);
+        call_notes: skipNotes,
+      }).eq('id', data.leadId);
+    }
+    if (data.bookingId) {
+      await supabase.from('bookings').update({ status: 'confirmation_failed' }).eq('id', data.bookingId);
+    }
     
     return;
   }
@@ -364,6 +371,10 @@ async function executeCall(data: CallRequest): Promise<void> {
     move_date: moveDateFormatted,
     move_from: data.moveFrom || 'to be confirmed',
     move_to: data.moveTo || 'to be confirmed',
+    call_purpose: data.callPurpose || (data.bookingId ? 'booking_confirmation' : data.moveRequestId ? 'marketplace_confirmation' : 'quote_confirmation'),
+    lead_id: data.leadId || '',
+    move_request_id: data.moveRequestId || '',
+    booking_id: data.bookingId || '',
   };
 
   console.log('[trigger-confirmation-call] Making ElevenLabs outbound call with variables:', dynamicVariables);
@@ -435,20 +446,20 @@ async function executeCall(data: CallRequest): Promise<void> {
       const adminNotified = await sendAdminNotification(data, callResult.error, smsSent);
       
       // Update lead with failure status and SMS fallback result
-      await supabase
-        .from('leads')
-        .update({
+      const failNotes = JSON.stringify({
+        error: callResult.error,
+        attempted_at: new Date().toISOString(),
+        phone: formattedPhone,
+        sms_fallback: smsSent ? 'sent' : 'failed',
+        admin_notified: adminNotified,
+        retryable: false,
+      });
+      if (data.leadId) {
+        await supabase.from('leads').update({
           confirmation_call_status: smsSent ? 'failed_sms_sent' : 'failed',
-          call_notes: JSON.stringify({
-            error: callResult.error,
-            attempted_at: new Date().toISOString(),
-            phone: formattedPhone,
-            sms_fallback: smsSent ? 'sent' : 'failed',
-            admin_notified: adminNotified,
-            retryable: false,
-          }),
-        })
-        .eq('id', data.leadId);
+          call_notes: failNotes,
+        }).eq('id', data.leadId);
+      }
       
       if (smsSent) {
         console.log('[trigger-confirmation-call] Customer notified via SMS fallback');
@@ -471,24 +482,30 @@ async function executeCall(data: CallRequest): Promise<void> {
     console.log(`[trigger-confirmation-call] Storing conversation_id: ${conversationId}, call_sid: ${callSid}`);
 
     // Update the lead with call details - store in dedicated columns for reliable webhook matching
-    await supabase
-      .from('leads')
-      .update({
+    const initiatedNotes = JSON.stringify({
+      initiated_at: new Date().toISOString(),
+      phone: formattedPhone,
+      delay_seconds: 0,
+      dynamic_variables: dynamicVariables,
+      api_response: callData,
+      move_request_id: data.moveRequestId,
+      booking_id: data.bookingId,
+    });
+    if (data.leadId) {
+      await supabase.from('leads').update({
         confirmation_call_status: 'calling',
         confirmation_call_time: new Date().toISOString(),
-        // Store in dedicated indexed columns for fast webhook lookup
         conversation_id: conversationId,
         call_sid: callSid,
-        // Keep call_notes for debugging/audit trail
-        call_notes: JSON.stringify({
-          initiated_at: new Date().toISOString(),
-          phone: formattedPhone,
-          delay_seconds: 0,
-          dynamic_variables: dynamicVariables,
-          api_response: callData,
-        }),
-      })
-      .eq('id', data.leadId);
+        call_notes: initiatedNotes,
+      }).eq('id', data.leadId);
+    }
+    // Mirror call linkage onto the booking so the post-call webhook can correlate
+    if (data.bookingId) {
+      await supabase.from('bookings').update({
+        status: 'confirmation_in_progress',
+      }).eq('id', data.bookingId);
+    }
 
   } catch (error) {
     // This catch handles errors after all retries are exhausted (5xx/429 errors)
@@ -510,9 +527,8 @@ async function executeCall(data: CallRequest): Promise<void> {
       const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
       const errorSupabase = createClient(supabaseUrl, supabaseKey);
       
-      await errorSupabase
-        .from('leads')
-        .update({
+      if (data.leadId) {
+        await errorSupabase.from('leads').update({
           confirmation_call_status: smsSent ? 'failed_sms_sent' : 'failed',
           call_notes: JSON.stringify({
             error: errorMessage,
@@ -521,8 +537,8 @@ async function executeCall(data: CallRequest): Promise<void> {
             admin_notified: adminNotified,
             retries_exhausted: true,
           }),
-        })
-        .eq('id', data.leadId);
+        }).eq('id', data.leadId);
+      }
         
       if (smsSent) {
         console.log('[trigger-confirmation-call] Customer notified via SMS fallback');
@@ -608,7 +624,7 @@ serve(async (req) => {
     }
 
     // SEC-001: Verify token and lead freshness before initiating call
-    if (data.verificationToken) {
+    if (data.verificationToken && data.leadId) {
       const { data: lead, error: verifyError } = await supabase
         .from('leads')
         .select('id, verification_token, confirmation_call_status, created_at, call_sid, conversation_id')
@@ -657,16 +673,18 @@ serve(async (req) => {
     console.log(`[trigger-confirmation-call] Will call ${data.phone} immediately`);
 
     // Update lead status to "pending" immediately
-    await supabase
-      .from('leads')
-      .update({
-        confirmation_call_status: 'pending',
-        call_notes: JSON.stringify({
-          scheduled_for: new Date().toISOString(),
-          delay_seconds: 0,
-        }),
-      })
-      .eq('id', data.leadId);
+    if (data.leadId) {
+      await supabase
+        .from('leads')
+        .update({
+          confirmation_call_status: 'pending',
+          call_notes: JSON.stringify({
+            scheduled_for: new Date().toISOString(),
+            delay_seconds: 0,
+          }),
+        })
+        .eq('id', data.leadId);
+    }
 
     // Execute call synchronously - waitUntil is unreliable for critical operations
     // The call must complete before returning to ensure it actually happens

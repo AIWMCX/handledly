@@ -61,7 +61,7 @@ function recordCostAsync(sessionId?: string, ipHash?: string): void {
 }
 
 // Professional moving assistant system prompt - ANTI-RAMBLING v5.0
-// Updated February 2026 with short-burst conversational rules
+// Updated April 2026 with marketplace branching (Handledly-direct vs concierge)
 const SYSTEM_PROMPT = `You are Jack, a friendly and professional moving specialist for Handledly Moving Services in Denver, Colorado.
 
 ## 🚨 ANTI-RAMBLING RULES (TOP PRIORITY — FOLLOW ON EVERY MESSAGE)
@@ -153,8 +153,22 @@ Collect in this order, ONE per message:
 - 4BDR+: 6-8 hrs, 4 movers (~$1554-$2072)
 - 200+ lb items: $189/hr with 3 movers + truck
 
+## 🔀 BOOKING PATH — ASK BEFORE SUBMITTING
+
+When you have basics (size + from/to), once before collecting contact info, ask exactly:
+
+"Quick choice: do you want my Handledly crew direct, or want me to shop your move to verified Denver movers and bring back the best price? Either's free."
+
+- "Direct" / "Handledly" / "you" → Handledly-direct path → use [QUOTE_READY] block
+- "Shop" / "marketplace" / "compare" / "options" → Marketplace path → use [MARKETPLACE_READY] block
+- Default if unclear: Handledly-direct.
+
+Never ask this question more than once per conversation.
+
 ## WHEN READY TO SUBMIT
-When you have ALL info (name, email, phone, from, to, date, bedrooms), respond with:
+
+### Path A — Handledly-direct (instant quote)
+When user picked direct AND you have name/email/phone/from/to/date/bedrooms:
 
 [QUOTE_READY]
 {
@@ -172,6 +186,30 @@ When you have ALL info (name, email, phone, from, to, date, bedrooms), respond w
 [/QUOTE_READY]
 
 Then send a short confirmation: "Awesome! Quote's on its way to your email. We'll give you a quick call to confirm."
+
+### Path B — Marketplace (concierge / shop multiple movers)
+When user picked marketplace AND you have origin ZIP, dest ZIP, move size, preferred date, name, email, phone:
+
+[MARKETPLACE_READY]
+{
+  "fullName": "Customer Name",
+  "email": "email@example.com",
+  "phone": "1234567890",
+  "originZip": "80202",
+  "destZip": "80301",
+  "originCity": "Denver",
+  "destCity": "Boulder",
+  "moveSize": "2-bedroom",
+  "moveType": "local",
+  "preferredMoveDate": "YYYY-MM-DD",
+  "flexibleDates": false,
+  "notes": "Any specialty items / context"
+}
+[/MARKETPLACE_READY]
+
+Then send: "Perfect — I'm putting your request out to verified Denver movers. You'll get bids in your inbox, and on your dashboard if you sign in. Sign up to track quotes? handledly.com/auth"
+
+If marketplace user is NOT signed in, mention they need to create a free account to receive quotes.
 
 Remember: Short messages. ONE question at a time. Ping-pong, not monologue.`;
 
@@ -200,6 +238,23 @@ interface QuoteData {
   notes?: string;
 }
 
+interface MarketplaceData {
+  fullName: string;
+  email: string;
+  phone: string;
+  originZip: string;
+  destZip: string;
+  originCity?: string;
+  destCity?: string;
+  originState?: string;
+  destState?: string;
+  moveSize: string;
+  moveType: string;
+  preferredMoveDate?: string;
+  flexibleDates?: boolean;
+  notes?: string;
+}
+
 // Extract quote data from AI response if present
 function extractQuoteData(response: string): { cleanResponse: string; quoteData: QuoteData | null } {
   const quoteRegex = /\[QUOTE_READY\]([\s\S]*?)\[\/QUOTE_READY\]/;
@@ -220,6 +275,20 @@ function extractQuoteData(response: string): { cleanResponse: string; quoteData:
   } catch (error) {
     console.error('[ai-chat] Failed to parse quote data:', error);
     return { cleanResponse: response, quoteData: null };
+  }
+}
+
+// Extract marketplace data from AI response if present
+function extractMarketplaceData(response: string): { cleanResponse: string; marketplaceData: MarketplaceData | null } {
+  const re = /\[MARKETPLACE_READY\]([\s\S]*?)\[\/MARKETPLACE_READY\]/;
+  const match = response.match(re);
+  if (!match) return { cleanResponse: response, marketplaceData: null };
+  try {
+    const data = JSON.parse(match[1].trim()) as MarketplaceData;
+    return { cleanResponse: response.replace(re, '').trim(), marketplaceData: data };
+  } catch (e) {
+    console.error('[ai-chat] Failed to parse marketplace data:', e);
+    return { cleanResponse: response, marketplaceData: null };
   }
 }
 
@@ -374,18 +443,26 @@ serve(async (req) => {
 
     // Extract quote data if present
     const { cleanResponse, quoteData } = extractQuoteData(assistantMessage);
+    const { cleanResponse: finalResponse, marketplaceData } = extractMarketplaceData(cleanResponse);
 
-    console.log(`[ai-chat] Session ${sessionId}: Generated response - "${cleanResponse.substring(0, 50)}..."`);
+    console.log(`[ai-chat] Session ${sessionId}: Generated response - "${finalResponse.substring(0, 50)}..."`);
     
     if (quoteData) {
       console.log(`[ai-chat] Session ${sessionId}: Quote data extracted for ${quoteData.fullName}`);
     }
+    if (marketplaceData) {
+      console.log(`[ai-chat] Session ${sessionId}: Marketplace request extracted for ${marketplaceData.fullName}`);
+    }
 
     return secureJsonResponse(
       { 
-        response: cleanResponse,
+        response: finalResponse,
         sessionId,
-        action: quoteData ? { type: 'submit_quote', data: quoteData } : null,
+        action: marketplaceData
+          ? { type: 'submit_marketplace_request', data: marketplaceData }
+          : quoteData
+          ? { type: 'submit_quote', data: quoteData }
+          : null,
       },
       corsHeaders
     );
