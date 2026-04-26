@@ -15,9 +15,11 @@ import { SocialProofBanner, MobileStickyCTA, QuoteFormWizard } from "@/component
 import { QuoteFormData, ServiceType } from "@/types/conversion";
 import { ConversionEvents } from "@/lib/analytics";
 import { withRetry, classifyError, validateQuoteData } from "@/lib/apiUtils";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Quote() {
   const [searchParams] = useSearchParams();
+  const { user } = useAuth();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [callScheduled, setCallScheduled] = useState(false);
@@ -154,6 +156,42 @@ export default function Quote() {
       }
 
       toast.success("Quote submitted! Check your email.");
+
+      // MARKETPLACE: if the user is signed in as a customer, also broadcast
+      // this as a move_request so verified movers can submit competing quotes.
+      // Anonymous submissions stay in `leads` only (per launch policy).
+      if (user) {
+        const originZip = (data.moveFromAddress?.match(/\b(\d{5})\b/) ?? [])[1];
+        const destZip = (data.moveToAddress?.match(/\b(\d{5})\b/) ?? [])[1];
+        if (originZip && destZip) {
+          supabase.functions
+            .invoke("submit-move-request", {
+              body: {
+                moveType: data.serviceType,
+                moveSize: `${data.bedrooms ?? 1}-bedroom`,
+                originZip,
+                destZip,
+                preferredMoveDate: data.moveDate || undefined,
+                notes: data.notes || undefined,
+                fullName: data.fullName,
+                phone: data.phone,
+                leadId: response.leadId,
+                utm_source: data.utm_source ?? undefined,
+                utm_medium: data.utm_medium ?? undefined,
+                utm_campaign: data.utm_campaign ?? undefined,
+              },
+            })
+            .then(({ error }) => {
+              if (error) {
+                console.error("[Quote] marketplace broadcast failed", error);
+              } else {
+                toast.success("Your request was sent to verified movers in your area.");
+              }
+            });
+        } else {
+          console.warn("[Quote] skipped marketplace broadcast — no ZIP detected in addresses");
+        }
+      }
 
       // Send email quote via edge function (uses returned verification token)
       supabase.functions.invoke('send-quote-email', {
