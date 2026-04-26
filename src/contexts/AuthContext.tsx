@@ -63,15 +63,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const roles = (rolesRes.data ?? []).map((r: { role: string }) => r.role);
       const hasCompany = !!companyRes.data;
       const hasCustomerRow = !!customerRes.data;
-      // Mover signup flag may be set in user_metadata before onboarding completes.
-      const isPendingMover = metaRole === 'mover' && !hasCompany && !roles.includes('admin');
 
-      setIsAdmin(roles.includes('admin'));
-      setIsMover(hasCompany || isPendingMover);
+      // Admin ONLY when a real `user_roles` record with role='admin' exists.
+      // Never infer admin from metadata, email, or any client-side hint.
+      const adminFromDb = roles.includes('admin');
+
+      // Mover signup flag is set in user_metadata at signUp() time.
+      // A "pending mover" is a verified mover account that hasn't completed onboarding yet.
+      const isPendingMover = metaRole === 'mover' && !hasCompany && !adminFromDb;
+      const moverEffective = hasCompany || isPendingMover;
+
+      // Customer is true when there's an explicit customers row OR the user signed up as a customer
+      // via metadata. Brand-new movers must NOT be flagged as customers — that's what was sending
+      // them to /my-moves. Admins also stay out of the customer bucket.
+      const customerFromMetadata = metaRole === 'customer';
+      const customerEffective =
+        !adminFromDb && !moverEffective && (hasCustomerRow || customerFromMetadata || !metaRole);
+
+      setIsAdmin(adminFromDb);
+      setIsMover(moverEffective);
       setCompanyId(companyRes.data?.moving_company_id ?? null);
       setNeedsMoverOnboarding(isPendingMover);
-      // Default everyone with no other role to customer (so authenticated marketplace flows work).
-      setIsCustomer(hasCustomerRow || (!hasCompany && !isPendingMover && !roles.includes('admin')));
+      setIsCustomer(customerEffective);
     } catch (err) {
       console.error('Error loading roles:', err);
     }
