@@ -461,7 +461,7 @@ serve(async (req) => {
           try {
             const { error: sendError } = await resend.emails.send({
               from: 'Handledly Moving Services <noreply@handledly.com>',
-              replyTo: 'hello@handledly.com',
+              reply_to: 'hello@handledly.com',
               to: [lead.email],
               subject: emailContent.subject,
               html: emailContent.html,
