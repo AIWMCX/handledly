@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building2, LogOut, ClipboardList, Users, DollarSign } from 'lucide-react';
+import { Building2, LogOut, ClipboardList, Users, DollarSign, Inbox, Settings } from 'lucide-react';
 
 const MoverDashboard = () => {
   const { user, signOut, companyId } = useAuth();
@@ -35,13 +35,21 @@ const MoverDashboard = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button disabled>Onboarding wizard coming next</Button>
+              <Button asChild><Link to="/mover/onboarding">Start onboarding</Link></Button>
             </CardContent>
           </Card>
         ) : (
           <>
-            <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-            <p className="text-muted-foreground mb-8">Lead requests, quotes, and your CRM.</p>
+            <div className="flex items-start justify-between gap-4 flex-wrap mb-8">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
+                <p className="text-muted-foreground">Lead requests, quotes, and your CRM.</p>
+              </div>
+              <div className="flex gap-2">
+                <Button asChild><Link to="/mover/inbox"><Inbox className="h-4 w-4 mr-2" /> Open inbox</Link></Button>
+                <Button asChild variant="outline"><Link to="/mover/onboarding"><Settings className="h-4 w-4 mr-2" /> Profile</Link></Button>
+              </div>
+            </div>
             <div className="grid gap-4 md:grid-cols-3">
               <DashCard icon={ClipboardList} title="Open requests" desc="0 waiting for a quote" />
               <DashCard icon={Users} title="Active customers" desc="0 in your CRM" />
