@@ -368,6 +368,10 @@ async function executeCall(data: CallRequest): Promise<void> {
     move_date: moveDateFormatted,
     move_from: data.moveFrom || 'to be confirmed',
     move_to: data.moveTo || 'to be confirmed',
+    call_purpose: data.callPurpose || (data.bookingId ? 'booking_confirmation' : data.moveRequestId ? 'marketplace_confirmation' : 'quote_confirmation'),
+    lead_id: data.leadId || '',
+    move_request_id: data.moveRequestId || '',
+    booking_id: data.bookingId || '',
   };
 
   console.log('[trigger-confirmation-call] Making ElevenLabs outbound call with variables:', dynamicVariables);
