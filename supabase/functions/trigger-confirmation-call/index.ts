@@ -446,20 +446,20 @@ async function executeCall(data: CallRequest): Promise<void> {
       const adminNotified = await sendAdminNotification(data, callResult.error, smsSent);
       
       // Update lead with failure status and SMS fallback result
-      await supabase
-        .from('leads')
-        .update({
+      const failNotes = JSON.stringify({
+        error: callResult.error,
+        attempted_at: new Date().toISOString(),
+        phone: formattedPhone,
+        sms_fallback: smsSent ? 'sent' : 'failed',
+        admin_notified: adminNotified,
+        retryable: false,
+      });
+      if (data.leadId) {
+        await supabase.from('leads').update({
           confirmation_call_status: smsSent ? 'failed_sms_sent' : 'failed',
-          call_notes: JSON.stringify({
-            error: callResult.error,
-            attempted_at: new Date().toISOString(),
-            phone: formattedPhone,
-            sms_fallback: smsSent ? 'sent' : 'failed',
-            admin_notified: adminNotified,
-            retryable: false,
-          }),
-        })
-        .eq('id', data.leadId);
+          call_notes: failNotes,
+        }).eq('id', data.leadId);
+      }
       
       if (smsSent) {
         console.log('[trigger-confirmation-call] Customer notified via SMS fallback');
