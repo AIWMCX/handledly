@@ -138,7 +138,8 @@ describe('Auth flow — customer signup', () => {
 
     await waitFor(() => expect(last?.user?.email).toBe('jane@example.com'));
     expect(insertSpies['customers']).toHaveBeenCalledTimes(1);
-    expect(insertSpies['moving_company_users']).toBeUndefined();
+    // Mover-only table must NOT be written to during a customer signup.
+    expect(insertSpies['moving_company_users']?.mock.calls.length ?? 0).toBe(0);
 
     await waitFor(() => expect(last?.isCustomer).toBe(true));
     expect(last?.isMover).toBe(false);
@@ -165,7 +166,8 @@ describe('Auth flow — mover signup', () => {
 
     // Mover signup MUST NOT auto-create a customers row, and the moving_company_users
     // row is created later by the onboarding wizard, not at signup.
-    expect(insertSpies['customers']).toBeUndefined();
+    expect(insertSpies['customers']?.mock.calls.length ?? 0).toBe(0);
+    expect(insertSpies['moving_company_users']?.mock.calls.length ?? 0).toBe(0);
 
     await waitFor(() => {
       expect(last?.isMover).toBe(true);
