@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, ShieldX, Home, LogOut } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,8 +14,9 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = true, requireRole }) => {
-  const { user, isAdmin, isMover, isCustomer, isLoading, signOut } = useAuth();
+  const { user, isAdmin, isMover, isCustomer, isLoading, signOut, needsMoverOnboarding } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Resolve effective required role (requireRole wins; fall back to legacy requireAdmin)
   const role: RequiredRole = requireRole ?? (requireAdmin ? 'admin' : 'any');
@@ -26,6 +27,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
       navigate(`/auth?redirect=${encodeURIComponent(here)}`);
     }
   }, [user, isLoading, navigate]);
+
+  // Pending movers must always finish onboarding before reaching mover-only pages.
+  useEffect(() => {
+    if (isLoading || !user) return;
+    if (
+      role === 'mover' &&
+      needsMoverOnboarding &&
+      !isAdmin &&
+      location.pathname !== '/mover/onboarding'
+    ) {
+      navigate('/mover/onboarding', { replace: true });
+    }
+  }, [isLoading, user, role, needsMoverOnboarding, isAdmin, location.pathname, navigate]);
 
   if (isLoading) {
     return (
@@ -43,6 +57,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
   }
 
   // Non-admin role checks: render a friendly access denied for the right audience.
+  // Pending movers (mover metadata, no company yet) ARE movers — let them through so
+  // /mover/onboarding renders; the redirect effect above shuttles them away from other mover pages.
   if (role === 'mover' && !isMover && !isAdmin) {
     return <AccessDenied message="This area is for moving companies." onSignOut={signOut} />;
   }
