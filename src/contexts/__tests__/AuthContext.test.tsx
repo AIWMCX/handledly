@@ -97,7 +97,9 @@ function resolveRedirect(s: ReturnType<typeof useAuth>) {
 
 function Probe({ onState }: { onState: (s: ReturnType<typeof useAuth>) => void }) {
   const auth = useAuth();
-  React.useEffect(() => onState(auth));
+  React.useEffect(() => {
+    onState(auth);
+  });
   if (auth.isLoading) return <span>loading</span>;
   return <span data-testid="redirect">{resolveRedirect(auth)}</span>;
 }
