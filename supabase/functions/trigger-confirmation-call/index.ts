@@ -482,24 +482,30 @@ async function executeCall(data: CallRequest): Promise<void> {
     console.log(`[trigger-confirmation-call] Storing conversation_id: ${conversationId}, call_sid: ${callSid}`);
 
     // Update the lead with call details - store in dedicated columns for reliable webhook matching
-    await supabase
-      .from('leads')
-      .update({
+    const initiatedNotes = JSON.stringify({
+      initiated_at: new Date().toISOString(),
+      phone: formattedPhone,
+      delay_seconds: 0,
+      dynamic_variables: dynamicVariables,
+      api_response: callData,
+      move_request_id: data.moveRequestId,
+      booking_id: data.bookingId,
+    });
+    if (data.leadId) {
+      await supabase.from('leads').update({
         confirmation_call_status: 'calling',
         confirmation_call_time: new Date().toISOString(),
-        // Store in dedicated indexed columns for fast webhook lookup
         conversation_id: conversationId,
         call_sid: callSid,
-        // Keep call_notes for debugging/audit trail
-        call_notes: JSON.stringify({
-          initiated_at: new Date().toISOString(),
-          phone: formattedPhone,
-          delay_seconds: 0,
-          dynamic_variables: dynamicVariables,
-          api_response: callData,
-        }),
-      })
-      .eq('id', data.leadId);
+        call_notes: initiatedNotes,
+      }).eq('id', data.leadId);
+    }
+    // Mirror call linkage onto the booking so the post-call webhook can correlate
+    if (data.bookingId) {
+      await supabase.from('bookings').update({
+        status: 'confirmation_in_progress',
+      }).eq('id', data.bookingId);
+    }
 
   } catch (error) {
     // This catch handles errors after all retries are exhausted (5xx/429 errors)
