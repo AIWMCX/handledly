@@ -55,7 +55,7 @@ const Auth = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { signIn, signUp, user, isAdmin, isMover, isCustomer, isLoading } = useAuth();
+  const { signIn, signUp, user, isAdmin, isMover, isCustomer, isLoading, needsMoverOnboarding } = useAuth();
   const navigate = useNavigate();
 
   // Role-based redirect after login
@@ -66,9 +66,9 @@ const Auth = () => {
       return;
     }
     if (isAdmin) navigate('/admin');
-    else if (isMover) navigate('/mover/dashboard');
+    else if (isMover) navigate(needsMoverOnboarding ? '/mover/onboarding' : '/mover/dashboard');
     else if (isCustomer) navigate('/my-moves');
-  }, [user, isAdmin, isMover, isCustomer, isLoading, redirectTo, navigate]);
+  }, [user, isAdmin, isMover, isCustomer, isLoading, redirectTo, navigate, needsMoverOnboarding]);
 
   const switchMode = (m: Mode) => {
     setMode(m);
@@ -126,7 +126,7 @@ const Auth = () => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await signUp(email, password, {
+      const { error, needsEmailConfirm } = await signUp(email, password, {
         role: signupRole,
         fullName,
         phone,
@@ -136,14 +136,22 @@ const Auth = () => {
         setError(error.message.includes('already registered')
           ? 'This email is already registered. Please sign in instead.'
           : error.message);
-      } else {
+      } else if (needsEmailConfirm) {
+        // Email confirmation required — user is NOT signed in yet.
         setSuccessMessage(
           signupRole === 'mover'
-            ? "Account created. Check your email to verify, then we'll walk you through company onboarding."
-            : 'Account created. Check your email to verify, then sign in.'
+            ? "Account created. Check your inbox to verify, then sign in to finish company onboarding."
+            : 'Account created. Check your inbox to verify, then sign in.'
         );
         setMode('login');
         setPassword('');
+      } else {
+        // Auto-confirmed: user is signed in. The redirect effect will route based on role.
+        setSuccessMessage(
+          signupRole === 'mover'
+            ? 'Account created — taking you to company onboarding…'
+            : 'Account created — welcome aboard!'
+        );
       }
     } finally {
       setIsSubmitting(false);

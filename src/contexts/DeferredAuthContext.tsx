@@ -23,9 +23,10 @@ interface AuthContextType {
   isCustomer: boolean;
   isAuthorized: boolean;
   companyId: string | null;
+  needsMoverOnboarding: boolean;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, extras?: SignUpExtras) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, extras?: SignUpExtras) => Promise<{ error: Error | null; needsEmailConfirm?: boolean }>;
   signOut: () => Promise<void>;
 }
 
@@ -70,6 +71,7 @@ export function DeferredAuthProvider({ children }: { children: React.ReactNode }
     isCustomer: false,
     isAuthorized: false,
     companyId: null,
+    needsMoverOnboarding: false,
     isLoading: true,
     signIn: async () => ({ error: new Error('Auth not loaded yet') }),
     signUp: async () => ({ error: new Error('Auth not loaded yet') }),

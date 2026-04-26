@@ -22,9 +22,11 @@ interface AuthContextType {
   isCustomer: boolean;
   isAuthorized: boolean; // Derived from isAdmin (database role)
   companyId: string | null;
+  /** True for movers who completed signup but haven't finished company onboarding yet. */
+  needsMoverOnboarding: boolean;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, extras?: SignUpExtras) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, extras?: SignUpExtras) => Promise<{ error: Error | null; needsEmailConfirm?: boolean }>;
   signOut: () => Promise<void>;
 }
 
@@ -45,11 +47,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isMover, setIsMover] = useState(false);
   const [isCustomer, setIsCustomer] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
+  const [needsMoverOnboarding, setNeedsMoverOnboarding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const isAuthorized = isAdmin;
 
-  const loadRoles = async (userId: string) => {
+  const loadRoles = async (userId: string, metaRole?: string) => {
     try {
       const [rolesRes, companyRes, customerRes] = await Promise.all([
         supabase.from('user_roles').select('role').eq('user_id', userId),
@@ -58,10 +61,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ]);
 
       const roles = (rolesRes.data ?? []).map((r: { role: string }) => r.role);
+      const hasCompany = !!companyRes.data;
+      const hasCustomerRow = !!customerRes.data;
+      // Mover signup flag may be set in user_metadata before onboarding completes.
+      const isPendingMover = metaRole === 'mover' && !hasCompany && !roles.includes('admin');
+
       setIsAdmin(roles.includes('admin'));
-      setIsMover(!!companyRes.data);
+      setIsMover(hasCompany || isPendingMover);
       setCompanyId(companyRes.data?.moving_company_id ?? null);
-      setIsCustomer(!!customerRes.data || (!companyRes.data && !roles.includes('admin')));
+      setNeedsMoverOnboarding(isPendingMover);
+      // Default everyone with no other role to customer (so authenticated marketplace flows work).
+      setIsCustomer(hasCustomerRow || (!hasCompany && !isPendingMover && !roles.includes('admin')));
     } catch (err) {
       console.error('Error loading roles:', err);
     }
@@ -73,8 +83,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session?.user ?? null);
 
       if (session?.user) {
+        const metaRole = (session.user.user_metadata as { role?: string } | null)?.role;
         setTimeout(async () => {
-          await loadRoles(session.user.id);
+          await loadRoles(session.user.id, metaRole);
           setIsLoading(false);
         }, 0);
       } else {
@@ -82,6 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsMover(false);
         setIsCustomer(false);
         setCompanyId(null);
+        setNeedsMoverOnboarding(false);
         setIsLoading(false);
       }
     });
@@ -90,7 +102,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        await loadRoles(session.user.id);
+        const metaRole = (session.user.user_metadata as { role?: string } | null)?.role;
+        await loadRoles(session.user.id, metaRole);
       }
       setIsLoading(false);
     });
@@ -109,13 +122,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: redirectUrl, data: { role, full_name: extras?.fullName } },
+      options: {
+        emailRedirectTo: redirectUrl,
+        data: {
+          role,
+          full_name: extras?.fullName,
+          phone: extras?.phone,
+          company_name: extras?.companyName,
+        },
+      },
     });
 
     if (error) return { error: error as Error };
 
     const newUserId = data.user?.id;
     if (!newUserId) return { error: null };
+
+    // With auto-confirm on, signUp returns a session and the user is signed in immediately.
+    // If `data.session` is null we have email-confirmation-required; surface that to caller.
+    const needsEmailConfirm = !data.session;
 
     // Create role-specific records (best-effort; will retry on first sign-in if blocked)
     try {
@@ -134,7 +159,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.warn('Post-signup profile creation deferred:', err);
     }
 
-    return { error: null };
+    // If signed in immediately, refresh local role state so navigation works without a reload.
+    if (data.session?.user) {
+      await loadRoles(data.session.user.id, role);
+    }
+
+    return { error: null, needsEmailConfirm };
   };
 
   const signOut = async () => {
@@ -143,11 +173,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsMover(false);
     setIsCustomer(false);
     setCompanyId(null);
+    setNeedsMoverOnboarding(false);
   };
 
   return (
     <AuthContext.Provider value={{
-      user, session, isAdmin, isMover, isCustomer, isAuthorized, companyId, isLoading,
+      user, session, isAdmin, isMover, isCustomer, isAuthorized, companyId,
+      needsMoverOnboarding, isLoading,
       signIn, signUp, signOut,
     }}>
       {children}
