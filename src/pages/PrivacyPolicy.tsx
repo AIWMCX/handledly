@@ -5,9 +5,9 @@ import { SEO } from "@/components/SEO";
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-background">
-      <SEO 
-        title="Privacy Policy | Handledly Moving Services"
-        description="Read our privacy policy to understand how Handledly Moving Services collects, uses, and protects your personal information. Your privacy matters to us."
+      <SEO
+        title="Privacy Policy | Handledly Marketplace"
+        description="Read our privacy policy to understand how Handledly, the moving marketplace platform, collects, uses, and protects your personal information — including what is shared with moving companies."
         canonicalUrl="https://handledly.com/privacy"
       />
       <Header />
@@ -34,14 +34,16 @@ const PrivacyPolicy = () => {
             {/* Introduction */}
             <div className="mb-8">
               <p className="text-foreground leading-relaxed">
-                Handledly Moving Services, operated by Handledly Moving Services Inc. ("Company," "we," "our," or "us"), 
-                provides moving services through our website at{" "}
+                Handledly, operated by Handledly, Inc. ("Company," "we," "our," or "us"), is a
+                marketplace platform available at{" "}
                 <a href="https://handledly.com" className="text-primary hover:underline">
                   https://handledly.com
                 </a>{" "}
-                (the "Service"). This Privacy Policy describes how we collect, use, and protect 
-                your personal information. By using our Service, you agree to the practices 
-                outlined in this policy.
+                (the "Service") that connects customers with independent, third-party moving
+                companies. This Privacy Policy describes how we collect, use, and protect your
+                personal information, including what information is shared with a moving company
+                once you choose to request a quote from or book with them. By using our Service,
+                you agree to the practices outlined in this policy.
               </p>
             </div>
 
@@ -94,9 +96,13 @@ const PrivacyPolicy = () => {
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-primary mb-4">Data Sharing Practices</h2>
               <p className="text-foreground leading-relaxed">
-                We do not share your personal information with third parties for marketing purposes. 
-                Any information shared with third-party service providers is strictly for facilitating 
-                our Service, and these providers are obligated not to disclose or use the information 
+                We do not share your personal information with third parties for marketing purposes.
+                We do share the details of your move request, and your contact information once you
+                choose to connect, with the moving companies you invite to quote or book with — that
+                is how the marketplace works. Those companies are independent businesses responsible
+                for how they handle the information you share with them directly. Any other
+                information shared with third-party service providers is strictly for facilitating
+                our Service, and those providers are obligated not to disclose or use the information
                 for other purposes.
               </p>
             </div>

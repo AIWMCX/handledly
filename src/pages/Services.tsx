@@ -112,7 +112,7 @@ export default function Services() {
     <div className="min-h-screen bg-background">
       <Header />
       <SEO 
-        title="Moving Services Denver - Local Movers & Heavy Item Specialists | Handledly Moving Services"
+        title="Moving Services Denver - Local Movers & Heavy Item Specialists | Handledly"
         description="Professional Denver moving services with flat hourly rates. Local moving, piano moving, pool table moving, safe moving, and same-day service. Licensed and insured. Get your free quote!"
         canonicalUrl="https://handledly.com/services"
         keywords={["Denver moving services", "local movers Denver", "heavy item movers", "piano moving Denver", "pool table movers", "same day moving Denver"]}

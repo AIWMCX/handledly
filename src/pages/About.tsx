@@ -12,47 +12,47 @@ import { SEO } from "@/components/SEO";
 
 import { 
   ArrowRight, Shield, Heart, Award, Users, 
-  CheckCircle, Star, Truck, MapPin 
+  CheckCircle, Truck, MapPin
 } from "lucide-react";
 import { SocialProofBanner, MobileStickyCTA, AnimatedStats } from "@/components/conversion";
 
 const values = [
   {
     icon: Shield,
-    title: "Reliability",
-    description: "We show up on time, every time. Your schedule matters to us as much as it does to you.",
+    title: "Neutrality",
+    description: "We rank companies on eligibility, availability, and verified track record — not who pays the most.",
   },
   {
     icon: Heart,
-    title: "Care",
-    description: "Every item we move is treated as if it were our own. Your belongings are precious to us.",
+    title: "No Lead-Selling",
+    description: "Movers never pay to receive a request. Handledly only earns when a booking is completed.",
   },
   {
     icon: Award,
-    title: "Excellence",
-    description: "We don't just meet expectations—we exceed them. Quality is in everything we do.",
+    title: "Verification",
+    description: "Every company discloses its licensing and insurance information before it can list on the platform.",
   },
   {
     icon: Users,
-    title: "Community",
-    description: "We're Denver locals serving our neighbors. This is our home too.",
+    title: "Local Focus",
+    description: "We're building the Denver metro network first, one verified company at a time.",
   },
 ];
 
 const milestones = [
-  { title: "Professional Training", description: "Every team member completes hands-on training before their first move" },
-  { title: "Quality Equipment", description: "Modern trucks and premium moving supplies for safe transport" },
-  { title: "Local Knowledge", description: "We know Denver's neighborhoods, buildings, and traffic patterns" },
-  { title: "Customer Focus", description: "Real-time communication and personalized service on every job" },
+  { title: "Company Verification", description: "Companies submit DOT/MC authority, state license, and insurance details before going live" },
+  { title: "One Move Request", description: "Customers describe their move once and compare quotes from multiple companies" },
+  { title: "Direct Communication", description: "Message movers in-platform; contact details are shared once you choose to connect" },
+  { title: "Booking After Completion", description: "Reviews are only enabled after a verified, completed booking" },
 ];
 
 const credentials = [
-  "Colorado Licensed & Registered",
-  "Fully Bonded & Insured",
-  "Background-Checked Employees",
-  "Professional Liability Coverage",
-  "GPS-Tracked Fleet",
-  "Verified Customer Reviews",
+  "Denver metro focus at launch",
+  "License & insurance disclosed per company",
+  "No pay-per-lead pricing for movers",
+  "1.5% success commission — charged only on completed bookings",
+  "Reviews gated to verified completed bookings",
+  "Companies set their own hours and service areas",
 ];
 
 const denverAreas = [
@@ -64,11 +64,11 @@ const denverAreas = [
 export default function About() {
   return (
     <div className="min-h-screen bg-background">
-      <SEO 
-        title="About Handledly Moving Services - Denver's Professional Moving Team"
-        description="Denver's trusted moving team with professional crews and transparent pricing. Licensed, insured, and committed to excellence on every move."
+      <SEO
+        title="About Handledly - The Denver Moving Marketplace"
+        description="Handledly is the marketplace connecting Denver-area customers with independent, verified moving companies. Compare quotes, message movers, and book — without paying for leads."
         canonicalUrl="https://handledly.com/about"
-        keywords={['about Handledly Moving Services', 'Denver moving company', 'trusted movers Denver', 'professional movers']}
+        keywords={['about Handledly', 'Denver moving marketplace', 'compare Denver movers', 'moving company marketplace']}
       />
       
       <Header />
@@ -82,24 +82,24 @@ export default function About() {
             {/* Denver Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6 shadow-sm">
               <MapPin className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary">Denver's Professional Moving Team</span>
+              <span className="text-sm font-semibold text-primary">The Denver Moving Marketplace</span>
             </div>
-            
+
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-semibold mb-6">
-              Denver's Most <span className="text-accent">Trusted</span> Moving Team
+              One Request. <span className="text-accent">Several Verified</span> Movers.
             </h1>
             <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed mb-6">
-              Denver's trusted partner for seamless, stress-free moves. 
-              Our story is one of dedication, quality service, and an 
-              unwavering commitment to treating every move with care.
+              Handledly is the marketplace where Denver-area customers compare quotes
+              from independent, licensed moving companies — and where movers build a
+              real customer pipeline without paying for leads they might not win.
             </p>
-            
+
             {/* Trust indicators */}
             <div className="flex flex-wrap items-center gap-4">
-              
+
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/5 border border-primary/10">
                 <Truck className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-primary">Professional Denver Movers</span>
+                <span className="text-sm font-medium text-primary">Independent, verified moving companies</span>
               </div>
             </div>
           </div>
@@ -118,54 +118,42 @@ export default function About() {
               </h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  We're a Denver-based moving team that believes moving should be 
-                  straightforward and stress-free. No drama, no hidden fees, no 
-                  surprises—just professional movers who show up on time and 
-                  handle your belongings with care.
+                  Handledly is a marketplace, not a moving company. We don't own trucks
+                  or send crews — we connect you with independent, licensed moving
+                  companies serving the Denver metro area, so you can compare real
+                  quotes side by side instead of calling ten different websites.
                 </p>
                 <p>
-                  Our team brings hands-on experience from working in the Denver 
-                  metro area. We know the buildings, the neighborhoods, and what 
-                  it takes to get the job done right. Whether it's a one-bedroom 
-                  apartment or a full house, we treat every move with the same 
-                  level of attention.
+                  Every company on Handledly discloses its own licensing, insurance,
+                  and service area. You choose who to hear from, message them directly
+                  through the platform, and book with the one that fits your move —
+                  the moving company you select is the one that performs and is
+                  responsible for the move.
                 </p>
                 <p>
-                  What sets us apart? We answer our phones, we communicate clearly, 
-                  and we genuinely care about making your move easier. That's it—
-                  no complicated story, just good work.
+                  What sets us apart? Moving companies never pay for a lead they don't
+                  win — Handledly only earns a small commission when a booking is
+                  actually completed. That keeps the incentives aligned: we do better
+                  when you find the right mover, not when a company outbids another
+                  for your phone number.
                 </p>
               </div>
             </div>
             <div className="relative">
               {/* Stats card instead of placeholder */}
               <div className="rounded-2xl glass-card shadow-depth-3 p-8">
-                <h3 className="font-heading text-xl font-semibold text-primary mb-6">Denver Moving Excellence</h3>
-                <AnimatedStats 
+                <h3 className="font-heading text-xl font-semibold text-primary mb-6">How the Marketplace Works</h3>
+                <AnimatedStats
                   stats={[
-                    { value: 4.9, label: "Google Rating", suffix: "/5" },
-                    { value: 30, label: "Cities Served", suffix: "+" },
-                    { value: 0, label: "Hidden Fees", prefix: "$" },
-                    { value: 97, label: "Satisfaction Rate", suffix: "%" },
+                    { value: 1.5, label: "Commission — success fee only", suffix: "%" },
+                    { value: 30, label: "Metro Cities Covered", suffix: "+" },
+                    { value: 0, label: "Cost to List Your Company", prefix: "$" },
+                    { value: 0, label: "Fee to Receive a Request", prefix: "$" },
                   ]}
                   className="grid grid-cols-2 gap-6"
                 />
               </div>
-              
-              {/* Floating Glass Card - Hidden on mobile to prevent overlap */}
-              <div className="hidden sm:block absolute -bottom-6 -left-6 p-6 rounded-xl glass-card shadow-depth-3 hover-lift">
-                <div className="flex items-center gap-3">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-accent fill-accent" />
-                    ))}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-primary">4.9 Rating</p>
-                    <p className="text-sm text-muted-foreground">Customer Reviews</p>
-                  </div>
-                </div>
-              </div>
+
             </div>
           </div>
         </Container>
@@ -201,7 +189,7 @@ export default function About() {
         <Container className="relative z-10">
           <SectionHeader
             title="Our Values"
-            subtitle="The principles that guide every move we make."
+            subtitle="The principles that guide how we run the marketplace."
           />
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -231,8 +219,8 @@ export default function About() {
       <Section className="bg-secondary">
         <Container size="narrow">
           <SectionHeader
-            title="What We Bring"
-            subtitle="The things that matter most on moving day."
+            title="How Booking Works"
+            subtitle="From move request to a completed, reviewed booking."
           />
           
           <div className="grid sm:grid-cols-2 gap-6">
@@ -258,8 +246,8 @@ export default function About() {
         <div className="absolute inset-0 bg-mesh-section pointer-events-none" />
         <Container className="relative z-10">
           <SectionHeader
-            title="Licensed & Certified"
-            subtitle="Your peace of mind is backed by our credentials."
+            title="How the Marketplace Protects You"
+            subtitle="The standards every company on Handledly must meet."
           />
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
@@ -283,10 +271,10 @@ export default function About() {
         <Container size="narrow" className="relative z-10">
           <div className="text-center">
             <h2 className="font-heading text-3xl lg:text-4xl font-semibold text-primary mb-4">
-              Ready to Experience the Difference?
+              Ready to Compare Movers?
             </h2>
             <p className="text-muted-foreground mb-8">
-              Let Denver's most trusted movers show you what premium service really means.
+              Submit one move request and hear from verified Denver-area companies — free, no obligation.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="gradient-gold text-white shadow-gold hover:opacity-90 hover-lift animate-glow-pulse">

@@ -15,8 +15,8 @@ const NotFound = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEO 
-        title="Page Not Found | Handledly Moving Services"
-        description="Sorry, the page you're looking for doesn't exist. Get back to planning your Denver move with Handledly Moving Services."
+        title="Page Not Found | Handledly"
+        description="Sorry, the page you're looking for doesn't exist. Get back to comparing verified Denver movers on Handledly."
       />
       
       <Header />

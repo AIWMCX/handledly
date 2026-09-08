@@ -264,7 +264,7 @@ export default function Quote() {
   return (
     <div className="min-h-screen bg-background">
       <SEO 
-        title="Free Moving Quote Denver - Instant Estimate | Handledly Moving Services"
+        title="Free Moving Quote Denver - Instant Estimate | Handledly"
         description="Get a free moving quote in 60 seconds. Transparent pricing, no hidden fees. Local moves, heavy items, same-day service available. Denver's top-rated movers."
         canonicalUrl="https://handledly.com/quote"
         keywords={['free moving quote', 'moving estimate Denver', 'moving cost calculator', 'instant moving quote']}

@@ -46,12 +46,12 @@ const trustPillars = [
   {
     icon: ShieldCheck,
     title: "Verified & Insured",
-    description: "Every company is DOT-licensed with verified insurance on file.",
+    description: "Companies submit DOT/MC authority and insurance info before they can list.",
   },
   {
     icon: DollarSign,
     title: "Transparent Pricing",
-    description: "Binding quotes, no hidden fees, no surprise charges on move day.",
+    description: "Every quote states its price breakdown and whether it's binding or non-binding.",
   },
   {
     icon: Star,
@@ -144,11 +144,11 @@ export default function Index() {
             <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <BadgeCheck className="w-4 h-4 text-accent" />
-                <span>Verified DOT licensed companies</span>
+                <span>DOT/MC authority disclosed</span>
               </div>
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-accent" />
-                <span>Insurance verified</span>
+                <span>Insurance on file</span>
               </div>
               <div className="flex items-center gap-2">
                 <Star className="w-4 h-4 text-accent fill-accent" />
@@ -192,9 +192,9 @@ export default function Index() {
           <Container>
             <SectionHeader
               title="Featured Moving Companies"
-              subtitle="Top-rated, verified movers ready to quote your next move."
+              subtitle="Illustrative example — Denver's live mover network is onboarding now."
             />
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-6 opacity-90">
               {featuredMovers.map((mover) => (
                 <div
                   key={mover.name}
@@ -245,8 +245,8 @@ export default function Index() {
             </div>
 
             <div className="text-center mt-10">
-              <p className="text-sm text-muted-foreground mb-4">
-                Sample profiles shown. Live mover network launching soon.
+              <p className="text-sm font-medium text-accent mb-4">
+                ⚠ Sample profiles for illustration only — not real companies. Live mover network launching soon.
               </p>
               <Button asChild variant="outline" size="lg" className="border-primary text-primary hover:bg-primary hover:text-white">
                 <Link to="/auth?mode=signup&role=mover">
@@ -331,8 +331,8 @@ export default function Index() {
                   </div>
                   <div className="p-5 rounded-2xl bg-primary-foreground/10 border border-primary-foreground/20">
                     <Clock className="w-6 h-6 text-accent mb-3" />
-                    <p className="font-heading text-2xl font-bold text-primary-foreground">24-48h</p>
-                    <p className="text-sm text-primary-foreground/70">Payout window (coming soon)</p>
+                    <p className="font-heading text-2xl font-bold text-primary-foreground">Soon</p>
+                    <p className="text-sm text-primary-foreground/70">Fast payouts — payment processing launching</p>
                   </div>
                   <div className="p-5 rounded-2xl bg-primary-foreground/10 border border-primary-foreground/20">
                     <BadgeCheck className="w-6 h-6 text-accent mb-3" />

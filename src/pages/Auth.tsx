@@ -213,7 +213,7 @@ const Auth = () => {
                   Get free quotes from verified moving companies.
                 </TabsContent>
                 <TabsContent value="mover" className="text-xs text-muted-foreground mt-2">
-                  Join the marketplace. 1.5% commission, free CRM, 24-48 hr payout.
+                  Join the marketplace. 1.5% commission, free CRM. Payouts launching soon.
                 </TabsContent>
               </Tabs>
             )}

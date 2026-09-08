@@ -1,4 +1,4 @@
-// Quote Calculation Engine for Handledly Moving Services
+// Quote Calculation Engine for Handledly
 // Flat Hourly Rate Model - NO HIDDEN FEES
 
 export type ServiceType = 'local-moving' | 'heavy-items';

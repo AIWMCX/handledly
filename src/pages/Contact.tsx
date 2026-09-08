@@ -98,11 +98,11 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <SEO 
-        title="Contact Denver's Best Movers - Get Your Free Quote | Handledly Moving Services"
-        description="Contact Handledly Moving Services for professional Denver moving services. Call (878) 218-7397 for instant quotes. Under 10-minute response time. Licensed and insured movers."
+      <SEO
+        title="Contact Handledly - The Denver Moving Marketplace"
+        description="Questions about Handledly, the Denver-area moving marketplace? Reach our platform support team for help finding, comparing, or booking a verified moving company."
         canonicalUrl="https://handledly.com/contact"
-        keywords={["contact Denver movers", "moving quote Denver", "Denver moving company phone", "Handledly Moving Services contact"]}
+        keywords={["contact Handledly", "moving marketplace support", "Denver moving marketplace", "Handledly support"]}
       />
       
       <main id="main-content">
@@ -119,15 +119,15 @@ export default function Contact() {
             {/* Denver Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-6">
               <MapPin className="w-4 h-4 text-accent" />
-              <span className="text-sm font-medium text-accent">Denver's Top-Rated Movers</span>
+              <span className="text-sm font-medium text-accent">The Denver Moving Marketplace</span>
             </div>
-            
+
             <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-semibold mb-6">
-              Contact <span className="text-accent">Denver's</span> Best Movers
+              Contact <span className="text-accent">Handledly</span> Support
             </h1>
             <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed mb-6">
-              Ready to plan your move? Have questions? We're here to help. 
-              Reach out through any channel—we respond fast.
+              Questions about using the marketplace, a booking, or listing your moving
+              company? Our platform support team is here to help — reach out any way you like.
             </p>
             
             {/* Trust indicators */}
@@ -320,7 +320,7 @@ export default function Contact() {
                     Prefer to Talk to a Human?
                   </p>
                   <p className="text-white/80 text-sm mb-4">
-                    Our friendly Denver team is standing by to help with your move.
+                    Our platform support team is standing by to help you use Handledly.
                   </p>
                   <Button asChild size="lg" className="w-full bg-accent hover:bg-accent/90 text-white">
                     <a href="tel:+18782187397">

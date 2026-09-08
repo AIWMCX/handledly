@@ -6,9 +6,9 @@ import { SEO } from "@/components/SEO";
 const TermsOfService = () => {
   return (
     <div className="min-h-screen bg-background">
-      <SEO 
-        title="Terms of Service | Handledly Moving Services"
-        description="Review the terms and conditions for using Handledly Moving Services. Includes SMS messaging terms, service agreements, and user obligations."
+      <SEO
+        title="Terms of Service | Handledly Marketplace"
+        description="Review the terms and conditions for using the Handledly marketplace, including how bookings with independent moving companies work, SMS messaging terms, and user obligations."
         canonicalUrl="https://handledly.com/terms"
       />
       <Header />
@@ -40,20 +40,31 @@ const TermsOfService = () => {
                 <a href="https://handledly.com" className="text-primary hover:underline">
                   https://handledly.com
                 </a>{" "}
-                ("Website"). These Terms and Conditions ("Terms") govern your use of our Website 
-                and the services provided by Handledly Moving Services Inc. ("Company," "we," "our," or "us"). By 
-                accessing or using our Website, you agree to these Terms. If you do not agree, 
-                you must discontinue use of the Website immediately.
+                (the "Website" or "Platform"). These Terms and Conditions ("Terms") govern your
+                use of the Platform operated by Handledly, Inc. ("Handledly," "Company," "we,"
+                "our," or "us"). By accessing or using the Platform, you agree to these Terms. If
+                you do not agree, you must discontinue use of the Platform immediately.
               </p>
             </div>
 
-            {/* Services */}
+            {/* Marketplace Role */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-primary mb-4">Services</h2>
+              <h2 className="text-2xl font-bold text-primary mb-4">Handledly Is a Marketplace, Not a Mover</h2>
+              <p className="text-foreground leading-relaxed mb-4">
+                Handledly is a marketplace platform that connects customers seeking moving
+                services with independent, third-party moving companies ("Companies") that list
+                and offer their services on the Platform. Handledly does not itself provide
+                moving, packing, storage, or transportation services, does not employ moving
+                crews, and does not own or operate moving trucks.
+              </p>
               <p className="text-foreground leading-relaxed">
-                Our Website provides information about moving services offered by Handledly Moving Services. 
-                Specific terms regarding individual services may be detailed in a separate 
-                agreement between you and the Company.
+                Each Company is an independent business responsible for the moving services it
+                performs, including its own pricing, licensing, insurance, scheduling, and the
+                quality and safety of the move. Any quote, estimate, or booking you accept is an
+                agreement between you and the Company you selected — not with Handledly. Handledly
+                is not a party to, and is not liable for, the performance of that agreement, except
+                as expressly stated in these Terms regarding payments processed through the
+                Platform.
               </p>
             </div>
 
@@ -84,10 +95,11 @@ const TermsOfService = () => {
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-primary mb-4">Intellectual Property</h2>
               <p className="text-foreground leading-relaxed">
-                All content on this Website, including text, graphics, logos, images, and software, 
-                is the property of Handledly Moving Services Inc. or its licensors and is protected by copyright and 
-                trademark laws. You may not reproduce, distribute, or modify any content without 
-                our prior written consent.
+                All content on this Website, including text, graphics, logos, images, and software,
+                is the property of Handledly, Inc. or its licensors and is protected by copyright and
+                trademark laws. You may not reproduce, distribute, or modify any content without
+                our prior written consent. Company profiles, logos, and content submitted by
+                individual moving companies remain the property of those companies.
               </p>
             </div>
 
@@ -174,29 +186,19 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold text-primary mt-6 mb-3">Types of SMS Communications</h3>
               <p className="text-foreground leading-relaxed mb-4">
-                If you have consented to receive text messages from Handledly Moving Services, you may 
+                If you have consented to receive text messages from Handledly, you may
                 receive messages related to the following:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-foreground mb-4">
-                <li>Details of your order</li>
+                <li>Status updates on your move request or booking</li>
+                <li>Notifications that a moving company has responded or sent a quote</li>
               </ul>
               <p className="text-foreground mb-2">Example:</p>
               <blockquote className="bg-muted border-l-4 border-primary p-4 rounded-r-lg my-4">
                 <p className="text-foreground italic">
-                  "Perfect, [Name]. Your moving is added to our company's schedule for [Date and Time]. 
-                  Our quote is as we agreed [Price]. It includes: 2 Movers team, Truck, and all the 
-                  needed supplies for the move.
-                  <br /><br />
-                  No Truck fee and no travel fee, all the taxes are included in the quote.
-                  <br /><br />
-                  If you need help assembling or disassembling your furniture, it's also included.
-                  <br /><br />
-                  Min 2 hours
-                  <br /><br />
-                  Our priority is to ensure your move is smooth and hassle-free. See you soon and have 
-                  an amazing day!
-                  <br /><br />
-                  Handledly Moving Services team
+                  "Hi [Name], Mile High Movers just sent you a quote on Handledly for your move on
+                  [Date]. Log in to compare it with your other quotes and message the company
+                  directly.
                   <br /><br />
                   Reply STOP to opt out of SMS messaging at any time."
                 </p>
@@ -216,7 +218,7 @@ const TermsOfService = () => {
 
               <h3 className="text-xl font-semibold text-primary mt-6 mb-3">Opt-In Method</h3>
               <p className="text-foreground mb-4">
-                You may opt-in to receive SMS messages from Handledly Moving Services in the following ways:
+                You may opt-in to receive SMS messages from Handledly in the following ways:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-foreground mb-4">
                 <li>Verbally, during a conversation</li>

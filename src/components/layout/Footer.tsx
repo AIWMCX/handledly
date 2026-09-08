@@ -10,7 +10,6 @@ import {
   Shield,
   Award,
   CheckCircle,
-  Zap,
   CreditCard
 } from "lucide-react";
 
@@ -82,15 +81,16 @@ export function Footer() {
               </div>
               <div>
                 <p className="font-heading text-lg font-semibold text-white">Handledly</p>
-                <p className="text-xs text-white/70 tracking-widest uppercase">Moving Services</p>
+                <p className="text-xs text-white/70 tracking-widest uppercase">Moving Marketplace</p>
               </div>
             </div>
             <p className="text-white/80 text-sm leading-relaxed">
-              Denver's trusted partner for stress-free moves. Flat-rate pricing with no hidden fees.
+              The marketplace connecting Denver-area customers with independent,
+              verified moving companies — no paid leads, no hidden markups.
             </p>
-            
+
             {/* Social Links - Hidden until accounts are created */}
-            {/* 
+            {/*
             <div className="flex gap-4">
               <a href="https://facebook.com/handledly" className="text-white/70 hover:text-accent transition-colors p-2 rounded-lg hover:bg-white/10" aria-label="Facebook">
                 <Facebook className="w-5 h-5" />
@@ -104,15 +104,15 @@ export function Footer() {
             </div>
             */}
 
-            {/* License & Insurance Badges */}
+            {/* Marketplace policy badges */}
             <div className="space-y-3 pt-4 border-t border-white/20">
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-accent" />
-                <span className="text-xs font-medium text-white">Licensed & $750K Insured</span>
+                <span className="text-xs font-medium text-white">Every company discloses license & insurance</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-accent" />
-                <span className="text-xs text-white/80">Workers' Comp Coverage</span>
+                <span className="text-xs text-white/80">No fee to list, request, or lose a job</span>
               </div>
             </div>
           </div>
@@ -133,19 +133,19 @@ export function Footer() {
               ))}
             </ul>
 
-            {/* Payment Methods */}
+            {/* Platform note */}
             <div className="mt-8 pt-6 border-t border-white/20">
-              <p className="text-xs font-medium text-white mb-3">We Accept</p>
+              <p className="text-xs font-medium text-white mb-3">For Moving Companies</p>
               <div className="flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-white/70" />
-                <span className="text-xs text-white/70">Visa, MC, Cash, Check</span>
+                <span className="text-xs text-white/70">Free to join. 1.5% commission on completed bookings only.</span>
               </div>
             </div>
           </div>
 
-          {/* Services */}
+          {/* Services customers can request */}
           <div>
-            <p className="font-heading text-lg font-semibold mb-6 text-white">Our Services</p>
+            <p className="font-heading text-lg font-semibold mb-6 text-white">Popular Move Types</p>
             <ul className="space-y-2">
               {services.map((service) => (
                 <li key={service.label}>
@@ -191,23 +191,19 @@ export function Footer() {
               </li>
             </ul>
 
-            {/* Business Hours */}
+            {/* Platform Support Hours */}
             <div className="mt-6 pt-4 border-t border-white/20">
               <div className="flex items-center gap-2 mb-3">
                 <Clock className="w-4 h-4 text-accent" />
-                <span className="text-sm font-medium text-white">Business Hours</span>
+                <span className="text-sm font-medium text-white">Platform Support Hours</span>
               </div>
               <div className="text-sm text-white/80 space-y-1">
                 <p>Mon - Fri: 7:00 AM - 8:00 PM</p>
                 <p>Saturday: 7:00 AM - 6:00 PM</p>
                 <p>Sunday: 8:00 AM - 5:00 PM</p>
               </div>
-              <div className="mt-3 flex items-center gap-2">
-                <Zap className="w-4 h-4 text-accent" />
-                <span className="text-xs font-medium text-accent">Same-Day Service Available</span>
-              </div>
-              <p className="text-xs text-white/70 mt-2">
-                Emergency & last-minute moves welcome
+              <p className="text-xs text-white/70 mt-3">
+                Each moving company sets its own hours and response times, shown on its profile.
               </p>
             </div>
           </div>
@@ -216,7 +212,7 @@ export function Footer() {
         {/* Quote Promise Banner */}
         <div className="mt-12 p-4 bg-accent/20 border border-accent/30 rounded-lg text-center backdrop-blur-sm">
           <p className="text-sm font-medium text-white">
-            🚚 Get Your Personal Moving Quote in <span className="text-white font-semibold">10 Minutes or Less</span> — Call Now or Fill Out Our Form
+            🚚 Submit One Move Request — Compare Quotes from <span className="text-white font-semibold">Verified Companies</span>
           </p>
         </div>
 
@@ -224,7 +220,7 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t border-white/20 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
             <p className="text-white/70 text-xs">
-              © {currentYear} Handledly Moving Services Inc. All rights reserved.
+              © {currentYear} Handledly. All rights reserved. Handledly is a marketplace platform — moves are performed by independent, licensed moving companies.
             </p>
           </div>
           <div className="flex gap-6">
